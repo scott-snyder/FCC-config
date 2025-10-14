@@ -1,19 +1,15 @@
 {
   "version": 5,
-  "prev": "ae2f619f11cb3ce77a640431caecd2251452e9a3",
-  "head": "2916da29bc5a659de6704b7f3a4d54030794b404",
+  "prev": "970d770e5f1254b17aefe03dc3e714951d89d5ee",
+  "head": "e885193675dd52e8f7cfa82c8ffe4c1465f9ec62",
   "applied": [
-    "allegroNoise",
-    "refresh-temp"
+    "allegroNoise"
   ],
   "unapplied": [],
   "hidden": [],
   "patches": {
     "allegroNoise": {
-      "oid": "403a768cefc06c3f5fd5844818336ae65f2d4d76"
-    },
-    "refresh-temp": {
-      "oid": "2916da29bc5a659de6704b7f3a4d54030794b404"
+      "oid": "e885193675dd52e8f7cfa82c8ffe4c1465f9ec62"
     }
   }
 }
