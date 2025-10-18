@@ -61,74 +61,75 @@ if ecalEndcapSamplingFraction and len(ecalEndcapSamplingFraction) > 0:
     assert (ecalEndcapLayers == len(ecalEndcapSamplingFraction))
 
 
-def makeCalibrateECalBarrel (flags, name = 'CalibrateECalBarrel'):
+def CalibrateECalBarrelCfg (cfg, name = 'CalibrateECalBarrel'):
     return C.CalibrateInLayersTool(name,
                                    samplingFraction=ecalBarrelSamplingFraction,
-                                   readoutName=flags.ECal.Barrel.readoutName,
+                                   readoutName=cfg.flags.ECal.Barrel.readoutName,
                                    layerFieldName="layer")
 
 
-def makeCalibrateECalEndcap (flags, name = 'CalibrateECalEndcap'):
+def CalibrateECalEndcapCfg (cfg, name = 'CalibrateECalEndcap'):
     return C.CalibrateInLayersTool(name,
                                    samplingFraction=ecalEndcapSamplingFraction,
-                                   readoutName=flags.ECal.Endcap.readoutName,
+                                   readoutName=cfg.flags.ECal.Endcap.readoutName,
                                    layerFieldName="layer")
 
 
-def makeCalibrateHCalBarrel (flags, name = 'CalibrateHCalBarrel'):
+def CalibrateHCalBarrelCfg (cfg, name = 'CalibrateHCalBarrel'):
     return C.CalibrateCaloHitsTool(name,
                                    invSamplingFraction=29.4202)
 
 
-def makeCalibrateHCalEndcap (flags, name = 'CalibrateHCalEndcap'):
+def CalibrateHCalEndcapCfg (cfg, name = 'CalibrateHCalEndcap'):
     return C.CalibrateCaloHitsTool(name,
                                    invSamplingFraction=29.4202)  # FIXME: to be updated for ddsim
 
 
-def makeCellPositionsECalBarrel (flags,
-                                 name = 'CellPositionsECalBarrel',
-                                 readoutName = None):
-    if readoutName is None: readoutName = flags.ECal.Barrel.readoutName
+def CellPositionsECalBarrelCfg (cfg,
+                                name = 'CellPositionsECalBarrel',
+                                readoutName = None):
+    if readoutName is None: readoutName = cfg.flags.ECal.Barrel.readoutName
     return C.CellPositionsECalBarrelModuleThetaSegTool(name,
                                                        readoutName=readoutName)
 
 
-def makeCellPositionsECalEndcap (flags,
-                                 name = 'CellPositionsECalEndcap',
-                                 readoutName = None):
-    if readoutName is None: readoutName = flags.ECal.Endcap.readoutName
+def CellPositionsECalEndcapCfg (cfg,
+                                name = 'CellPositionsECalEndcap',
+                                readoutName = None):
+    if readoutName is None: readoutName = cfg.flags.ECal.Endcap.readoutName
     return C.CellPositionsECalEndcapTurbineSegTool(name,
                                                    readoutName=readoutName)
 
 
-def makeCellPositionsHCalBarrel (flags,
-                                 name = 'CellPositionsHCalBarrel',
-                                 readoutName = None):
-    if readoutName is None: readoutName = flags.HCal.Barrel.readoutName
+def CellPositionsHCalBarrelCfg (cfg,
+                                name = 'CellPositionsHCalBarrel',
+                                readoutName = None):
+    if readoutName is None: readoutName = cfg.flags.HCal.Barrel.readoutName
     return C.CellPositionsHCalPhiThetaSegTool(name,
                                               readoutName=readoutName,
                                               detectorName='HCalBarrel')
 
 
-def makeCellPositionsHCalEndcap (flags,
-                                 name = 'CellPositionsHCalEndcap',
-                                 readoutName = None):
-    if readoutName is None: readoutName = flags.HCal.Endcap.readoutName
+def CellPositionsHCalEndcapCfg (cfg,
+                                name = 'CellPositionsHCalEndcap',
+                                readoutName = None):
+    if readoutName is None: readoutName = cfg.flags.HCal.Endcap.readoutName
     return C.CellPositionsHCalPhiThetaSegTool(name,
                                               readoutName=readoutName,
                                               detectorName='HCalThreePartsEndcap',
                                               numLayersHCalThreeParts=[6, 9, 22])
 
 
-def makeECalCrosstalkMap (flags, name = 'ReadCrosstalkMap'):
-    if not flags.ECal.Barrel.addCrosstalk: return None
+def ReadCrosstalkMapCfg (cfg, name = 'ReadCrosstalkMap'):
+    if not cfg.flags.ECal.Barrel.addCrosstalk: return None
     return C.ReadCaloCrosstalkMap(name,
-                                  fileName=flags.dataFilesUrl + "xtalk_neighbours_map_ecalB_thetamodulemerged.root")
+                                  fileName=cfg.flags.dataFilesUrl + "xtalk_neighbours_map_ecalB_thetamodulemerged.root")
 
 
-def makeECalBarrelNoiseTool (flags, name = 'ecalBarrelNoiseTool'):
+def eCalBarrelNoiseToolCfg (cfg, name = 'ecalBarrelNoiseTool'):
+    flags = cfg.flags
     return C.NoiseCaloCellsVsThetaFromFileTool (name,
-                                                cellPositionsTool=makeCellPositionsECalBarrel(flags),
+                                                cellPositionsTool=CellPositionsECalBarrelCfg(cfg),
                                                 readoutName=flags.ECal.Barrel.readoutName,
                                                 noiseFileName=flags.ECal.Barrel.noisePath,
                                                 elecNoiseRMSHistoName=flags.ECal.Barrel.noiseRMSHistName,
@@ -142,27 +143,28 @@ def makeECalBarrelNoiseTool (flags, name = 'ecalBarrelNoiseTool'):
                                                 )
 
 
-def makeECalBarrelGeometryTool (flags, name = 'ecalBarrelGeometryTool'):
+def eCalBarrelGeometryToolCfg (cfg, name = 'ecalBarrelGeometryTool'):
     return C.TubeLayerModuleThetaCaloTool(name,
-                                          readoutName=flags.ECal.Barrel.readoutName,
+                                          readoutName=cfg.flags.ECal.Barrel.readoutName,
                                           activeVolumeName="LAr_sensitive",
                                           activeFieldName="layer",
                                           activeVolumesNumber=ecalBarrelLayers,
                                           fieldNames=["system"],
-                                          fieldValues=[detIDs(flags, 'ECAL_Barrel')],
+                                          fieldValues=[detIDs(cfg.flags, 'ECAL_Barrel')],
                                           )
 
 
-def makeCreateECalBarrelCells (flags,
-                               name = 'CreatePositionedECalBarrelCells',
-                               doCellCalibration = True,
-                               addNoise = False,
-                               addCrosstalk = None,
-                               filterCellNoise = False,
-                               cellsNameSuffix = '',
-                               readoutName = None,
-                               **kw):
+def CreateECalBarrelCellsCfg (cfg,
+                              name = 'CreatePositionedECalBarrelCells',
+                              doCellCalibration = True,
+                              addNoise = False,
+                              addCrosstalk = None,
+                              filterCellNoise = False,
+                              cellsNameSuffix = '',
+                              readoutName = None,
+                              **kw):
 
+    flags = cfg.flags
     if readoutName is None: readoutName = flags.ECal.Barrel.readoutName
     if addCrosstalk is None: addCrosstalk = flags.ECal.Barrel.addCrosstalk
 
@@ -171,37 +173,39 @@ def makeCreateECalBarrelCells (flags,
     kw.setdefault('hits', readoutName)
 
     if doCellCalibration:
-        kw['calibTool'] = makeCalibrateECalBarrel(flags)
+        kw['calibTool'] = CalibrateECalBarrelCfg(cfg)
 
     if addCrosstalk:
-        kw['crosstalkTool'] = makeECalCrosstalkMap(flags)
+        kw['crosstalkTool'] = ReadCrosstalkMapCfg(cfg)
 
     if addNoise:
-        kw['noiseTool'] = makeECalBarrelNoiseTool (flags)
-        kw['geometryTool'] = makeECalBarrelGeometryTool (flags)
+        kw['noiseTool'] = eCalBarrelNoiseToolCfg (cfg)
+        kw['geometryTool'] = eCalBarrelGeometryToolCfg (cfg)
 
     if readoutName == flags.ECal.Barrel.readoutName:
-        kw['positionsTool'] = makeCellPositionsECalBarrel(flags)
+        kw['positionsTool'] = CellPositionsECalBarrelCfg(cfg)
     else:
-        kw['positionsTool'] = makeCellPositionsECalBarrel(flags,
-                                                          name='CellPositions' + readoutName,
-                                                          readoutName=readoutName)
+        kw['positionsTool'] = CellPositionsECalBarrelCfg(cfg,
+                                                         name='CellPositions' + readoutName,
+                                                         readoutName=readoutName)
 
-    return C.CreatePositionedCaloCells(name,
-                                       doCellCalibration=doCellCalibration,
-                                       addCrosstalk=addCrosstalk,
-                                       addCellNoise=addNoise,
-                                       filterCellNoise=filterCellNoise,
-                                       **kw
-                                       )
+    cfg.addAlg(C.CreatePositionedCaloCells(name,
+                                           doCellCalibration=doCellCalibration,
+                                           addCrosstalk=addCrosstalk,
+                                           addCellNoise=addNoise,
+                                           filterCellNoise=filterCellNoise,
+                                           **kw
+                                           ))
+    return
                            
 
-def makeCreateECalEndcapCells (flags,
-                               name = 'CreatePositionedECalEndcapCells',
-                               doCellCalibration = True,
-                               cellsNameSuffix = '',
-                               readoutName = None,
-                               **kw):
+def CreateECalEndcapCellsCfg (cfg,
+                              name = 'CreatePositionedECalEndcapCells',
+                              doCellCalibration = True,
+                              cellsNameSuffix = '',
+                              readoutName = None,
+                              **kw):
+    flags = cfg.flags
     if readoutName is None: readoutName = flags.ECal.Endcap.readoutName
 
     kw.setdefault('cells', readoutName + flags.cellsNamePart + cellsNameSuffix)
@@ -209,25 +213,27 @@ def makeCreateECalEndcapCells (flags,
     kw.setdefault('hits', readoutName)
 
     if doCellCalibration:
-        kw['calibTool'] = makeCalibrateECalEndcap(flags)
+        kw['calibTool'] = CalibrateECalEndcapCfg(cfg)
 
-    return C.CreatePositionedCaloCells(name,
-                                       doCellCalibration=doCellCalibration,
-                                       positionsTool=makeCellPositionsECalEndcap(flags),
-                                       addCrosstalk=False,
-                                       addCellNoise=False,
-                                       filterCellNoise=False,
-                                       noiseTool=None,
-                                       **kw
-                                       )
+    cfg.addAlg(C.CreatePositionedCaloCells(name,
+                                           doCellCalibration=doCellCalibration,
+                                           positionsTool=CellPositionsECalEndcapCfg(cfg),
+                                           addCrosstalk=False,
+                                           addCellNoise=False,
+                                           filterCellNoise=False,
+                                           noiseTool=None,
+                                           **kw
+                                           ))
+    return
 
 
-def makeCreateHCalBarrelCells (flags,
-                               name = 'CreatePositionedHCalBarrelCells',
-                               doCellCalibration = True,
-                               cellsNameSuffix = '',
-                               readoutName = None,
-                               **kw):
+def CreateHCalBarrelCellsCfg (cfg,
+                              name = 'CreatePositionedHCalBarrelCells',
+                              doCellCalibration = True,
+                              cellsNameSuffix = '',
+                              readoutName = None,
+                              **kw):
+    flags = cfg.flags
     if readoutName is None: readoutName = flags.HCal.Barrel.readoutName
 
     kw.setdefault('cells', readoutName + flags.cellsNamePart + cellsNameSuffix)
@@ -235,22 +241,24 @@ def makeCreateHCalBarrelCells (flags,
     kw.setdefault('hits', readoutName)
 
     if doCellCalibration:
-        kw['calibTool'] = makeCalibrateHCalBarrel(flags)
+        kw['calibTool'] = CalibrateHCalBarrelCfg(cfg)
 
-    return C.CreatePositionedCaloCells(name,
-                                       doCellCalibration=doCellCalibration,
-                                       addCellNoise=False,
-                                       positionsTool=makeCellPositionsHCalBarrel(flags),
-                                       **kw
-                                       )
+    cfg.addAlg(C.CreatePositionedCaloCells(name,
+                                           doCellCalibration=doCellCalibration,
+                                           addCellNoise=False,
+                                           positionsTool=CellPositionsHCalBarrelCfg(cfg),
+                                           **kw
+                                           ))
+    return
 
 
-def makeCreateHCalEndcapCells (flags,
-                               name = 'CreatePositionedHCalEndcapCells',
-                               doCellCalibration = True,
-                               cellsNameSuffix = '',
-                               readoutName = None,
-                               **kw):
+def CreateHCalEndcapCellsCfg (cfg,
+                              name = 'CreatePositionedHCalEndcapCells',
+                              doCellCalibration = True,
+                              cellsNameSuffix = '',
+                              readoutName = None,
+                              **kw):
+    flags = cfg.flags
     if readoutName is None: readoutName = flags.HCal.Endcap.readoutName
 
     kw.setdefault('cells', readoutName + flags.cellsNamePart + cellsNameSuffix)
@@ -258,32 +266,35 @@ def makeCreateHCalEndcapCells (flags,
     kw.setdefault('hits', readoutName)
 
     if doCellCalibration:
-        kw['calibTool'] = makeCalibrateHCalEndcap(flags)
+        kw['calibTool'] = CalibrateHCalEndcapCfg(cfg)
 
-    return C.CreatePositionedCaloCells(name,
-                                       doCellCalibration=doCellCalibration,
-                                       addCellNoise=False,
-                                       positionsTool=makeCellPositionsHCalEndcap(flags),
-                                       **kw
-                                       )
+    cfg.addAlg(C.CreatePositionedCaloCells(name,
+                                           doCellCalibration=doCellCalibration,
+                                           addCellNoise=False,
+                                           positionsTool=CellPositionsHCalEndcapCfg(cfg),
+                                           **kw
+                                           ))
+    return
 
 
                            
-def makeReSegmentationECal(flags,
-                           name = 'ReSegmentationEcal',
-                           newReadoutName = 'ECalBarrelModuleThetaMerged2',
-                           newCellsName = 'ECalBarrelCellsMerged'):
+def redoECalSegmentationCfg(cfg,
+                            name = 'ReSegmentationEcal',
+                            newReadoutName = 'ECalBarrelModuleThetaMerged2',
+                            newCellsName = 'ECalBarrelCellsMerged'):
 
-    return C.RedoSegmentation(name,
-                              # old bitfield (readout)
-                              oldReadoutName=flags.ECal.Barrel.readoutName,
-                              # specify which fields are going to be altered (deleted/rewritten)
-                              oldSegmentationIds=['module', 'theta'],
-                              # new bitfield (readout), with new segmentation (merged modules and theta cells)
-                              newReadoutName=newReadoutName,
-                              debugPrint=200,
-                              inhits=flags.ECal.Barrel.readoutName + flags.cellsNamePart,
-                              outhits=newCellsName)
+    flags = cfg.algs
+    cfg.addAlg(C.RedoSegmentation(name,
+                                  # old bitfield (readout)
+                                  oldReadoutName=flags.ECal.Barrel.readoutName,
+                                  # specify which fields are going to be altered (deleted/rewritten)
+                                  oldSegmentationIds=['module', 'theta'],
+                                  # new bitfield (readout), with new segmentation (merged modules and theta cells)
+                                  newReadoutName=newReadoutName,
+                                  debugPrint=200,
+                                  inhits=flags.ECal.Barrel.readoutName + flags.cellsNamePart,
+                                  outhits=newCellsName))
+    return
 
 
 

@@ -140,8 +140,19 @@ addPi0RecoTool = True
 #
 # ALGORITHMS AND SERVICES SETUP
 #
-TopAlg = []  # alg sequence
-ExtSvc = []  # list of external services
+class Cfg:
+    def __init__ (self, flags):
+        self.TopAlg = []  # alg sequence
+        self.ExtSvc = []  # list of external services
+        self.flags = flags
+        return
+    def addAlg (self, a):
+        self.TopAlg.append (a)
+        return
+    def addSvc (self, a):
+        self.ExtSvc.append (a)
+        return
+cfg = Cfg(flags)
 
 
 # Event counter
@@ -149,16 +160,16 @@ from Configurables import EventCounter
 eventCounter = EventCounter("EventCounter",
                             OutputLevel=INFO,
                             Frequency=10)
-TopAlg += [eventCounter]
+cfg.addAlg (eventCounter)
 # add a message sink service if you want a summary table at the end (not needed..)
-# ExtSvc += ["Gaudi::Monitoring::MessageSvcSink"]
+# cfg.ExtSvc += ["Gaudi::Monitoring::MessageSvcSink"]
 
 # CPU information
 from Configurables import AuditorSvc, ChronoAuditor
 chra = ChronoAuditor()
 audsvc = AuditorSvc()
 audsvc.Auditors = [chra]
-ExtSvc += [audsvc]
+cfg.addSvc(audsvc)
 
 
 # Detector geometry
@@ -177,7 +188,7 @@ detectors_to_use = [
 geoservice.detectors = [
     os.path.join(path_to_detector, _det) for _det in detectors_to_use
 ]
-ExtSvc += [geoservice]
+cfg.addSvc(geoservice)
 
 from FCC_config.ALLEGRO.DetIDs import detIDs
 
@@ -187,10 +198,10 @@ from Configurables import EventDataSvc
 io_svc = IOSvc("IOSvc")
 io_svc.Input = inputfile
 io_svc.Output = outputfile
-ExtSvc += [EventDataSvc("EventDataSvc")]
+cfg.addSvc(EventDataSvc("EventDataSvc"))
 
 if addTracks or digitiseTrackerHits or addNoise:
-    ExtSvc += ["RndmGenSvc"]
+    cfg.addSvc("RndmGenSvc")
 
 
 # Tracking
@@ -215,7 +226,7 @@ if addTracks:
                                                                        "SiWr_Barrel",
                                                                        "SiWr_Disks"]),
                                                     OutputLevel=INFO)
-    TopAlg += [tracksFromGenParticles]
+    cfg.addAlg(tracksFromGenParticles)
 
     # Calculate dNdx from tracks
     from Configurables import TrackdNdxDelphesBased
@@ -228,7 +239,7 @@ if addTracks:
                                            RmaxParameterName="DCH_gas_outer_cyl_R",
                                            FillFactor=1.0,
                                            OutputLevel=ERROR)
-    TopAlg += [dNdxFromTracks]
+    cfg.addAlg(dNdxFromTracks)
 
 
 # Tracker digitisation
@@ -257,7 +268,7 @@ if digitiseTrackerHits:
                                   forceHitsOntoSurface=False,
                                   OutputLevel=INFO
                                   )
-    TopAlg += [vtxb_digitizer]
+    cfg.addAlg(vtxb_digitizer)
 
     vtxd_digitizer = VTXdigitizer("VTXDdigitizer",
                                   inputSimHits="VertexEndcapCollection",
@@ -271,7 +282,7 @@ if digitiseTrackerHits:
                                   forceHitsOntoSurface=False,
                                   OutputLevel=INFO
                                   )
-    TopAlg += [vtxd_digitizer]
+    cfg.addAlg(vtxd_digitizer)
 
     # digitise silicon wrapper hits
     siWrapperResolution_x = 0.050 / math.sqrt(12)  # [mm]
@@ -290,7 +301,7 @@ if digitiseTrackerHits:
                                    forceHitsOntoSurface=False,
                                    OutputLevel=INFO
                                    )
-    TopAlg += [siwrb_digitizer]
+    cfg.addAlg(siwrb_digitizer)
 
     siwrd_digitizer = VTXdigitizer("SiWrDdigitizer",
                                    inputSimHits="SiWrDCollection",
@@ -304,10 +315,10 @@ if digitiseTrackerHits:
                                    forceHitsOntoSurface=False,
                                    OutputLevel=INFO
                                    )
-    TopAlg += [siwrd_digitizer]
+    cfg.addAlg(siwrd_digitizer)
 
     from Configurables import UniqueIDGenSvc
-    ExtSvc += [UniqueIDGenSvc("uidSvc")]
+    cfg.addSvc(UniqueIDGenSvc("uidSvc"))
     from Configurables import DCHdigi_v01
     # "https://fccsw.web.cern.ch/fccsw/filesFoSimDigiReco/IDEA/DataAlgFORGEANT.root"
     dch_digitizer = DCHdigi_v01("DCHdigi",
@@ -322,7 +333,7 @@ if digitiseTrackerHits:
                                 zResolution_mm=0.,  # in mm - Note: At this point, the z resolution comes without the stereo measurement
                                 xyResolution_mm=0.  # in mm
                                 )
-    TopAlg += [dch_digitizer]
+    cfg.addAlg(dch_digitizer)
 
 
 #############################################################################
@@ -336,8 +347,8 @@ ecalBarrelPositionedCellsName2 = ecalBarrelReadoutName2 + "Positioned"
 # Create cells in ECal barrel (calibrated and positioned - optionally with xtalk and noise added)
 # from uncalibrated cells (+cellID info) from ddsim
 from Configurables import CreatePositionedCaloCells
-from FCC_config.ALLEGRO.CreateCaloCells import makeCreateECalBarrelCells
-TopAlg.append (makeCreateECalBarrelCells(flags))
+from FCC_config.ALLEGRO.CreateCaloCells import CreateECalBarrelCellsCfg
+CreateECalBarrelCellsCfg(cfg)
 
 # -  now, if we want to also save cells with coarser granularity:
 if resegmentECalBarrel:
@@ -347,51 +358,48 @@ if resegmentECalBarrel:
     # Step a: compute new cellID of cells based on new readout
     # (merged module-theta segmentation with variable merging vs layer)
     #from Configurables import RedoSegmentation
-    from FCC_config.ALLEGRO.CreateCaloCells import makeReSegmentationECal
-    TopAlg.append (makeReSegmentationECal
-                   (flags,
-                    newReadoutName = ecalBarrelReadoutName2,
-                    newCellsName = ecalBarrelHitsMergedName))
+    from FCC_config.ALLEGRO.CreateCaloCells import redoECalSegmentationCfg
+    redoECalSegmentationCfg(cfg,
+                            newReadoutName = ecalBarrelReadoutName2,
+                            newCellsName = ecalBarrelHitsMergedName)
 
 
     # Step b: merge new cells with same cellID together
     # do not apply cell calibration again since cells were already
     # calibrated in Step 1
     # noise and xtalk off assuming they were applied earlier
-    TopAlg.append (makeCreateECalBarrelCells(flags,
-                                             'CreatePositionedECalBarrelCells2',
-                                             hits = ecalBarrelHitsMergedName,
-                                             readoutName=ecalBarrelReadoutName2,
-                                             addCrosstalk = False,
-                                             doCellCalibration = False))
+    CreateECalBarrelCellsCfg(cfg,
+                             'CreatePositionedECalBarrelCells2',
+                             hits = ecalBarrelHitsMergedName,
+                             readoutName=ecalBarrelReadoutName2,
+                             addCrosstalk = False,
+                             doCellCalibration = False)
 
 # Create cells in ECal endcap (needed if one wants to apply cell calibration,
 # which is not performed by ddsim)
-from FCC_config.ALLEGRO.CreateCaloCells import makeCreateECalEndcapCells
-TopAlg.append (makeCreateECalEndcapCells(flags))
+from FCC_config.ALLEGRO.CreateCaloCells import CreateECalEndcapCellsCfg
+CreateECalEndcapCellsCfg(cfg)
 
 if addNoise:
     # cells with noise not filtered
-    TopAlg.append (makeCreateECalBarrelCells
-                   (flags,
-                    'CreatePositionedECalBarrelCellsWithNoise',
-                    addNoise = True,
-                    cellsNameSuffix = 'WithNoise'))
+    CreateECalBarrelCellsCfg (cfg,
+                              'CreatePositionedECalBarrelCellsWithNoise',
+                              addNoise = True,
+                              cellsNameSuffix = 'WithNoise')
 
     # cells with noise filtered
-    TopAlg.append (makeCreateECalBarrelCells
-                   (flags,
-                    name = 'CreatePositionedECalBarrelCellsWithNoiseFiltered',
-                    addNoise = True,
-                    filterCellNoise = True,
-                    cellsNameSuffix = ' WithNoiseFiltered'))
+    CreateECalBarrelCellsCfg (cfg,
+                              'CreatePositionedECalBarrelCellsWithNoiseFiltered',
+                              addNoise = True,
+                              filterCellNoise = True,
+                              cellsNameSuffix = ' WithNoiseFiltered')
 
 
 if runHCal:
     from FCC_config.ALLEGRO.CreateCaloCells import \
-         makeCreateHCalBarrelCells, makeCreateHCalEndcapCells
-    TopAlg.append (makeCreateHCalBarrelCells(flags))
-    TopAlg.append (makeCreateHCalEndcapCells(flags))
+         CreateHCalBarrelCellsCfg, CreateHCalEndcapCellsCfg
+    CreateHCalBarrelCellsCfg(cfg)
+    CreateHCalEndcapCellsCfg(cfg)
 
 
 #############################################################################
@@ -431,7 +439,7 @@ if runMuon:
                                                       cells=muonBarrelPositionedCellsName,
                                                       links=muonBarrelLinks
                                                       )
-    TopAlg += [createMuonBarrelCells]
+    cfg.addAlg(createMuonBarrelCells)
 
     muonEndcapReadoutName = "MuonTaggerEndcapPhiTheta"
     muonEndcapPositionedCellsName = muonEndcapReadoutName + "Positioned"
@@ -457,7 +465,7 @@ if runMuon:
                                                       cells=muonEndcapPositionedCellsName,
                                                       links=muonEndcapLinks
                                                       )
-    TopAlg += [createMuonEndcapCells]
+    cfg.addAlg(createMuonEndcapCells)
 else:
     muonBarrelReadoutName = ""
     muonEndcapReadoutName = ""
@@ -479,7 +487,7 @@ def setupSWClusters(inputCells,
                     runPhotonIDTool,
                     clusterType="StandardSize"):
 
-    global TopAlg
+    global cfg
 
     from Configurables import CaloTowerToolFCCee
     from Configurables import CreateCaloClustersSlidingWindowFCCee
@@ -554,7 +562,7 @@ def setupSWClusters(inputCells,
                                                       )
     clusterAlg.clusters.Path = outputClusters
     clusterAlg.clusterCells.Path = outputClusters.replace("Clusters", "Cluster") + "Cells"
-    TopAlg += [clusterAlg]
+    cfg.addAlg(clusterAlg)
     outputSaveClusters.append(outputClusters)
 
     if applyUpDownstreamCorrections:
@@ -575,7 +583,7 @@ def setupSWClusters(inputCells,
                                                 downstreamFormulas=[['[0]+[1]*x', '[0]+[1]/sqrt(x)', '[0]+[1]/x']],
                                                 OutputLevel=INFO
                                                 )
-        TopAlg += [correctClusterAlg]
+        cfg.addAlg(correctClusterAlg)
 
     if addShapeParameters:
         # note that this only works for ecal barrel given various hardcoded quantities
@@ -594,7 +602,7 @@ def setupSWClusters(inputCells,
                                                  do_widthTheta_logE_weights=logEWeightInPhotonID,
                                                  OutputLevel=INFO
                                                  )
-        TopAlg += [augmentClusterAlg]
+        cfg.addAlg(augmentClusterAlg)
         # since the non-decorated version of the clusters will be dropped, we update the list of clusters for which we store the truth links
         outputSaveClusters.append("Augmented" + clusterAlg.clusters.Path)
         outputSaveClusters.remove(clusterAlg.clusters.Path)
@@ -620,7 +628,7 @@ def setupSWClusters(inputCells,
                                                      calibrationFile=dataFolder + "lgbm_calibration-CaloClusters.onnx",
                                                      OutputLevel=INFO
                                                      )
-        TopAlg += [calibrateClustersAlg]
+        cfg.addAlg(calibrateClustersAlg)
 
     if runPhotonIDTool:
         if not addShapeParameters:
@@ -641,7 +649,7 @@ def setupSWClusters(inputCells,
                                        mvaInputsFile=dataFolder + "bdt-photonid-settings-EMBCaloClusters.json",
                                        OutputLevel=INFO
                                        )
-            TopAlg += [photonIDAlg]
+            cfg.addAlg(photonIDAlg)
 
 
 # Function that sets up the sequence for producing Topo clusters given an input cell collection
@@ -656,7 +664,7 @@ def setupTopoClusters(inputCells,
                       addShapeParameters,
                       runPhotonIDTool):
 
-    global TopAlg
+    global cfg
 
     from Configurables import TopoCaloNeighbours
     from Configurables import TopoCaloNoisyCells
@@ -698,7 +706,7 @@ def setupTopoClusters(inputCells,
                                       calorimeterIDs=caloIDs,
                                       createClusterCellCollection=doCreateClusterCellCollection,
                                       OutputLevel=INFO)
-    TopAlg += [clusterAlg]
+    cfg.addAlg(clusterAlg)
     outputSaveClusters.append(outputClusters)
 
     if applyUpDownstreamCorrections:
@@ -719,7 +727,7 @@ def setupTopoClusters(inputCells,
                                                 downstreamFormulas=[['[0]+[1]*x', '[0]+[1]/sqrt(x)', '[0]+[1]/x']],
                                                 OutputLevel=INFO
                                                 )
-        TopAlg += [correctClusterAlg]
+        cfg.addAlg(correctClusterAlg)
 
     if addShapeParameters:
         # note that this only works for ecal barrel given various hardcoded quantities
@@ -737,7 +745,7 @@ def setupTopoClusters(inputCells,
                                                  do_photon_shapeVar=True,  # we want these variables to train the photon ID BDT
                                                  do_widthTheta_logE_weights=logEWeightInPhotonID,
                                                  OutputLevel=INFO)
-        TopAlg += [augmentClusterAlg]
+        cfg.addAlg(augmentClusterAlg)
         # since the non-decorated version of the clusters will be dropped, we update the list of clusters for which we store the truth links
         outputSaveClusters.append("Augmented" + clusterAlg.clusters.Path)
         outputSaveClusters.remove(clusterAlg.clusters.Path)
@@ -757,7 +765,7 @@ def setupTopoClusters(inputCells,
                 massHigh=0.153543,
                 OutputLevel=INFO
             )
-            TopAlg += [Pi0RecoAlg]
+            cfg.addAlg(Pi0RecoAlg)
 
     if applyMVAClusterEnergyCalibration:
         # note that this only works for ecal barrel given various hardcoded quantities
@@ -780,7 +788,7 @@ def setupTopoClusters(inputCells,
                                                      calibrationFile=dataFolder + "lgbm_calibration-CaloTopoClusters.onnx",
                                                      OutputLevel=INFO
                                                      )
-        TopAlg += [calibrateClustersAlg]
+        cfg.addAlg(calibrateClustersAlg)
 
     if runPhotonIDTool:
         if not addShapeParameters:
@@ -800,7 +808,7 @@ def setupTopoClusters(inputCells,
                                        mvaModelFile=dataFolder + "bdt-photonid-weights-EMBCaloTopoClusters.onnx",
                                        mvaInputsFile=dataFolder + "bdt-photonid-settings-EMBCaloTopoClusters.json",
                                        OutputLevel=INFO)
-            TopAlg += [photonIDAlg]
+            cfg.addAlg(photonIDAlg)
 
 
 if doSWClustering:
@@ -968,7 +976,7 @@ createTruthLinks = CreateTruthLinks("CreateTruthLinks",
                                     cell_mcparticle_links="CaloHitMCParticleLinks",
                                     cluster_mcparticle_links="ClusterMCParticleLinks",
                                     OutputLevel=INFO)
-TopAlg += [createTruthLinks]
+cfg.addAlg(createTruthLinks)
 
 
 # Configure the output
@@ -1034,20 +1042,20 @@ if not saveHits or not saveCells:
 
 # if we decorate the clusters, we can drop the non-decorated ones
 if addShapeParameters:
-    for algo in TopAlg:
+    for algo in cfg.TopAlg:
         if algo.__class__.__name__ == "AugmentClustersFCCee":
             io_svc.outputCommands.append("drop %s" % algo.inClusters)
 
 
 # configure the application
-print(TopAlg)
-print(ExtSvc)
+print(cfg.TopAlg)
+print(cfg.ExtSvc)
 from k4FWCore import ApplicationMgr
 applicationMgr = ApplicationMgr(
-    TopAlg=TopAlg,
+    TopAlg=cfg.TopAlg,
     EvtSel='NONE',
     EvtMax=Nevts,
-    ExtSvc=ExtSvc,
+    ExtSvc=cfg.ExtSvc,
     StopOnSignal=True,
 )
 
