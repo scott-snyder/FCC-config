@@ -91,10 +91,8 @@ class Flags:
 flags = Flags()
 flags.compactFile = 'ALLEGRO_o1_v03.xml'
 flags.pathToDetector = os.environ.get('K4GEO','') + '/FCCee/ALLEGRO/compact/' + os.path.splitext(flags.compactFile)[0]
-flags.dataFiles = 'data/'
-#flags.dataFiles = './'
-#flags.dataFilesUrl = 'https://fccsw.web.cern.ch/fccsw/filesForSimDigiReco/ALLEGRO/ALLEGRO_o1_v03/'
-flags.dataFilesUrl = flags.dataFiles
+flags.dataFiles = './'
+flags.dataFilesUrl = 'https://fccsw.web.cern.ch/fccsw/filesForSimDigiReco/ALLEGRO/ALLEGRO_o1_v03/'
 flags.cellsNamePart = 'Positioned'
 flags.linksNamePart = 'SimCaloHitLinks'
 from FCC_config.ALLEGRO.CreateCaloCells import defineCaloCellFlags
