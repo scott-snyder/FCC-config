@@ -1,12 +1,11 @@
 {
   "version": 5,
-  "prev": "fa36b6dda8752f9b6eec514ee5c2bb440ec62eec",
-  "head": "6c494fd9379a46b94a4003ab3f28b0627e226807",
+  "prev": "81d8595450c11be26fd5f2183026a7d66ac79a8f",
+  "head": "5bf28c231970f2bb6f9e920e5a315f06dfb278bd",
   "applied": [
     "allegroNoise",
     "gitignore",
-    "cell-creation",
-    "refresh-temp"
+    "cell-creation"
   ],
   "unapplied": [],
   "hidden": [],
@@ -18,10 +17,7 @@
       "oid": "b2355703135476bef7f29f5e2f3b8d28c84ff8e1"
     },
     "cell-creation": {
-      "oid": "8e5addabe18ed3790fda3690a0aba6d0b6eddcfb"
-    },
-    "refresh-temp": {
-      "oid": "6c494fd9379a46b94a4003ab3f28b0627e226807"
+      "oid": "5bf28c231970f2bb6f9e920e5a315f06dfb278bd"
     }
   }
 }
