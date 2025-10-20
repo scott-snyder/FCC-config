@@ -1,0 +1,27 @@
+Bottom: 9792f4461bd399961b6d43b1a19a7ce6e6c53070
+Top:    9792f4461bd399961b6d43b1a19a7ce6e6c53070
+Author: scott snyder <snyder@bnl.gov>
+Date:   2025-10-20 14:59:57 -0400
+
+Fix allegro configuration with noise.
+
+The allegro run_digi_reco.py configuration doesn't with if --addNoise is used
+because we schedule the resolvedPi0FromClusterPair twice with identical
+name and outputs.  Fix by qualifying with the cluster name.
+
+To reproduce:
+
+```
+$ mkdir allegro-noisetest
+$ cd allegro-noisetest
+$ . /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh -r 2025-10-07
+$ git clone https://github.com/HEP-FCC/FCC-config
+$ FCC-config/FCCee/FullSim/ALLEGRO/ALLEGRO_o1_v03/ctest_sim_digi_reco.sh 
+$ k4run FCC-config/FCCee/FullSim/ALLEGRO/ALLEGRO_o1_v03/run_digi_reco.py --addNoise --includeHCal --includeMuon --trkdigi --addTracks --calibrateClusters --saveCells 2>&1|tee log
+```
+
+This gives errors:
+
+```
+4FWCore__Algs    WARNING resolvedPi0FromClusterPair already exists - append failed!!!
+k4FWCore__Algs      ERROR Unable to configure one or more sequencer members 
