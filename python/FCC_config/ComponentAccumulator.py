@@ -1,9 +1,8 @@
 class ComponentAccumulator:
-    def __init__ (self, flags):
+    def __init__ (self):
         self._algSeq = []
         self._algs = {}
         self._svcs = {}
-        self.flags = flags
         return
     def addAlg (self, a):
         if a.name() in self._algs:

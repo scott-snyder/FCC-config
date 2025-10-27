@@ -164,7 +164,7 @@ def CreateECalBarrelCellsCfg (flags,
                               readoutName = None,
                               **kw):
 
-    cfg = ComponentAccumulator(flags)
+    cfg = ComponentAccumulator()
     if readoutName is None: readoutName = flags.ECal.Barrel.readoutName
     if addCrosstalk is None: addCrosstalk = flags.ECal.Barrel.addCrosstalk
 
@@ -205,7 +205,7 @@ def CreateECalEndcapCellsCfg (flags,
                               cellsNameSuffix = '',
                               readoutName = None,
                               **kw):
-    cfg = ComponentAccumulator(flags)
+    cfg = ComponentAccumulator()
     if readoutName is None: readoutName = flags.ECal.Endcap.readoutName
 
     kw.setdefault('cells', readoutName + flags.cellsNamePart + cellsNameSuffix)
@@ -233,7 +233,7 @@ def CreateHCalBarrelCellsCfg (flags,
                               cellsNameSuffix = '',
                               readoutName = None,
                               **kw):
-    cfg = ComponentAccumulator(flags)
+    cfg = ComponentAccumulator()
     if readoutName is None: readoutName = flags.HCal.Barrel.readoutName
 
     kw.setdefault('cells', readoutName + flags.cellsNamePart + cellsNameSuffix)
@@ -258,7 +258,7 @@ def CreateHCalEndcapCellsCfg (flags,
                               cellsNameSuffix = '',
                               readoutName = None,
                               **kw):
-    cfg = ComponentAccumulator(flags)
+    cfg = ComponentAccumulator()
     if readoutName is None: readoutName = flags.HCal.Endcap.readoutName
 
     kw.setdefault('cells', readoutName + flags.cellsNamePart + cellsNameSuffix)
@@ -283,7 +283,7 @@ def redoECalSegmentationCfg(flags,
                             newReadoutName = 'ECalBarrelModuleThetaMerged2',
                             newCellsName = 'ECalBarrelCellsMerged'):
 
-    cfg = ComponentAccumulator(flags)
+    cfg = ComponentAccumulator()
     cfg.addAlg(C.RedoSegmentation(name,
                                   # old bitfield (readout)
                                   oldReadoutName=flags.ECal.Barrel.readoutName,
