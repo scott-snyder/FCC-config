@@ -250,7 +250,6 @@ def CaloClusterCfg (flags,
                                              clusterFlags.CaloSW.calibrationFile))
         clustersName = swclust_cfg.algs()[-1].outClusters.Path
 
-    print ('aaa', clusterNameRoot, clusterFlags.doPhotonID, clusterFlags.addShapeParameters, 'ECAL_Barrel' in inputCells)
     if (clusterFlags.doPhotonID and
         clusterFlags.addShapeParameters and
         'ECAL_Barrel' in inputCells):
