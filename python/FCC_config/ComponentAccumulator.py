@@ -1,5 +1,7 @@
 class ComponentAccumulator:
     def __init__ (self):
+        return self.__reset()
+    def __reset (self):
         self._algSeq = []
         self._algs = {}
         self._svcs = {}
@@ -28,3 +30,19 @@ class ComponentAccumulator:
         for s in other.svcs():
             self.addSvs (s)
         return
+
+    def toVars (self, topAlg, extSvc):
+        for a in topAlg:
+            if a.name() in self._algs:
+                print ('ERROR: Duplicate algorithm', a.name())
+                assert 0
+        topAlg += self.algs()
+
+        for s in extSvc:
+            sname = s if isinstance(s, str) else s.name()
+            if sname in self._svcs:
+                print ('ERROR: Duplicate service', sname)
+                assert 0
+        extSvc += self.svcs()
+
+        return self.__reset()
