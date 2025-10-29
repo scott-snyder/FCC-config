@@ -122,7 +122,6 @@ def CellPositionsHCalEndcap (flags,
 
 
 def ReadCrosstalkMap (flags, name = 'ReadCrosstalkMap'):
-    if not flags.ECal.Barrel.addCrosstalk: return None
     return C.ReadCaloCrosstalkMap(name,
                                   fileName=flags.dataFilesUrl + "xtalk_neighbours_map_ecalB_thetamodulemerged.root")
 
@@ -186,8 +185,8 @@ def CreateECalBarrelCellsCfg (flags,
         kw['positionsTool'] = CellPositionsECalBarrel(flags)
     else:
         kw['positionsTool'] = CellPositionsECalBarrel(flags,
-                                                         name='CellPositions' + readoutName,
-                                                         readoutName=readoutName)
+                                                      name='CellPositions' + readoutName,
+                                                      readoutName=readoutName)
 
     cfg.addAlg(C.CreatePositionedCaloCells(name,
                                            doCellCalibration=doCellCalibration,
