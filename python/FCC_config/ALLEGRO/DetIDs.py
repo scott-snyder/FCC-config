@@ -27,7 +27,6 @@ def _detIdDict (flags):
 
 def detIDs (flags, ids):
     d = _detIdDict (flags)
-    print(d)
     if isinstance(ids, list):
         return [d[x] for x in ids]
     return d[ids]
