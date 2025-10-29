@@ -363,7 +363,7 @@ if addNoise:
                                   'CreatePositionedECalBarrelCellsWithNoiseFiltered',
                                   addNoise = True,
                                   filterCellNoise = True,
-                                  cellsNameSuffix = ' WithNoiseFiltered'))
+                                  cellsNameSuffix = 'WithNoiseFiltered'))
 
 
 if runHCal:
