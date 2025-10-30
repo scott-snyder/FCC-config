@@ -290,7 +290,7 @@ if digitiseTrackerHits:
                                    forceHitsOntoSurface=False,
                                    OutputLevel=INFO
                                    )
-    TopAlg += [siwrd_digitizer]
+    TopAlg += [siwrb_digitizer]
 
     siwrd_digitizer = VTXdigitizer("SiWrDdigitizer",
                                    inputSimHits="SiWrDCollection",
