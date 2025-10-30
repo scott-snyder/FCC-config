@@ -191,11 +191,32 @@ def AugmentCaloClustersCfg (flags, clusterFlags, inputClusters, clusterNameRoot)
     return cfg
 
 
+def CalibrateCaloClustersCfg (flags, clusterFlags, inputClusters, clusterNameRoot):
+    cfg = ComponentAccumulator()
+
+    # note that this only works for ecal barrel given various
+    # hardcoded quantities
+    alg = C.CalibrateCaloClusters('Calibrate' + clusterNameRoot,
+                                  inClusters = inputClusters,
+                                  outClusters = 'Calibrated' + clusterNameRoot,
+                                  systemIDs = [detIDs(flags, 'ECAL_Barrel')],
+                                  systemNames = ['EMB'],
+                                  numLayers = [ecalBarrelLayers],
+                                  firstLayerIDs = [0],
+                                  readoutNames = [flags.ECal.Barrel.readoutName],
+                                  layerFieldNames = ['layer'],
+                                  calibrationFile = flags.dataFiles + clusterFlags.calibrationFile,
+                                  )
+    cfg.addAlg(alg)
+    return cfg
+
+
+
 def CaloPhotonIDCfg (flags, inputClusters, clusterNameRoot, modelNameRoot):
     cfg = ComponentAccumulator()
     alg = C.PhotonIDTool("PhotonID" + clusterNameRoot,
                          inClusters=inputClusters,
-                         outClusters="PhotonID" + clusterNameRoot,
+                         outClusters="PhotonID" + inputClusters,
                          mvaModelFile = f'{flags.dataFiles}bdt-photonid-weights-{modelNameRoot}.onnx',
                          mvaInputsFile = f'{flags.dataFiles}bdt-photonid-settings-{modelNameRoot}.json',
                          )
@@ -213,8 +234,18 @@ def CaloClusterCfg (flags,
                     clusterNameRoot,
                     outputSaveClusters,
                     creatorCfg,
-                    creatorCfgArgs):
+                    creatorCfgArgs,
+                    applyMVAClusterEnergyCalibration = None,
+                    addShapeParameters = None,
+                    doPhotonID = None):
     cfg = ComponentAccumulator()
+
+    if applyMVAClusterEnergyCalibration is None:
+        applyMVAClusterEnergyCalibration = clusterFlags.applyMVAClusterEnergyCalibration
+    if addShapeParameters is None:
+        addShapeParameters = clusterFlags.addShapeParameters
+    if doPhotonID is None:
+        doPhotonID = clusterFlags.doPhotonID
 
     cells = []
     caloIDs = []
@@ -230,7 +261,7 @@ def CaloClusterCfg (flags,
     clustersName = cfg.algs()[-1].clusters.Path
     outputSaveClusters.append (clustersName)
 
-    if clusterFlags.addShapeParameters and 'ECAL_Barrel' in inputCells:
+    if addShapeParameters and 'ECAL_Barrel' in inputCells:
         # note that this only works for ecal barrel given various hardcoded quantities
         cfg.merge (AugmentCaloClustersCfg (flags, clusterFlags, clustersName, clusterNameRoot))
         clustersName = cfg.algs()[-1].outClusters.Path
@@ -244,15 +275,13 @@ def CaloClusterCfg (flags,
             from FCC_config.ALLEGRO.CreateCaloClusters import PairCaloClustersPi0Cfg
             cfg.merge(PairCaloClustersPi0Cfg(flags, clustersName, clusterNameRoot))
 
-    if clusterFlags.applyMVAClusterEnergyCalibration  and 'ECAL_Barrel' in inputCells:
-        # note that this only works for ecal barrel given various hardcoded quantities
-        cfg.merge (CalibrateCaloClustersCfg (flags, clustersName, clusterNameRoot,
-                                             clusterFlags.CaloSW.calibrationFile))
-        clustersName = swclust_cfg.algs()[-1].outClusters.Path
+    if applyMVAClusterEnergyCalibration  and 'ECAL_Barrel' in inputCells:
+        # note that this only works for ecal barrel given various
+        # hardcoded quantities
+        cfg.merge (CalibrateCaloClustersCfg (flags, clusterFlags, clustersName, clusterNameRoot))
+        clustersName = cfg.algs()[-1].outClusters.Path
 
-    if (clusterFlags.doPhotonID and
-        clusterFlags.addShapeParameters and
-        'ECAL_Barrel' in inputCells):
+    if (doPhotonID and addShapeParameters and 'ECAL_Barrel' in inputCells):
         cfg.merge (CaloPhotonIDCfg (flags, clustersName, clusterNameRoot,
                                     clusterFlags.photonIDModelNameRoot))
         clustersName = cfg.algs()[-1].outClusters.Path
@@ -266,13 +295,15 @@ def CaloSWClusterCfg (flags,
                       clusterNameRoot,
                       threshold,
                       clusterType,
-                      outputSaveClusters):
+                      outputSaveClusters,
+                      **kw):
 
     return CaloClusterCfg (flags, flags.CaloSW,
                            inputCells, clusterNameRoot, outputSaveClusters,
                            CreateCaloSWClustersCfg,
                            {'threshold' : threshold,
-                            'clusterType' : clusterType})
+                            'clusterType' : clusterType},
+                           **kw)
 
 
 
@@ -280,11 +311,13 @@ def CaloTopoClusterCfg (flags,
                         inputCells,
                         clusterNameRoot,
                         threshold,
-                        outputSaveClusters):
+                        outputSaveClusters,
+                        **kw):
     return CaloClusterCfg (flags, flags.CaloTopo,
                            inputCells, clusterNameRoot, outputSaveClusters,
                            CreateCaloTopoClustersCfg,
-                           {'threshold' : threshold})
+                           {'threshold' : threshold},
+                           **kw)
 
 
 class ClusterFlags:
