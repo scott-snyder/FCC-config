@@ -91,7 +91,7 @@ class Flags:
 flags = Flags()
 flags.compactFile = 'ALLEGRO_o1_v03.xml'
 flags.pathToDetector = os.environ.get('K4GEO','') + '/FCCee/ALLEGRO/compact/' + os.path.splitext(flags.compactFile)[0]
-flags.dataFiles = './'
+flags.dataFiles = dataFolder
 flags.dataFilesUrl = 'https://fccsw.web.cern.ch/fccsw/filesForSimDigiReco/ALLEGRO/ALLEGRO_o1_v03/'
 flags.cellsNamePart = 'Positioned'
 flags.linksNamePart = 'SimCaloHitLinks'
@@ -328,7 +328,7 @@ if digitiseTrackerHits:
 #############################################################################
 # Calorimeter digitisation (merging hits into cells, EM scale calibration via sampling fractions)
 
-caldigi_cfg = ComponentAccumulator(flags)
+caldigi_cfg = ComponentAccumulator()
 
 # - ECAL readouts
 ecalBarrelReadoutName2 = "ECalBarrelModuleThetaMerged2"    # barrel, after re-segmentation (for optimisation studies)
