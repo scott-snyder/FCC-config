@@ -23,8 +23,8 @@ Nevts = -1                                 # -1 means all events in input file (
 
 # - general settings not set via CLI
 filterNoiseThreshold = -1                  # if addNoise is true, and filterNoiseThreshold is >0, will filter away cells with abs(energy) below filterNoiseThreshold * expected sigma(noise)
-dataFolder = "data/"                     # directory containing the calibration files
-#dataFolder = "./"                          # directory containing the calibration files
+# dataFolder = "data/"                     # directory containing the calibration files
+dataFolder = "./"                          # directory containing the calibration files
 
 # - general settings set via CLI
 from k4FWCore.parseArgs import parser
