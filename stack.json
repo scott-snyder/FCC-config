@@ -1,10 +1,11 @@
 {
   "version": 5,
-  "prev": "23cee46f3b7b598bcba5406ab049932d1e4e74ec",
-  "head": "b2355703135476bef7f29f5e2f3b8d28c84ff8e1",
+  "prev": "71497004bfa55b1e0af52592f123c3effa1d3a25",
+  "head": "5dd421759d1ea28e21c62b71217abec91cf209e1",
   "applied": [
     "allegroNoise",
-    "gitignore"
+    "gitignore",
+    "typo"
   ],
   "unapplied": [
     "cell-creation",
@@ -17,6 +18,9 @@
     },
     "gitignore": {
       "oid": "b2355703135476bef7f29f5e2f3b8d28c84ff8e1"
+    },
+    "typo": {
+      "oid": "5dd421759d1ea28e21c62b71217abec91cf209e1"
     },
     "cell-creation": {
       "oid": "396cadfb048d0d8cbe6fe9b80bb2fed6903558d0"
