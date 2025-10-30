@@ -497,7 +497,10 @@ if doSWClustering:
                               'CaloClusters',
                               0.04,  # threshold,
                               'StandardSize',
-                              outputSaveClusters))
+                              outputSaveClusters,
+                              applyMVAClusterEnergyCalibration = False,
+                              addShapeParameters = False,
+                              doPhotonID = False))
 
     # experimental: MUON clusters
     if runMuon:
@@ -538,7 +541,7 @@ if doTopoClustering:
             CaloTopoClusterCfg (flags,
                                 {'ECAL_Barrel': flags.ECal.Barrel.cellsName + suffix},
                                 'EMBCaloTopoClusters' + suffix,
-                                0,  # threshold,
+                                0.1,  # threshold,
                                 outputSaveClusters))
 
     # ECAL + HCAL
@@ -550,9 +553,12 @@ if doTopoClustering:
                                  'HCAL_Barrel': flags.HCal.Barrel.cellsName,
                                  'HCAL_Endcap': flags.HCal.Endcap.cellsName,
                                  },
-                                'CaloTopoClusters' + suffix,
+                                'CaloTopoClusters',
                                 0, # threshold
-                                outputSaveClusters))
+                                outputSaveClusters,
+                                applyMVAClusterEnergyCalibration = False,
+                                addShapeParameters = False,
+                                doPhotonID = False))
 calclust_cfg.toVars (TopAlg, ExtSvc)
 
 
