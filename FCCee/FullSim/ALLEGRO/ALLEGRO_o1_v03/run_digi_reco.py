@@ -512,7 +512,10 @@ if doSWClustering:
                               'MuonCaloClusters',
                               0.00,  # threshold,
                               'MuonSize',
-                              outputSaveClusters))
+                              outputSaveClusters,
+                              applyMVAClusterEnergyCalibration = False,
+                              addShapeParameters = False,
+                              doPhotonID = False))
 
 from FCC_config.ALLEGRO.CreateCaloClusters import CaloTopoClusterCfg
 if doTopoClustering:
