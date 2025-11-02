@@ -154,6 +154,7 @@ def eCalBarrelGeometryTool (flags, name = 'ecalBarrelGeometryTool'):
 
 
 def CreateECalBarrelCellsCfg (flags,
+                              io_svc,
                               name = 'CreatePositionedECalBarrelCells',
                               doCellCalibration = True,
                               addNoise = False,
@@ -195,10 +196,17 @@ def CreateECalBarrelCellsCfg (flags,
                                            filterCellNoise=filterCellNoise,
                                            **kw
                                            ))
+    if flags.saveCells:
+        io_svc.outputCommands += [f'keep {kw["cells"]}']
+    if flags.saveHits and flags.saveCells:
+        io_svc.outputCommands += [f'keep {kw["links"]}']
+    if flags.saveHits:
+        io_svc.outputCommands += [f'keep {readoutName}Contributions']
     return cfg
                            
 
 def CreateECalEndcapCellsCfg (flags,
+                              io_svc,
                               name = 'CreatePositionedECalEndcapCells',
                               doCellCalibration = True,
                               cellsNameSuffix = '',
@@ -223,10 +231,17 @@ def CreateECalEndcapCellsCfg (flags,
                                            noiseTool=None,
                                            **kw
                                            ))
+    if flags.saveCells:
+        io_svc.outputCommands += [f'keep {kw["cells"]}']
+    if flags.saveHits and flags.saveCells:
+        io_svc.outputCommands += [f'keep {kw["links"]}']
+    if flags.saveHits:
+        io_svc.outputCommands += [f'keep {readoutName}Contributions']
     return cfg
 
 
 def CreateHCalBarrelCellsCfg (flags,
+                              io_svc,
                               name = 'CreatePositionedHCalBarrelCells',
                               doCellCalibration = True,
                               cellsNameSuffix = '',
@@ -248,10 +263,17 @@ def CreateHCalBarrelCellsCfg (flags,
                                            positionsTool=CellPositionsHCalBarrel(flags),
                                            **kw
                                            ))
+    if flags.saveCells:
+        io_svc.outputCommands += [f'keep {kw["cells"]}']
+    if flags.saveHits and flags.saveCells:
+        io_svc.outputCommands += [f'keep {kw["links"]}']
+    if flags.saveHits:
+        io_svc.outputCommands += [f'keep {readoutName}Contributions']
     return cfg
 
 
 def CreateHCalEndcapCellsCfg (flags,
+                              io_svc,
                               name = 'CreatePositionedHCalEndcapCells',
                               doCellCalibration = True,
                               cellsNameSuffix = '',
@@ -273,6 +295,12 @@ def CreateHCalEndcapCellsCfg (flags,
                                            positionsTool=CellPositionsHCalEndcap(flags),
                                            **kw
                                            ))
+    if flags.saveCells:
+        io_svc.outputCommands += [f'keep {kw["cells"]}']
+    if flags.saveHits and flags.saveCells:
+        io_svc.outputCommands += [f'keep {kw["links"]}']
+    if flags.saveHits:
+        io_svc.outputCommands += [f'keep {readoutName}Contributions']
     return cfg
 
 
