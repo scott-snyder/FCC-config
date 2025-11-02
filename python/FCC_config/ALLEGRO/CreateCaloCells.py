@@ -155,6 +155,21 @@ def eCalBarrelGeometryTool (flags, name = 'ecalBarrelGeometryTool',
                                           )
 
 
+def _keepCells (flags, kw, readoutName):
+    cfg = ComponentAccumulator()
+    keep = []
+    if flags.saveCells:
+        keep.append (kw['cells'])
+    if flags.saveHits and flags.saveCells:
+        keep.append (kw['links'])
+    if flags.saveHits:
+        keep.append (f'{readoutName}Contributions')
+    if keep:
+        from FCC_config.CoreConfig import IOSvcCfg
+        cfg.merge(IOSvcCfg(flags, keep=keep))
+    return cfg
+
+
 def CreateECalBarrelCellsCfg (flags,
                               name = 'CreatePositionedECalBarrelCells',
                               doCellCalibration = True,
@@ -197,6 +212,8 @@ def CreateECalBarrelCellsCfg (flags,
                                            filterCellNoise=filterCellNoise,
                                            **kw
                                            ))
+
+    cfg.merge (_keepCells (flags, kw, readoutName))
     return cfg
                            
 
@@ -225,6 +242,8 @@ def CreateECalEndcapCellsCfg (flags,
                                            noiseTool=None,
                                            **kw
                                            ))
+
+    cfg.merge (_keepCells (flags, kw, readoutName))
     return cfg
 
 
@@ -250,6 +269,8 @@ def CreateHCalBarrelCellsCfg (flags,
                                            positionsTool=CellPositionsHCalBarrel(flags),
                                            **kw
                                            ))
+
+    cfg.merge (_keepCells (flags, kw, readoutName))
     return cfg
 
 
@@ -275,6 +296,8 @@ def CreateHCalEndcapCellsCfg (flags,
                                            positionsTool=CellPositionsHCalEndcap(flags),
                                            **kw
                                            ))
+
+    cfg.merge (_keepCells (flags, kw, readoutName))
     return cfg
 
 
