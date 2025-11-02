@@ -261,6 +261,12 @@ def CaloClusterCfg (flags,
     clustersName = cfg.algs()[-1].clusters.Path
     outputSaveClusters.append (clustersName)
 
+    keep = []
+    if not addShapeParameters:
+        keep.append (clustersName)
+    if clusterFlags.saveClusterCells:
+        keep.append (cfg.algs()[-1].clusterCells.Path)
+
     if addShapeParameters and 'ECAL_Barrel' in inputCells:
         # note that this only works for ecal barrel given various hardcoded quantities
         cfg.merge (AugmentCaloClustersCfg (flags, clusterFlags, clustersName, clusterNameRoot))
@@ -274,18 +280,28 @@ def CaloClusterCfg (flags,
         if clusterFlags.addPi0RecoTool:
             from FCC_config.ALLEGRO.CreateCaloClusters import PairCaloClustersPi0Cfg
             cfg.merge(PairCaloClustersPi0Cfg(flags, clustersName, clusterNameRoot))
+            keep += [f'Unpaired{clustersName}',
+                     f'Paired{clustersName}',
+                     f'ResolvedPi0Particle{clusterNameRoot}',
+                     ]
+    keep.append (clustersName)
 
     if applyMVAClusterEnergyCalibration  and 'ECAL_Barrel' in inputCells:
         # note that this only works for ecal barrel given various
         # hardcoded quantities
         cfg.merge (CalibrateCaloClustersCfg (flags, clusterFlags, clustersName, clusterNameRoot))
         clustersName = cfg.algs()[-1].outClusters.Path
+        keep.append (clustersName)
 
     if (doPhotonID and addShapeParameters and 'ECAL_Barrel' in inputCells):
         cfg.merge (CaloPhotonIDCfg (flags, clustersName, clusterNameRoot,
                                     clusterFlags.photonIDModelNameRoot))
         clustersName = cfg.algs()[-1].outClusters.Path
+        keep.append (clustersName)
 
+    if keep:
+        from FCC_config.CoreConfig import IOSvcCfg
+        cfg.merge(IOSvcCfg(flags, keep=keep))
     return cfg
 
 
@@ -346,6 +362,8 @@ class ClusterFlags:
 
         # resolved pi0 reconstruction by cluster pairing
         self.addPi0RecoTool = False
+
+        self.saveClusterCells = True
 
         return
 def defineCaloClusterFlags(flags, opts):
