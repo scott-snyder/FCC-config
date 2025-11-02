@@ -97,6 +97,8 @@ flags.dataFiles = dataFolder
 flags.dataFilesUrl = 'https://fccsw.web.cern.ch/fccsw/filesForSimDigiReco/ALLEGRO/ALLEGRO_o1_v03/'
 flags.cellsNamePart = 'Positioned'
 flags.linksNamePart = 'SimCaloHitLinks'
+flags.saveHits = saveHits   # should be elsewhere?
+flags.saveCells = saveCells
 from FCC_config.ALLEGRO.CreateCaloCells import defineCaloCellFlags
 defineCaloCellFlags(flags)
 flags.ECal.Barrel.addCrosstalk = addCrosstalk
@@ -162,6 +164,9 @@ from Configurables import EventDataSvc
 io_svc = IOSvc("IOSvc")
 io_svc.Input = inputfile
 io_svc.Output = outputfile
+io_svc.outputCommands = ['drop *',
+                         'keep EventHeader',
+                         'keep MCParticles']
 ExtSvc += [EventDataSvc("EventDataSvc")]
 
 if addTracks or digitizeTrackerHits or addNoise:
@@ -204,6 +209,26 @@ if addTracks:
                                            FillFactor=1.0,
                                            OutputLevel=ERROR)
     TopAlg += [dNdxFromTracks]
+
+io_svc.outputCommands += ['keep SiWrBDigis',
+                          'keep SiWrBSimDigiLinks',
+                          'keep SiWrDDigis',
+                          'keep SiWrDSimDigiLinks',
+                          'keep VTXBDigis',
+                          'keep VTXBSimDigiLinks',
+                          'keep VTXDDigis',
+                          'keep VTXDSimDigiLinks',
+                          'keep DCH_DigiCollection',
+                          'keep DCH_DigiSimAssociationCollection',
+                          'keep DCHdNdxCollection']
+if not dropDCHHits:
+    io_svc.outputCommands += ['keep DCHCollection']
+if not dropSiWrHits:
+    io_svc.outputCommands += ['keep SiWrBCollection',
+                              'keep SiWrDCollection']
+if not dropMuonHits:
+    io_svc.outputCommands += ['keep VertexBarrelCollection',
+                              'keep VertexEndcapCollection']
 
 
 # Tracker digitization
@@ -340,8 +365,11 @@ if digitizeTrackerHits:
                                 xyResolution_mm=0.  # in mm
                                 )
     TopAlg += [dch_digitizer]
+io_svc.outputCommands += ['keep TracksFromGenParticles',
+                          'keep TracksFromGenParticlesAssociation',]
 
 
+#############################################################################
 # Calorimeter digitization (merging hits into cells, EM scale calibration via sampling fractions)
 
 caldigi_cfg = ComponentAccumulator()
@@ -355,7 +383,7 @@ ecalBarrelPositionedCellsName2 = ecalBarrelReadoutName2 + "Positioned"
 # from uncalibrated cells (+cellID info) from ddsim
 from Configurables import CreatePositionedCaloCells
 from FCC_config.ALLEGRO.CreateCaloCells import CreateECalBarrelCellsCfg
-caldigi_cfg.merge(CreateECalBarrelCellsCfg(flags))
+caldigi_cfg.merge(CreateECalBarrelCellsCfg(flags, io_svc))
 
 # -  now, if we want to also save cells with coarser granularity:
 if resegmentECalBarrel:
@@ -387,19 +415,19 @@ if resegmentECalBarrel:
 # Create cells in ECal endcap (needed if one wants to apply cell calibration,
 # which is not performed by ddsim)
 from FCC_config.ALLEGRO.CreateCaloCells import CreateECalEndcapCellsCfg
-caldigi_cfg.merge(CreateECalEndcapCellsCfg(flags))
+caldigi_cfg.merge(CreateECalEndcapCellsCfg(flags, io_svc))
 
 if addNoise:
     # cells with noise not filtered
     caldigi_cfg.merge(
-        CreateECalBarrelCellsCfg (flags,
+        CreateECalBarrelCellsCfg (flags, io_svc,
                                   'CreatePositionedECalBarrelCellsWithNoise',
                                   addNoise = True,
                                   cellsNameSuffix = 'WithNoise'))
 
     # cells with noise filtered
     caldigi_cfg.merge(
-        CreateECalBarrelCellsCfg (flags,
+        CreateECalBarrelCellsCfg (flags, io_svc,
                                   'CreatePositionedECalBarrelCellsWithNoiseFiltered',
                                   addNoise = True,
                                   filterCellNoise = True,
@@ -409,8 +437,8 @@ if addNoise:
 if runHCal:
     from FCC_config.ALLEGRO.CreateCaloCells import \
          CreateHCalBarrelCellsCfg, CreateHCalEndcapCellsCfg
-    caldigi_cfg.merge(CreateHCalBarrelCellsCfg(flags))
-    caldigi_cfg.merge(CreateHCalEndcapCellsCfg(flags))
+    caldigi_cfg.merge(CreateHCalBarrelCellsCfg(flags, io_svc))
+    caldigi_cfg.merge(CreateHCalEndcapCellsCfg(flags, io_svc))
 
 caldigi_cfg.toVars (TopAlg, ExtSvc)
 
@@ -479,7 +507,19 @@ if runMuon:
                                                       links=muonEndcapLinks
                                                       )
     TopAlg += [createMuonEndcapCells]
+
+    if not dropMuonHits:
+        io_svc.outputCommands += [f'keep {muonBarrelPositionedCellsName}',
+                                  f'keep {muonEndcapPositionedCellsName}',
+                                  f'keep {muonBarrelReadoutName}',
+                                  f'keep {muonBarrelReadoutName}Contributions',
+                                  f'keep {muonEndcapReadoutName}']
 else:
+    if not dropMuonHits:
+        io_svc.outputCommands += ['keep MuonTaggerBarrelPhiTheta',
+                                  'keep MuonTaggerBarrelPhiThetaContributions',
+                                  'keep MuonTaggerEndcapPhiTheta']
+
     muonBarrelReadoutName = ""
     muonEndcapReadoutName = ""
     muonBarrelPositionedCellsName = ""
@@ -487,6 +527,9 @@ else:
     muonBarrelLinks = ""
     muonEndcapLinks = ""
 
+if saveHits and saveCells:
+    io_svc.outputCommands += ['keep MuonTaggerBarrelPhiThetaPositionedSimCaloHitLinks',
+                              'keep MuonTaggerEndcapPhiThetaPositionedSimCaloHitLinks']
 
 
 from FCC_config.ALLEGRO.CreateCaloClusters import CaloSWClusterCfg
@@ -499,7 +542,8 @@ if doSWClustering:
                           'EMBCaloClusters',
                           0.04,  # threshold,
                           'StandardSize',
-                          outputSaveClusters))
+                          outputSaveClusters,
+                          io_svc))
 
     # SW ECAL endcap clusters
     calclust_cfg.merge (
@@ -508,7 +552,8 @@ if doSWClustering:
                           'EMECCaloClusters',
                           0.04,  # threshold,
                           'StandardSize',
-                          outputSaveClusters))
+                          outputSaveClusters,
+                          io_svc))
 
     # SW ECAL barrel clusters with noise
     if addNoise:
@@ -525,7 +570,8 @@ if doSWClustering:
                               # reconstruction, or use filtered cells
                               0.1,
                               'StandardSize',
-                              outputSaveClusters))
+                              outputSaveClusters,
+                              io_svc))
 
     # ECAL + HCAL clusters
     if runHCal:
@@ -540,6 +586,7 @@ if doSWClustering:
                               0.04,  # threshold,
                               'StandardSize',
                               outputSaveClusters,
+                              io_svc,
                               applyMVAClusterEnergyCalibration = False,
                               addShapeParameters = False,
                               doPhotonID = False))
@@ -555,9 +602,11 @@ if doSWClustering:
                               0.00,  # threshold,
                               'MuonSize',
                               outputSaveClusters,
+                              io_svc,
                               applyMVAClusterEnergyCalibration = False,
                               addShapeParameters = False,
                               doPhotonID = False))
+
 
 from FCC_config.ALLEGRO.CreateCaloClusters import CaloTopoClusterCfg
 if doTopoClustering:
@@ -567,7 +616,8 @@ if doTopoClustering:
                             {'ECAL_Barrel': flags.ECal.Barrel.cellsName},
                             'EMBCaloTopoClusters',
                             0,  # threshold,
-                            outputSaveClusters))
+                            outputSaveClusters,
+                            io_svc))
 
     # ECAL endcap topoclusters
     calclust_cfg.merge (
@@ -575,7 +625,8 @@ if doTopoClustering:
                             {'ECAL_Endcap': flags.ECal.Endcap.cellsName},
                             'EMECCaloTopoClusters',
                             0,  # threshold,
-                            outputSaveClusters))
+                            outputSaveClusters,
+                            io_svc))
 
     # ECAL topoclusters with noise
     if addNoise:
@@ -587,7 +638,8 @@ if doTopoClustering:
                                 {'ECAL_Barrel': flags.ECal.Barrel.cellsName + suffix},
                                 'EMBCaloTopoClusters' + suffix,
                                 0.1,  # threshold,
-                                outputSaveClusters))
+                                outputSaveClusters,
+                                io_svc))
 
     # ECAL + HCAL
     if runHCal:
@@ -601,10 +653,14 @@ if doTopoClustering:
                                 'CaloTopoClusters',
                                 0, # threshold
                                 outputSaveClusters,
+                                io_svc,
                                 applyMVAClusterEnergyCalibration = False,
                                 addShapeParameters = False,
                                 doPhotonID = False))
 calclust_cfg.toVars (TopAlg, ExtSvc)
+
+
+########################################################################
 
 
 # Create CaloHit<->MCParticle links (needed for training datasets for MLPF)
@@ -623,74 +679,9 @@ createTruthLinks = CreateTruthLinks("CreateTruthLinks",
                                     cluster_mcparticle_links="ClusterMCParticleLinks",
                                     OutputLevel=INFO)
 TopAlg += [createTruthLinks]
+io_svc.outputCommands += ['keep CaloHitMCParticleLinks',
+                          'keep ClusterMCParticleLinks']
 
-
-# Configure the output
-
-# drop the empty cells
-io_svc.outputCommands = ["keep *",
-                         "drop emptyCaloCells"]
-
-# drop the uncalibrated cells
-if dropUncalibratedCells:
-    io_svc.outputCommands.append("drop %s" % flags.ECal.Barrel.readoutName)
-    io_svc.outputCommands.append("drop %s" % ecalBarrelReadoutName2)
-    io_svc.outputCommands.append("drop %s" % flags.ECal.Endcap.readoutName)
-    if runHCal:
-        io_svc.outputCommands.append("drop %s" % flags.HCal.Barrel.readoutName)
-        io_svc.outputCommands.append("drop %s" % flags.HCal.Endcap.readoutName)
-    else:
-        io_svc.outputCommands += ["drop HCal*"]
-
-    # drop the intermediate ecal barrel cells in case of a resegmentation
-    if resegmentECalBarrel:
-        io_svc.outputCommands.append("drop %s" % ecalBarrelHitsMergedName)
-
-# drop lumi, vertex, DCH, Muons (unless want to keep for event display)
-if dropLumiCalHits:
-    io_svc.outputCommands.append("drop Lumi*")
-if dropVertexHits:
-    io_svc.outputCommands.append("drop VertexBarrelCollection*")
-    io_svc.outputCommands.append("drop VertexEndcapCollection*")
-if dropDCHHits:
-    io_svc.outputCommands.append("drop DCHCollection*")
-if dropSiWrHits:
-    io_svc.outputCommands.append("drop SiWrBCollection*")
-    io_svc.outputCommands.append("drop SiWrDCollection*")
-if dropMuonHits:
-    io_svc.outputCommands.append("drop MuonTagger*PhiTheta")   # hits
-    io_svc.outputCommands.append("drop MuonTagger*PhiThetaPositioned")   # cells
-
-# drop hits/positioned cells/cluster cells if desired
-if not saveHits:
-    io_svc.outputCommands.append("drop *%sContributions" % flags.ECal.Barrel.readoutName)
-    io_svc.outputCommands.append("drop *%sContributions" % ecalBarrelReadoutName2)
-    io_svc.outputCommands.append("drop *%sContributions" % flags.ECal.Endcap.readoutName)
-    if runHCal:
-        io_svc.outputCommands.append("drop *%sContributions" % flags.HCal.Barrel.readoutName)
-        io_svc.outputCommands.append("drop *%sContributions" % flags.HCal.Endcap.readoutName)
-if not saveCells:
-    io_svc.outputCommands.append("drop %s" % flags.ECal.Barrel.cellsName)
-    io_svc.outputCommands.append("drop %s" % flags.ECal.Endcap.cellsName)
-    if addNoise:
-        io_svc.outputCommands.append("drop %sWithNoise*" % flags.ECal.Barrel.cellsName)
-        io_svc.outputCommands.append("drop %sWithNoise*" % flags.ECal.Endcap.cellsName)
-    if resegmentECalBarrel:
-        io_svc.outputCommands.append("drop %s" % ecalBarrelPositionedCellsName2)
-    if runHCal:
-        io_svc.outputCommands.append("drop %s" % flags.HCal.Barrel.cellsName)
-        io_svc.outputCommands.append("drop %s" % flags.HCal.Endcap.cellsName)
-if not saveClusterCells:
-    io_svc.outputCommands.append("drop *Calo*Cluster*Cells*")
-# drop hits<->cells links if either of the two collections are not saved
-if not saveHits or not saveCells:
-    io_svc.outputCommands.append("drop *SimCaloHitLinks")
-
-# if we decorate the clusters, we can drop the non-decorated ones
-if flags.CaloSW.addShapeParameters or flags.CaloTopo.addShapeParameters:
-    for algo in TopAlg:
-        if algo.__class__.__name__ == "AugmentClustersFCCee":
-            io_svc.outputCommands.append("drop %s" % algo.inClusters)
 
 
 # configure the application
