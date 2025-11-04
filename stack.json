@@ -1,17 +1,16 @@
 {
   "version": 5,
-  "prev": "5988233a76cd289cc66d6ecb4545ae0024a8ea91",
-  "head": "897b76bc96b8301a1e413e769c993932190fb0b0",
+  "prev": "1932c95476267f3cb91fb3db586fe22e8b7cff10",
+  "head": "5dd630713505970501bd53d053997a0d88829cb7",
   "applied": [
     "allegroNoise",
     "gitignore",
     "typo",
     "cell-creation",
-    "cluster-creation"
-  ],
-  "unapplied": [
+    "cluster-creation",
     "outputsel-wip"
   ],
+  "unapplied": [],
   "hidden": [],
   "patches": {
     "allegroNoise": {
