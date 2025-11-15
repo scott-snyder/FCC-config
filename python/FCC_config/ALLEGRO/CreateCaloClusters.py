@@ -158,7 +158,7 @@ def PairCaloClustersPi0Cfg (flags, inputClusters, clusterNameRoot):
     alg = C.PairCaloClustersPi0('resolvedPi0FromClusterPair' + clusterNameRoot,
                                 inClusters = inputClusters,
                                 unpairedClusters = 'Unpaired' + inputClusters,
-                                pairedClusters  = 'pairedClusters' + inputClusters,
+                                pairedClusters  = 'Paired' + inputClusters,
                                 reconstructedPi0 = 'ResolvedPi0Particle' + clusterNameRoot,
                                 massPeak = flags.CaloTopo.pi0MassPeak,
                                 massLow  = flags.CaloTopo.pi0MassLow,
@@ -342,7 +342,7 @@ class ClusterFlags:
         self.logEWeightInPhotonID = False
 
         # resolved pi0 reconstruction by cluster pairing
-        self.addPi0RecoTool = opts.reconstructPi0s
+        self.addPi0RecoTool = False
 
         return
 def defineCaloClusterFlags(flags, opts):
@@ -351,7 +351,7 @@ def defineCaloClusterFlags(flags, opts):
     flags.CaloSW.photonIDModelNameRoot = 'EMBCaloClusters'
 
     flags.CaloTopo = ClusterFlags(opts)
-    flags.CaloTopo.addPi0RecoTool = True
+    flags.CaloTopo.addPi0RecoTool = opts.reconstructPi0s
     flags.CaloTopo.photonIDModelNameRoot = 'EMBCaloTopoClusters'
 
     flags.CaloTopo.EMBNeighbours = 'neighbours_map_ecalB_thetamodulemerged'
