@@ -281,7 +281,7 @@ def CaloClusterCfg (flags,
             from FCC_config.ALLEGRO.CreateCaloClusters import PairCaloClustersPi0Cfg
             cfg.merge(PairCaloClustersPi0Cfg(flags, clustersName, clusterNameRoot))
             io_svc.outputCommands += [f'keep Unpaired{clustersName}',
-                                      f'keep pairedClusters{clustersName}',
+                                      f'keep Paired{clustersName}',
                                       f'keep ResolvedPi0Particle{clusterNameRoot}',
                                       ]
     io_svc.outputCommands += [f'keep {clustersName}']
