@@ -3,7 +3,7 @@ import Configurables as C
 from .DetIDs import detIDs
 
 
-# ECAL barrel parameters for digitisation
+# ECAL barrel parameters for digitization
 ecalBarrelLayers = 11
 ecalBarrelSamplingFraction = [0.3800493723322256,  #  0
                               0.13494147915064658, #  1
@@ -21,7 +21,7 @@ if ecalBarrelSamplingFraction and len(ecalBarrelSamplingFraction) > 0:
     assert (ecalBarrelLayers == len(ecalBarrelSamplingFraction))
 
 
-# ECAL endcap parameters for digitisation
+# ECAL endcap parameters for digitization
 # the turbine endcap has calibration "layers" in the both the z and radial
 # directions, for each of the three wheels.  So the total number of layers
 # is given by:
