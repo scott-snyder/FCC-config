@@ -8,7 +8,7 @@ from FCC_config.ALLEGRO.DetIDs import detIDs
 # Parameters
 #
 
-# ECAL barrel parameters for digitisation
+# ECAL barrel parameters for digitization
 from .CreateCaloCells import ecalBarrelLayers
 
 # to be recalculated for V03, separately for topo and calo clusters...
