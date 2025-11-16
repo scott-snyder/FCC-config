@@ -28,7 +28,7 @@ class ComponentAccumulator:
         for a in other.algs():
             self.addAlg (a)
         for s in other.svcs():
-            self.addSvs (s)
+            self.addSvc (s)
         return
 
     def toVars (self, topAlg, extSvc):
