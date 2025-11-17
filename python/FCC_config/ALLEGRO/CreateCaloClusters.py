@@ -235,7 +235,6 @@ def CaloClusterCfg (flags,
                     outputSaveClusters,
                     creatorCfg,
                     creatorCfgArgs,
-                    io_svc,
                     applyMVAClusterEnergyCalibration = None,
                     addShapeParameters = None,
                     doPhotonID = None):
@@ -262,10 +261,11 @@ def CaloClusterCfg (flags,
     clustersName = cfg.algs()[-1].clusters.Path
     outputSaveClusters.append (clustersName)
 
+    keep = []
     if not addShapeParameters:
-        io_svc.outputCommands += [f'keep {clustersName}']
+        keep.append (clustersName)
     if clusterFlags.saveClusterCells:
-        io_svc.outputCommands += [f'keep {cfg.algs()[-1].clusterCells.Path}']
+        keep.append (cfg.algs()[-1].clusterCells.Path)
 
     if addShapeParameters and 'ECAL_Barrel' in inputCells:
         # note that this only works for ecal barrel given various hardcoded quantities
@@ -280,25 +280,28 @@ def CaloClusterCfg (flags,
         if clusterFlags.addPi0RecoTool:
             from FCC_config.ALLEGRO.CreateCaloClusters import PairCaloClustersPi0Cfg
             cfg.merge(PairCaloClustersPi0Cfg(flags, clustersName, clusterNameRoot))
-            io_svc.outputCommands += [f'keep Unpaired{clustersName}',
-                                      f'keep Paired{clustersName}',
-                                      f'keep ResolvedPi0Particle{clusterNameRoot}',
-                                      ]
-    io_svc.outputCommands += [f'keep {clustersName}']
+            keep += [f'Unpaired{clustersName}',
+                     f'Paired{clustersName}',
+                     f'ResolvedPi0Particle{clusterNameRoot}',
+                     ]
+    keep.append (clustersName)
 
     if applyMVAClusterEnergyCalibration  and 'ECAL_Barrel' in inputCells:
         # note that this only works for ecal barrel given various
         # hardcoded quantities
         cfg.merge (CalibrateCaloClustersCfg (flags, clusterFlags, clustersName, clusterNameRoot))
         clustersName = cfg.algs()[-1].outClusters.Path
-        io_svc.outputCommands += [f'keep {clustersName}']
+        keep.append (clustersName)
 
     if (doPhotonID and addShapeParameters and 'ECAL_Barrel' in inputCells):
         cfg.merge (CaloPhotonIDCfg (flags, clustersName, clusterNameRoot,
                                     clusterFlags.photonIDModelNameRoot))
         clustersName = cfg.algs()[-1].outClusters.Path
-        io_svc.outputCommands += [f'keep {clustersName}']
+        keep.append (clustersName)
 
+    if keep:
+        from FCC_config.CoreConfig import IOSvcCfg
+        cfg.merge(IOSvcCfg(flags, keep=keep))
     return cfg
 
 
@@ -309,7 +312,6 @@ def CaloSWClusterCfg (flags,
                       threshold,
                       clusterType,
                       outputSaveClusters,
-                      io_svc,
                       **kw):
 
     return CaloClusterCfg (flags, flags.CaloSW,
@@ -317,7 +319,6 @@ def CaloSWClusterCfg (flags,
                            CreateCaloSWClustersCfg,
                            {'threshold' : threshold,
                             'clusterType' : clusterType},
-                           io_svc,
                            **kw)
 
 
@@ -327,13 +328,11 @@ def CaloTopoClusterCfg (flags,
                         clusterNameRoot,
                         threshold,
                         outputSaveClusters,
-                        io_svc,
                         **kw):
     return CaloClusterCfg (flags, flags.CaloTopo,
                            inputCells, clusterNameRoot, outputSaveClusters,
                            CreateCaloTopoClustersCfg,
                            {'threshold' : threshold},
-                           io_svc,
                            **kw)
 
 

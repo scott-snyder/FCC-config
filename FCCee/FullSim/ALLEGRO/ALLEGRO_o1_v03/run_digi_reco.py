@@ -91,6 +91,9 @@ dropMuonHits = False
 class Flags:
     pass
 flags = Flags()
+flags.IO = Flags()
+flags.IO.inputFile = [inputfile]
+flags.IO.outputFile = outputfile
 flags.compactFile = 'ALLEGRO_o1_v03.xml'
 flags.pathToDetector = os.environ.get('K4GEO','') + '/FCCee/ALLEGRO/compact/' + os.path.splitext(flags.compactFile)[0]
 flags.dataFiles = dataFolder
@@ -167,6 +170,7 @@ io_svc.Output = outputfile
 io_svc.outputCommands = ['drop *',
                          'keep EventHeader',
                          'keep MCParticles']
+ExtSvc += [io_svc]
 ExtSvc += [EventDataSvc("EventDataSvc")]
 
 if addTracks or digitizeTrackerHits or addNoise:
@@ -383,7 +387,7 @@ ecalBarrelPositionedCellsName2 = ecalBarrelReadoutName2 + "Positioned"
 # from uncalibrated cells (+cellID info) from ddsim
 from Configurables import CreatePositionedCaloCells
 from FCC_config.ALLEGRO.CreateCaloCells import CreateECalBarrelCellsCfg
-caldigi_cfg.merge(CreateECalBarrelCellsCfg(flags, io_svc))
+caldigi_cfg.merge(CreateECalBarrelCellsCfg(flags))
 
 # -  now, if we want to also save cells with coarser granularity:
 if resegmentECalBarrel:
@@ -415,19 +419,19 @@ if resegmentECalBarrel:
 # Create cells in ECal endcap (needed if one wants to apply cell calibration,
 # which is not performed by ddsim)
 from FCC_config.ALLEGRO.CreateCaloCells import CreateECalEndcapCellsCfg
-caldigi_cfg.merge(CreateECalEndcapCellsCfg(flags, io_svc))
+caldigi_cfg.merge(CreateECalEndcapCellsCfg(flags))
 
 if addNoise:
     # cells with noise not filtered
     caldigi_cfg.merge(
-        CreateECalBarrelCellsCfg (flags, io_svc,
+        CreateECalBarrelCellsCfg (flags,
                                   'CreatePositionedECalBarrelCellsWithNoise',
                                   addNoise = True,
                                   cellsNameSuffix = 'WithNoise'))
 
     # cells with noise filtered
     caldigi_cfg.merge(
-        CreateECalBarrelCellsCfg (flags, io_svc,
+        CreateECalBarrelCellsCfg (flags,
                                   'CreatePositionedECalBarrelCellsWithNoiseFiltered',
                                   addNoise = True,
                                   filterCellNoise = True,
@@ -437,8 +441,8 @@ if addNoise:
 if runHCal:
     from FCC_config.ALLEGRO.CreateCaloCells import \
          CreateHCalBarrelCellsCfg, CreateHCalEndcapCellsCfg
-    caldigi_cfg.merge(CreateHCalBarrelCellsCfg(flags, io_svc))
-    caldigi_cfg.merge(CreateHCalEndcapCellsCfg(flags, io_svc))
+    caldigi_cfg.merge(CreateHCalBarrelCellsCfg(flags))
+    caldigi_cfg.merge(CreateHCalEndcapCellsCfg(flags))
 
 caldigi_cfg.toVars (TopAlg, ExtSvc)
 
@@ -542,8 +546,7 @@ if doSWClustering:
                           'EMBCaloClusters',
                           0.04,  # threshold,
                           'StandardSize',
-                          outputSaveClusters,
-                          io_svc))
+                          outputSaveClusters))
 
     # SW ECAL endcap clusters
     calclust_cfg.merge (
@@ -552,8 +555,7 @@ if doSWClustering:
                           'EMECCaloClusters',
                           0.04,  # threshold,
                           'StandardSize',
-                          outputSaveClusters,
-                          io_svc))
+                          outputSaveClusters))
 
     # SW ECAL barrel clusters with noise
     if addNoise:
@@ -570,8 +572,7 @@ if doSWClustering:
                               # reconstruction, or use filtered cells
                               0.1,
                               'StandardSize',
-                              outputSaveClusters,
-                              io_svc))
+                              outputSaveClusters))
 
     # ECAL + HCAL clusters
     if runHCal:
@@ -586,7 +587,6 @@ if doSWClustering:
                               0.04,  # threshold,
                               'StandardSize',
                               outputSaveClusters,
-                              io_svc,
                               applyMVAClusterEnergyCalibration = False,
                               addShapeParameters = False,
                               doPhotonID = False))
@@ -602,7 +602,6 @@ if doSWClustering:
                               0.00,  # threshold,
                               'MuonSize',
                               outputSaveClusters,
-                              io_svc,
                               applyMVAClusterEnergyCalibration = False,
                               addShapeParameters = False,
                               doPhotonID = False))
@@ -616,8 +615,7 @@ if doTopoClustering:
                             {'ECAL_Barrel': flags.ECal.Barrel.cellsName},
                             'EMBCaloTopoClusters',
                             0,  # threshold,
-                            outputSaveClusters,
-                            io_svc))
+                            outputSaveClusters))
 
     # ECAL endcap topoclusters
     calclust_cfg.merge (
@@ -625,8 +623,7 @@ if doTopoClustering:
                             {'ECAL_Endcap': flags.ECal.Endcap.cellsName},
                             'EMECCaloTopoClusters',
                             0,  # threshold,
-                            outputSaveClusters,
-                            io_svc))
+                            outputSaveClusters))
 
     # ECAL topoclusters with noise
     if addNoise:
@@ -638,8 +635,7 @@ if doTopoClustering:
                                 {'ECAL_Barrel': flags.ECal.Barrel.cellsName + suffix},
                                 'EMBCaloTopoClusters' + suffix,
                                 0.1,  # threshold,
-                                outputSaveClusters,
-                                io_svc))
+                                outputSaveClusters))
 
     # ECAL + HCAL
     if runHCal:
@@ -653,7 +649,6 @@ if doTopoClustering:
                                 'CaloTopoClusters',
                                 0, # threshold
                                 outputSaveClusters,
-                                io_svc,
                                 applyMVAClusterEnergyCalibration = False,
                                 addShapeParameters = False,
                                 doPhotonID = False))
