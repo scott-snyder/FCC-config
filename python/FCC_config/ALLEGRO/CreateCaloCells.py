@@ -223,6 +223,7 @@ def CreateECalBarrelCellsCfg (flags,
                               filterCellNoise = False,
                               cellsNameSuffix = '',
                               readoutName = None,
+                              alg = C.CreatePositionedCaloCells,
                               **kw):
 
     cfg = ComponentAccumulator()
@@ -250,13 +251,13 @@ def CreateECalBarrelCellsCfg (flags,
                                                       name='CellPositions' + readoutName,
                                                       readoutName=readoutName)
 
-    cfg.addAlg(C.CreatePositionedCaloCells(name,
-                                           doCellCalibration=doCellCalibration,
-                                           addCrosstalk=addCrosstalk,
-                                           addCellNoise=addNoise,
-                                           filterCellNoise=filterCellNoise,
-                                           **kw
-                                           ))
+    cfg.addAlg(alg(name,
+                   doCellCalibration=doCellCalibration,
+                   addCrosstalk=addCrosstalk,
+                   addCellNoise=addNoise,
+                   filterCellNoise=filterCellNoise,
+                   **kw
+                   ))
 
     cfg.merge (_keepCells (flags, kw, readoutName))
     return cfg
