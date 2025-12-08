@@ -1,14 +1,15 @@
 {
   "version": 5,
-  "prev": "cc2d2cea66f2ee06d207d096cda629b0fbf91001",
-  "head": "29aa7058436d8b40548c0a64e3fd3170a44bead2",
+  "prev": "a9b23e911d3ff8b2e5550c1e2762f6b72a21961c",
+  "head": "5e4f64789f204dd0c3a919778c711815f227afe6",
   "applied": [
     "gitignore",
     "typo",
     "spelling",
     "cell-creation",
     "cluster-creation",
-    "outputsel-wip"
+    "outputsel-wip",
+    "local-wip"
   ],
   "unapplied": [],
   "hidden": [],
@@ -30,6 +31,9 @@
     },
     "outputsel-wip": {
       "oid": "29aa7058436d8b40548c0a64e3fd3170a44bead2"
+    },
+    "local-wip": {
+      "oid": "5e4f64789f204dd0c3a919778c711815f227afe6"
     }
   }
 }
