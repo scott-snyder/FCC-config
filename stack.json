@@ -1,8 +1,9 @@
 {
   "version": 5,
-  "prev": "238b638e7696fc96140fcad7eadd9e460c5882c8",
-  "head": "c598d09e897f710c3773d92a08f58d9158ae7f06",
-  "applied": [
+  "prev": "5289acbe96150cd9567342079ebbb3db28d8865e",
+  "head": "c45183057773ae47ed79df21813bc25f172a2513",
+  "applied": [],
+  "unapplied": [
     "gitignore",
     "typo",
     "spelling",
@@ -11,7 +12,6 @@
     "outputsel-wip",
     "local-wip"
   ],
-  "unapplied": [],
   "hidden": [],
   "patches": {
     "gitignore": {
