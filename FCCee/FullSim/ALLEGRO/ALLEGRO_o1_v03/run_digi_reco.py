@@ -23,8 +23,8 @@ Nevts = -1                                 # -1 means all events in input file (
 
 # - general settings not set via CLI
 filterNoiseThreshold = -1                  # if addNoise is true, and filterNoiseThreshold is >0, will filter away cells with abs(energy) below filterNoiseThreshold * expected sigma(noise)
-# dataFolder = "data/"                     # directory containing the calibration files
-dataFolder = "./"                          # directory containing the calibration files
+dataFolder = "data/"                     # directory containing the calibration files
+#dataFolder = "./"                          # directory containing the calibration files
 
 # - general settings set via CLI
 from k4FWCore.parseArgs import parser
@@ -97,7 +97,8 @@ flags.IO.outputFile = outputfile
 flags.compactFile = 'ALLEGRO_o1_v03.xml'
 flags.pathToDetector = os.environ.get('K4GEO','') + '/FCCee/ALLEGRO/compact/' + os.path.splitext(flags.compactFile)[0]
 flags.dataFiles = dataFolder
-flags.dataFilesUrl = 'https://fccsw.web.cern.ch/fccsw/filesForSimDigiReco/ALLEGRO/ALLEGRO_o1_v03/'
+#flags.dataFilesUrl = 'https://fccsw.web.cern.ch/fccsw/filesForSimDigiReco/ALLEGRO/ALLEGRO_o1_v03/'
+flags.dataFilesUrl = flags.dataFiles
 flags.cellsNamePart = 'Positioned'
 flags.linksNamePart = 'SimCaloHitLinks'
 flags.saveHits = saveHits   # should be elsewhere?
