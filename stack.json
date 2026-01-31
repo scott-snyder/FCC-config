@@ -1,16 +1,16 @@
 {
   "version": 5,
-  "prev": "3bb8c433c87237892b78e8f7393b903d02cfd27c",
-  "head": "7ef6c581f670461f8457119f79ab74ccbed3b9eb",
+  "prev": "485d4608949a1a0d17ba653098ccf427a2d26591",
+  "head": "abd0a375d245f04e9149d9caba3df9a7ddcbb929",
   "applied": [
     "gitignore",
     "typo",
     "spelling",
     "cell-creation",
-    "svc-fix"
+    "svc-fix",
+    "cluster-creation"
   ],
   "unapplied": [
-    "cluster-creation",
     "outputsel-wip",
     "local-wip"
   ],
@@ -32,7 +32,7 @@
       "oid": "7ef6c581f670461f8457119f79ab74ccbed3b9eb"
     },
     "cluster-creation": {
-      "oid": "74307e77c4e146a15290a2678d57e50a8082ed4a"
+      "oid": "abd0a375d245f04e9149d9caba3df9a7ddcbb929"
     },
     "outputsel-wip": {
       "oid": "97159006849493ab25be041ae6b6720d2da67358"
