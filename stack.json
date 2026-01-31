@@ -1,15 +1,16 @@
 {
   "version": 5,
-  "prev": "57e53da1c17cdf957e99c0c551dfa774acd8d528",
-  "head": "6bde75e68276dde0e1b156110b00bcef68ccf7a3",
+  "prev": "08b5d86dac5047ad42a852981d0477f5ac6bc084",
+  "head": "f2d8d0f1249fbfe1efd7e9bb6c5aee377a6d4f13",
   "applied": [
     "gitignore",
     "typo",
-    "spelling",
+    "spelling"
+  ],
+  "unapplied": [
     "cell-creation",
     "cluster-creation"
   ],
-  "unapplied": [],
   "hidden": [],
   "patches": {
     "cell-creation": {
