@@ -55,7 +55,7 @@ class ComponentAccumulator:
                 else:
                     print ('ERROR: Unmergable duplicate service', sname)
                     assert 0
-        for sname, s in self._svcs:
+        for sname, s in self._svcs.items():
             cnv = getattr (s, 'convertTo', None)
             if cnv and callable(cnv):
                 s = cnv(s)
