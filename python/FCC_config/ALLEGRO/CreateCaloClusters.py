@@ -103,9 +103,9 @@ def CreateCaloSWClustersCfg (flags,
 
 
 def CaloTopoNeighboursTool (flags, clusterNameRoot, caloIDs):
-    if caloIDs == ['ECAL_Barrel']:
+    if caloIDs == [detIDs(flags, 'ECAL_Barrel')]:
         neighboursMap = flags.CaloTopo.EMBNeighbours
-    elif caloIDs == ['ECAL_Endcap']:
+    elif caloIDs == [detIDs(flags, 'ECAL_Endcap')]:
         neighboursMap = flags.CaloTopo.EMECNeighbours
     else:
         neighboursMap = flags.CaloTopo.AllNeighbours
@@ -114,9 +114,9 @@ def CaloTopoNeighboursTool (flags, clusterNameRoot, caloIDs):
 
 
 def CaloTopoNoiseTool (flags, clusterNameRoot, caloIDs):
-    if caloIDs == ['ECAL_Barrel']:
+    if caloIDs == [detIDs(flags, 'ECAL_Barrel')]:
         noiseMap = flags.CaloTopo.EMBNoise
-    elif caloIDs == ['ECAL_Endcap']:
+    elif caloIDs == [detIDs(flags, 'ECAL_Endcap')]:
         noiseMap = flags.CaloTopo.EMECNoise
     else:
         noiseMap = flags.CaloTopo.AllNoise
