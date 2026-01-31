@@ -1,18 +1,18 @@
 {
   "version": 5,
-  "prev": "a7307de140aa5d29d36baafd274ca358cd5bf6e0",
-  "head": "084bc7fbf172e745ef9242b177489e3792ef8eb9",
+  "prev": "3bb8c433c87237892b78e8f7393b903d02cfd27c",
+  "head": "7ef6c581f670461f8457119f79ab74ccbed3b9eb",
   "applied": [
     "gitignore",
     "typo",
     "spelling",
-    "cell-creation"
+    "cell-creation",
+    "svc-fix"
   ],
   "unapplied": [
     "cluster-creation",
     "outputsel-wip",
-    "local-wip",
-    "svc-fix"
+    "local-wip"
   ],
   "hidden": [],
   "patches": {
@@ -28,6 +28,9 @@
     "cell-creation": {
       "oid": "084bc7fbf172e745ef9242b177489e3792ef8eb9"
     },
+    "svc-fix": {
+      "oid": "7ef6c581f670461f8457119f79ab74ccbed3b9eb"
+    },
     "cluster-creation": {
       "oid": "74307e77c4e146a15290a2678d57e50a8082ed4a"
     },
@@ -36,9 +39,6 @@
     },
     "local-wip": {
       "oid": "51e60ebe03689f17727e744f457119f179c04485"
-    },
-    "svc-fix": {
-      "oid": "4daf9a082c70439d317e832db362b3b17a7a999b"
     }
   }
 }
