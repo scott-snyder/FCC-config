@@ -123,6 +123,7 @@ def CellPositionsHCalEndcap (flags,
 
 def ReadCrosstalkMap (flags, name = 'ReadCrosstalkMap'):
     return C.ReadCaloCrosstalkMap(name,
+                                  detID = detIDs(flags, 'ECAL_Barrel'),
                                   fileName=flags.dataFilesUrl + "xtalk_neighbours_map_ecalB_thetamodulemerged.root")
 
 
@@ -151,6 +152,23 @@ def eCalBarrelGeometryTool (flags, name = 'ecalBarrelGeometryTool'):
                                           fieldNames=["system"],
                                           fieldValues=[detIDs(flags, 'ECAL_Barrel')],
                                           )
+
+class CaloCellIndexerSvc (C.k4__recCalo__CaloCellIndexerSvc):
+    def mergeTo (self, old):
+        if not isinstance (old, CaloCellIndexerSvc): return False
+        oldnames = [x.name() for x in old.GeoTools]
+        for tool in self.GeoTools:
+            if tool.name() not in oldnames:
+                old.GeoTools.append (tool)
+        return True
+
+def CaloCellIndexerSvcCfg (flags, name = 'k4::recCalo::CaloCellIndexerSvc'):
+    cfg = ComponentAccumulator()
+    svc = CaloCellIndexerSvc (name,
+                              GeoTools = [eCalBarrelGeometryTool(flags)])
+
+    cfg.addSvc (svc)
+    return cfg
 
 
 def _keepCells (flags, kw, readoutName):
@@ -190,6 +208,7 @@ def CreateECalBarrelCellsCfg (flags,
         kw['calibTool'] = CalibrateECalBarrel(flags)
 
     if addCrosstalk:
+        cfg.merge (CaloCellIndexerSvcCfg (flags))
         kw['crosstalkTool'] = ReadCrosstalkMap(flags)
 
     if addNoise:
