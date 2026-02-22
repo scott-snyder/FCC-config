@@ -1,11 +1,12 @@
 {
   "version": 5,
-  "prev": "4a4f5e76e09d30c018f2256a9528f6517f3ce0ca",
-  "head": "b17e761ed718fe4f277ca8419b4558a0acd4d36e",
+  "prev": "86e56849b1cbb07296ae5f8db3538bb89f36e4ed",
+  "head": "0c1588a3abd774964415dd5d09eba55bcce4a2d4",
   "applied": [
     "gitignore",
     "typo",
-    "spelling"
+    "spelling",
+    "cell-creation"
   ],
   "unapplied": [
     "cluster-creation",
@@ -14,6 +15,9 @@
   ],
   "hidden": [],
   "patches": {
+    "cell-creation": {
+      "oid": "0c1588a3abd774964415dd5d09eba55bcce4a2d4"
+    },
     "cluster-creation": {
       "oid": "7cfd053d9e236e9167b2be9e974482c69301fe54"
     },
