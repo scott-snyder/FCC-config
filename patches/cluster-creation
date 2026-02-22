@@ -1,6 +1,6 @@
-Bottom: 372dc1c001ed706398c42590e5929f32e63e87fa
-Top:    10a445004de122f5d51ee2006df772839f049ccd
+Bottom: a313ddea69e6a63c58457a028fe8daa17596030a
+Top:    970e2b9c9e59459d38914290b640b2e5d3c4cfbe
 Author: scott snyder <snyder@bnl.gov>
-Date:   2026-02-05 21:51:06 -0500
+Date:   2026-02-22 11:40:31 -0500
 
 Modularize calo cluster creation.
