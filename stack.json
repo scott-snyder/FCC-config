@@ -1,24 +1,24 @@
 {
   "version": 5,
-  "prev": "a4d58aae4b0a97276723a4894e55042f74569da1",
-  "head": "fa01740ce56fbe3546236baff64cefc99e43e995",
+  "prev": "596617f5336bdb1f089cda51ef736a9260021709",
+  "head": "c2a550b811ff81ce4604396511a740436a33654e",
   "applied": [
     "gitignore",
     "typo",
     "spelling",
-    "componentAccumulator"
+    "componentAccumulator",
+    "ca2"
   ],
   "unapplied": [
     "cell-creation",
     "cluster-creation",
     "outputsel-wip",
-    "indexing-wip",
-    "ca2"
+    "indexing-wip"
   ],
   "hidden": [],
   "patches": {
     "ca2": {
-      "oid": "94aed1c3642c8e67fc14b8515cb9dfef809f1ea9"
+      "oid": "c2a550b811ff81ce4604396511a740436a33654e"
     },
     "cell-creation": {
       "oid": "cbee5a90a9d7f6abfa9c75acf5119de96a1b17dc"
