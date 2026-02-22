@@ -143,9 +143,11 @@ def eCalBarrelNoiseTool (flags, name = 'ecalBarrelNoiseTool'):
                                                 )
 
 
-def eCalBarrelGeometryTool (flags, name = 'ecalBarrelGeometryTool'):
+def eCalBarrelGeometryTool (flags, name = 'ecalBarrelGeometryTool',
+                            readoutName = None):
+    if readoutName is None: readoutName = flags.ECal.Barrel.readoutName
     return C.TubeLayerModuleThetaCaloTool(name,
-                                          readoutName=flags.ECal.Barrel.readoutName,
+                                          readoutName=readoutName,
                                           activeVolumeName="LAr_sensitive",
                                           activeFieldName="layer",
                                           activeVolumesNumber=ecalBarrelLayers,
@@ -214,7 +216,7 @@ def CreateECalBarrelCellsCfg (flags,
 
     if addNoise:
         kw['noiseTool'] = eCalBarrelNoiseTool (flags)
-        kw['geometryTool'] = eCalBarrelGeometryTool (flags)
+        kw['geometryTool'] = eCalBarrelGeometryTool (flags, readoutName=readoutName)
 
     if readoutName == flags.ECal.Barrel.readoutName:
         kw['positionsTool'] = CellPositionsECalBarrel(flags)
