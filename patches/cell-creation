@@ -1,0 +1,6 @@
+Bottom: 102dbe0ba33025b52a4caa4d7d541ff9436cf2f2
+Top:    db7336f9ee46cf41799a4110be824b9f3a530617
+Author: scott snyder <snyder@bnl.gov>
+Date:   2025-10-16 22:54:13 -0400
+
+Modularize cell creation.

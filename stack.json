@@ -1,12 +1,13 @@
 {
   "version": 5,
-  "prev": "90ab23a53d6fef6bfaf88207ae39507f10f7cb7e",
-  "head": "564db58e79e439a57e70f8d0ae16d60f798389ed",
+  "prev": "15d5a0fe2fc6e7b9b6a02facff1e6bdfe1c95dd6",
+  "head": "1c465ad2cea79d59dc32e9f6fb6da65b1b14afcd",
   "applied": [
     "gitignore",
     "typo",
     "spelling",
-    "ca"
+    "ca",
+    "cell-creation"
   ],
   "unapplied": [
     "cluster-creation",
@@ -27,6 +28,9 @@
     },
     "ca": {
       "oid": "564db58e79e439a57e70f8d0ae16d60f798389ed"
+    },
+    "cell-creation": {
+      "oid": "1c465ad2cea79d59dc32e9f6fb6da65b1b14afcd"
     },
     "cluster-creation": {
       "oid": "ac4992cdee8f73f9b00e8c91ab6d7317975a4ecf"
