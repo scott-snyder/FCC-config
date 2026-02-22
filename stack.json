@@ -1,13 +1,12 @@
 {
   "version": 5,
-  "prev": "fa1dc2bcd4219b6f238d656b1df9b01d90664016",
-  "head": "8b5ae52c79e3da690dd89b222171ee0303e7744e",
+  "prev": "f404a2b0b511dd5a5e4db49535964b6722dfde14",
+  "head": "1c6bc1e358d7e38fcad8f76d7a13f30fba23221f",
   "applied": [
     "gitignore",
     "typo",
     "spelling",
-    "componentAccumulator",
-    "refresh-temp"
+    "componentAccumulator"
   ],
   "unapplied": [
     "cell-creation",
@@ -24,7 +23,7 @@
       "oid": "7cfd053d9e236e9167b2be9e974482c69301fe54"
     },
     "componentAccumulator": {
-      "oid": "68e7b33f781bfb45a5d2d3e22b799bca3ca3b17b"
+      "oid": "1c6bc1e358d7e38fcad8f76d7a13f30fba23221f"
     },
     "gitignore": {
       "oid": "e59cb928f93f387105d6b7a1087ac795bbf2d483"
@@ -34,9 +33,6 @@
     },
     "outputsel-wip": {
       "oid": "8fafd500d8e40834fe29ccb180c4b502092960a4"
-    },
-    "refresh-temp": {
-      "oid": "8b5ae52c79e3da690dd89b222171ee0303e7744e"
     },
     "spelling": {
       "oid": "b17e761ed718fe4f277ca8419b4558a0acd4d36e"
