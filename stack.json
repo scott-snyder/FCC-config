@@ -1,11 +1,12 @@
 {
   "version": 5,
-  "prev": "61a1e533e68b0aaa08cf364bd02198dccbb3695e",
-  "head": "1a83f9cf78c2e6794d13c45e6ddefa114a665099",
+  "prev": "b6b2dae40407da45d148d4bd84398733c1f545fa",
+  "head": "564db58e79e439a57e70f8d0ae16d60f798389ed",
   "applied": [
     "gitignore",
     "typo",
-    "spelling"
+    "spelling",
+    "ca"
   ],
   "unapplied": [
     "cell-creation",
@@ -24,6 +25,9 @@
     },
     "spelling": {
       "oid": "1a83f9cf78c2e6794d13c45e6ddefa114a665099"
+    },
+    "ca": {
+      "oid": "564db58e79e439a57e70f8d0ae16d60f798389ed"
     },
     "cell-creation": {
       "oid": "ded1554f8abc2c9cdd7f19716dc685567ab256be"
