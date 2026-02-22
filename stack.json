@@ -1,12 +1,13 @@
 {
   "version": 5,
-  "prev": "db22e3e995691deb49d33040c9fc3d32c3d60d17",
-  "head": "34430859874082cef726662cf6203ed13a19da72",
-  "applied": [],
-  "unapplied": [
+  "prev": "61a1e533e68b0aaa08cf364bd02198dccbb3695e",
+  "head": "1a83f9cf78c2e6794d13c45e6ddefa114a665099",
+  "applied": [
     "gitignore",
     "typo",
-    "spelling",
+    "spelling"
+  ],
+  "unapplied": [
     "cell-creation",
     "cluster-creation",
     "outputsel-wip",
