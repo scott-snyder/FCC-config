@@ -1,3 +1,33 @@
+#
+# File: python/FCC_config.ComponentAccumulator.py
+# Author: scott snyder <snyder@bnl.gov>
+# Date: Feb, 2026
+# Purpose: ComponentAccumulator-style configuration for key4hep.
+#
+# This module provides a ComponentAccumulator class for structured
+# configuration, along the lines of ATLAS (see
+# https://doi.org/10.1051/epjconf/201921405015 and section 3.2 of
+# https://doi.org/10.1140/epjc/s10052-024-13701-w).
+# Only the bare minimum required to try this out is implemented at this point;
+# in particular, component de-duplication is not implemented (except for an
+# ad-hoc facility for Services, see below).  More functionality from ATLAS
+# can be added as needed.
+#
+# key4hep configurations have tended to be monolithic python scripts.
+# For any significant configuration, maintaining this gets tedious and
+# error-prone, and results in large amounts of duplicated configuration code,
+# making it complicated to introduce changes in how components get configured.
+#
+# In this model, components are configured via configuration functions,
+# which ideally are provided via by the library defining the components.
+# Each function creates Gaudi Configurables for one component or a set of
+# closely related components and returns them via a ComponentAccumulator object.
+# These functions have no access to global state, taking all their information
+# via arguments; however, their first argument is conventionally a flags
+# object conveying information about what sort of configuration is desired.
+#
+# 
+
 def _mergeSvc (old, new):
     mergef = getattr (new, 'mergeTo', None)
     if not mergef or not callable(mergef):
