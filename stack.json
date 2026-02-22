@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "prev": "af4f025da851d0271c15ca9263cb224c328db6eb",
+  "prev": "59984df7b1ab5136938a5db819a83b0890268980",
   "head": "c2c92e46fbdf75066e5dd4f2b0295918d5646652",
   "applied": [
     "gitignore",
@@ -11,7 +11,6 @@
     "cluster-creation"
   ],
   "unapplied": [
-    "outputsel-wip",
     "local-wip",
     "indexing-wip"
   ],
@@ -34,9 +33,6 @@
     },
     "cluster-creation": {
       "oid": "c2c92e46fbdf75066e5dd4f2b0295918d5646652"
-    },
-    "outputsel-wip": {
-      "oid": "2a453f6d9a6049eb342bdd09d801ccca5e3431aa"
     },
     "local-wip": {
       "oid": "9e408816cf42129ebf06420748321a4800afdc66"
