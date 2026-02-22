@@ -1,15 +1,15 @@
 {
   "version": 5,
-  "prev": "f404a2b0b511dd5a5e4db49535964b6722dfde14",
-  "head": "1c6bc1e358d7e38fcad8f76d7a13f30fba23221f",
+  "prev": "0f4bc648dc0b593ccde7867a6f81823f9b330b78",
+  "head": "cbee5a90a9d7f6abfa9c75acf5119de96a1b17dc",
   "applied": [
     "gitignore",
     "typo",
     "spelling",
-    "componentAccumulator"
+    "componentAccumulator",
+    "cell-creation"
   ],
   "unapplied": [
-    "cell-creation",
     "cluster-creation",
     "outputsel-wip",
     "indexing-wip"
@@ -17,7 +17,7 @@
   "hidden": [],
   "patches": {
     "cell-creation": {
-      "oid": "0c1588a3abd774964415dd5d09eba55bcce4a2d4"
+      "oid": "cbee5a90a9d7f6abfa9c75acf5119de96a1b17dc"
     },
     "cluster-creation": {
       "oid": "7cfd053d9e236e9167b2be9e974482c69301fe54"
