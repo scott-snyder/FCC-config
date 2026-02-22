@@ -12,3 +12,6 @@ include(CTest)
 add_test(NAME ALLEGRO_o1_v03 COMMAND ../FCCee/FullSim/ALLEGRO/ALLEGRO_o1_v03/ctest_sim_digi_reco.sh)
 add_test(NAME IDEA_o1_v03 COMMAND ../FCCee/FullSim/IDEA/IDEA_o1_v03/ctest_sim_digi_reco.sh)
 set_tests_properties(ALLEGRO_o1_v03 PROPERTIES TIMEOUT 1800) # 30 minutes
+
+add_test(NAME ComponentAccumulator_test COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/python/test/ComponentAccumulator_test.py)
+set_tests_properties(ComponentAccumulator_test PROPERTIES FAIL_REGULAR_EXPRESSION failure)
