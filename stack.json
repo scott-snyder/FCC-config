@@ -1,18 +1,18 @@
 {
   "version": 5,
-  "prev": "9fadb0f89e939c8c4bf60271743d68be45d6470b",
-  "head": "539011729ebd137dcc376c78a9a1a329ed4ba147",
+  "prev": "d56147eda622045f835fbb370b37e7d0030589a5",
+  "head": "1c6bc1e358d7e38fcad8f76d7a13f30fba23221f",
   "applied": [
     "gitignore",
     "typo",
     "spelling",
-    "componentAccumulator",
+    "componentAccumulator"
+  ],
+  "unapplied": [
     "cell-creation",
     "cluster-creation",
     "outputsel-wip",
-    "indexing-wip"
-  ],
-  "unapplied": [
+    "indexing-wip",
     "ca2"
   ],
   "hidden": [],
