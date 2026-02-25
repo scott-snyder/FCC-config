@@ -1,0 +1,22 @@
+name: CTESTS
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        build_type: ["nightly"]
+        image: ["alma9"]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: key4hep/key4hep-actions/key4hep-build@main
+      with:
+        build_type: ${{ matrix.build_type }}
+        image: ${{ matrix.image }}
