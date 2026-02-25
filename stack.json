@@ -1,20 +1,19 @@
 {
   "version": 5,
-  "prev": "6ef280e18c893685632cabafb0a01c17e8421ae2",
-  "head": "7daf23413578329ba3cddf246b92617574259348",
+  "prev": "05d98fef661b20b6e3f1d6ff3a30356f6475f469",
+  "head": "3a1a0ffd20e5e3cdff167859a6973d0c022964ff",
   "applied": [
     "gitignore",
     "typo",
     "spelling",
-    "ca"
-  ],
-  "unapplied": [
+    "ca",
     "cell-creation",
     "cluster-creation",
     "outputsel-wip",
     "local-wip",
     "indexing-wip"
   ],
+  "unapplied": [],
   "hidden": [],
   "patches": {
     "gitignore": {
@@ -30,19 +29,19 @@
       "oid": "7daf23413578329ba3cddf246b92617574259348"
     },
     "cell-creation": {
-      "oid": "1c465ad2cea79d59dc32e9f6fb6da65b1b14afcd"
+      "oid": "5cb0f283d2967e54c74412e85273dbe8f03aacbb"
     },
     "cluster-creation": {
-      "oid": "c2c92e46fbdf75066e5dd4f2b0295918d5646652"
+      "oid": "2380f8ab2ba88e20f8157335cf4ec72891a78460"
     },
     "outputsel-wip": {
-      "oid": "bfb4dfaa67a4b15560044744a06622d40cf06f8a"
+      "oid": "fa8a9c8a51cf79f1d57ff363820c7879302ba74d"
     },
     "local-wip": {
-      "oid": "7a70fb850bd6fc81547e2afabb56199af106e3d8"
+      "oid": "2082fad0426fbfdb047bd6abe7baf7c35d8c77e3"
     },
     "indexing-wip": {
-      "oid": "6b4cac59de1a6d8b895e0ff01d10f903c40a2465"
+      "oid": "3a1a0ffd20e5e3cdff167859a6973d0c022964ff"
     }
   }
 }
