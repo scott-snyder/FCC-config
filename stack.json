@@ -1,8 +1,9 @@
 {
   "version": 5,
-  "prev": "b80ccdbbf51eb6d8c4b5a802e0843c07e8f76468",
-  "head": "11518841a994531b7277cd1869b9f03133a8f248",
-  "applied": [
+  "prev": "e1a3d66cc3fa8e339f512ede46faa2d71a57ec69",
+  "head": "34430859874082cef726662cf6203ed13a19da72",
+  "applied": [],
+  "unapplied": [
     "gitignore",
     "typo",
     "spelling",
@@ -13,7 +14,6 @@
     "indexing-wip",
     "ci"
   ],
-  "unapplied": [],
   "hidden": [],
   "patches": {
     "ca": {
