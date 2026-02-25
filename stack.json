@@ -1,11 +1,13 @@
 {
   "version": 5,
-  "prev": "2c1908a8a8e62406bfa3b0741d8f894fd3a53833",
-  "head": "6b4cac59de1a6d8b895e0ff01d10f903c40a2465",
+  "prev": "b8baa1bf3a54fb0ff4caad71c965a7f5c79fd3aa",
+  "head": "1a83f9cf78c2e6794d13c45e6ddefa114a665099",
   "applied": [
     "gitignore",
     "typo",
-    "spelling",
+    "spelling"
+  ],
+  "unapplied": [
     "ca",
     "cell-creation",
     "cluster-creation",
@@ -13,7 +15,6 @@
     "local-wip",
     "indexing-wip"
   ],
-  "unapplied": [],
   "hidden": [],
   "patches": {
     "gitignore": {
