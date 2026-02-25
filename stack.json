@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "prev": "b8baa1bf3a54fb0ff4caad71c965a7f5c79fd3aa",
+  "prev": "e79f814fd1c7b7e13c1ee85b00bff0b7640f7f20",
   "head": "1a83f9cf78c2e6794d13c45e6ddefa114a665099",
   "applied": [
     "gitignore",
@@ -8,7 +8,6 @@
     "spelling"
   ],
   "unapplied": [
-    "ca",
     "cell-creation",
     "cluster-creation",
     "outputsel-wip",
@@ -25,9 +24,6 @@
     },
     "spelling": {
       "oid": "1a83f9cf78c2e6794d13c45e6ddefa114a665099"
-    },
-    "ca": {
-      "oid": "564db58e79e439a57e70f8d0ae16d60f798389ed"
     },
     "cell-creation": {
       "oid": "1c465ad2cea79d59dc32e9f6fb6da65b1b14afcd"
