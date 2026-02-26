@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "prev": "7658ff5d8a6b7ae10e535e6043fa4f065da738d3",
+  "prev": "a3874f21f72c293668e4e1f8a7bb1598a87a99e3",
   "head": "b9c5251892a34f5cebe379d4967e3e7043910d85",
   "applied": [
     "typo",
@@ -39,7 +39,7 @@
       "oid": "bc76ff54dc3cbc4d99e0e2fe36c05dd30f561428"
     },
     "spelling": {
-      "oid": "b17e761ed718fe4f277ca8419b4558a0acd4d36e"
+      "oid": "a62adc63307c69752dc6ecad120175f4c9b5566b"
     },
     "typo": {
       "oid": "7f80798c1f69ed1c1c6f633e57e54170e687418c"
