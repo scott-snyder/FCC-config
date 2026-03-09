@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "prev": "a9061318947f5c9707acf33dc51e554774f08d84",
-  "head": "34b9f43de70ca3d1bc4212cce6965105819f4cf9",
+  "prev": "207cc42d59198f666b19a8925d4cc988281dff8d",
+  "head": "d477162eb57c75d402dd0216686064f6be4fc667",
   "applied": [
     "gitignore",
     "typo",
@@ -12,8 +12,7 @@
     "outputsel-wip",
     "local-wip",
     "indexing-wip",
-    "testdir",
-    "refresh-temp"
+    "testdir"
   ],
   "unapplied": [],
   "hidden": [],
@@ -46,10 +45,7 @@
       "oid": "3a1a0ffd20e5e3cdff167859a6973d0c022964ff"
     },
     "testdir": {
-      "oid": "270e3785b3fce928935c50b8b7e96a91111b9a07"
-    },
-    "refresh-temp": {
-      "oid": "34b9f43de70ca3d1bc4212cce6965105819f4cf9"
+      "oid": "d477162eb57c75d402dd0216686064f6be4fc667"
     }
   }
 }
