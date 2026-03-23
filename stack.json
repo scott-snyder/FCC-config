@@ -1,18 +1,19 @@
 {
   "version": 5,
-  "prev": "d36fc067e69cd63a73fdef20557b6c3bd2a5d530",
-  "head": "644d311fd777248e94d5595dd9cceb35aab9d5d1",
+  "prev": "5c58868247742886221dd8e9eff49bc620758103",
+  "head": "92984059a92c94a03b0c5aecad8d46d9b4eae1ee",
   "applied": [
     "gitignore",
     "ca",
     "cell-creation",
     "cluster-creation",
     "outputsel-wip",
-    "local-wip",
+    "local-wip"
+  ],
+  "unapplied": [
     "indexing-wip",
     "testdir"
   ],
-  "unapplied": [],
   "hidden": [],
   "patches": {
     "gitignore": {
