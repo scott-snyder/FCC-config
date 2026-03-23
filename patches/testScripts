@@ -1,0 +1,9 @@
+Bottom: 91e33defd2ded06f9f1f76dcb25af739ad2d77a4
+Top:    91e33defd2ded06f9f1f76dcb25af739ad2d77a4
+Author: sss <sss@karma>
+Date:   2026-03-23 16:58:31 -0400
+
+Fix finding test scripts.
+
+Look for test scripts starting from ${CMAKE_CURRENT_SOURCE_DIR}, not .. .
+(Don't make assumptions about the location of the build directory.)
