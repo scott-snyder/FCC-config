@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "prev": "f083445dcfac9c994c9ce087356f76e63c3517a8",
-  "head": "241c89769ff69f03231e20fd31ab9713b8bac3a4",
+  "prev": "138768733116ac92088a72c333b0133bd32bd6f7",
+  "head": "e9e3b59c738b047da39609320ffba9f99c41b5cd",
   "applied": [
     "gitignore",
     "ca",
@@ -9,8 +9,7 @@
     "cluster-creation",
     "outputsel-wip",
     "local-wip",
-    "indexing-wip",
-    "testdir"
+    "indexing-wip"
   ],
   "unapplied": [],
   "hidden": [],
@@ -35,9 +34,6 @@
     },
     "indexing-wip": {
       "oid": "e9e3b59c738b047da39609320ffba9f99c41b5cd"
-    },
-    "testdir": {
-      "oid": "241c89769ff69f03231e20fd31ab9713b8bac3a4"
     }
   }
 }
