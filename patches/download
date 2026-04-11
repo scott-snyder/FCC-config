@@ -1,0 +1,6 @@
+Bottom: 963319c795b1cce2ba824256192b8057ea667555
+Top:    963319c795b1cce2ba824256192b8057ea667555
+Author: sss <sss@karma>
+Date:   2026-04-11 13:41:01 -0400
+
+Fix typo in detection of already-downloaded files.
