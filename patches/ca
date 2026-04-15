@@ -1,9 +1,0 @@
-Bottom: 5ebd9059ac40163532f47168a8d316a4e272465e
-Top:    5ebd9059ac40163532f47168a8d316a4e272465e
-Author: sss <sss@karma>
-Date:   2026-04-15 15:46:15 -0400
-
-Start of an ATLAS-style ComponentAccumulator.
-
-Some prototype code to allow trying out ComponentAccumulator-style
-configuration.

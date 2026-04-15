@@ -1,6 +1,0 @@
-Bottom: e0a611d93eee6fbf1a9e5a57fe360b4ab649a454
-Top:    e0a611d93eee6fbf1a9e5a57fe360b4ab649a454
-Author: sss <sss@karma>
-Date:   2026-04-15 15:46:15 -0400
-
-Fix typo in detection of already-downloaded files.

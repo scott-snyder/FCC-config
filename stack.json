@@ -1,12 +1,10 @@
 {
   "version": 5,
-  "prev": "88c5fbd21c6e190a6b3b3e4908f98127d3586000",
-  "head": "5458b65d78ec789859bb7ee0b4726bb49d4148a3",
+  "prev": "31cbdb4642bdf2c8b5df0177d8517e04979e28e1",
+  "head": "6f1cdd6d61117915693bfe2e3641879136567fca",
   "applied": [
     "gitignore",
-    "ca",
     "ci",
-    "download",
     "cell-creation",
     "cluster-creation",
     "outputsel-wip",
@@ -15,29 +13,23 @@
   "unapplied": [],
   "hidden": [],
   "patches": {
-    "ca": {
-      "oid": "b68103b5aee04444058b4a2d48126096bda998ee"
-    },
     "cell-creation": {
-      "oid": "4ec8f2998d95bda12d2f7c7410f5219276799420"
+      "oid": "d7c0b3482940a99806c8b04450da1f982b296cae"
     },
     "ci": {
-      "oid": "a1efb0ed0f9f68dd343238fc72f7f0e5f9ac3723"
+      "oid": "c0bc61cfee967caa6413133ca96342260c2c2706"
     },
     "cluster-creation": {
-      "oid": "d4c294a0162a40cb510875b6cc6b4262a77be89b"
-    },
-    "download": {
-      "oid": "91f04241903fce6f527fd3ae9fda5147be2a97d2"
+      "oid": "abec5f4d0c425a03306ab8891fba1bcdb87b5942"
     },
     "gitignore": {
       "oid": "61ee7f7dc1dcdf47dd50d2976cba4066b99ad4be"
     },
     "indexing-wip": {
-      "oid": "5458b65d78ec789859bb7ee0b4726bb49d4148a3"
+      "oid": "6f1cdd6d61117915693bfe2e3641879136567fca"
     },
     "outputsel-wip": {
-      "oid": "3cc5360f97108e191826aaccc66c71589cad5c66"
+      "oid": "811754ef1fd856746f7ed25b678f7d19492820a3"
     }
   }
 }
