@@ -1,3 +1,10 @@
+#
+# File: python/FCC_config/ALLEGRO/DetIDs.py
+# Author: scott snyder <snyder@bnl.gov>, from code in ALLEGRO_o1_v03/run_digi_reco.py
+# Date: Apr, 2026
+# Purpose: Helper to translate between detector names and ID numbers.
+#
+
 import xml.etree.ElementTree as ET
 import os
 
