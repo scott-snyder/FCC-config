@@ -1,17 +1,16 @@
 {
   "version": 5,
-  "prev": "86cc2914a25b75cd3df5eca36783643a7f808a3f",
-  "head": "a98e318f2a412f09a131708bfbe9084c596c8b13",
+  "prev": "7b50ca0bae8b9d0b99e9eb4cfa7292d019eb8928",
+  "head": "546b1919ce1b3668a2b9908618ece9fa769ac030",
   "applied": [
     "gitignore",
     "cell-creation",
     "cluster-creation",
-    "outputsel-wip"
-  ],
-  "unapplied": [
+    "outputsel-wip",
     "local-wip",
     "indexing-wip"
   ],
+  "unapplied": [],
   "hidden": [],
   "patches": {
     "gitignore": {
@@ -27,10 +26,10 @@
       "oid": "a98e318f2a412f09a131708bfbe9084c596c8b13"
     },
     "local-wip": {
-      "oid": "93f52a1dbcfb244388a62a06f41f52db18ed26a5"
+      "oid": "26fa258f3ee8c02cc7dc7668cf2c1260089885dd"
     },
     "indexing-wip": {
-      "oid": "759110280262a7536d7678b169fbcec6cce70c33"
+      "oid": "546b1919ce1b3668a2b9908618ece9fa769ac030"
     }
   }
 }
