@@ -981,27 +981,6 @@ def setupTopoClusters(inputCells,
             # since the non-decorated version of the clusters will be dropped, we update the list of clusters for which we store the truth links
             outputSaveClusters.append("Augmented" + clusterAlg.clusters.Path)
             outputSaveClusters.remove(clusterAlg.clusters.Path)
-=======
-        # note that this only works for ecal barrel given various hardcoded quantities
-        from Configurables import AugmentClustersFCCee
-        augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
-                                                 inClusters=clusterAlg.clusters.Path,
-                                                 outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                 systemIDs=[detIDs(flags, "ECAL_Barrel")],
-                                                 systemNames=["EMB"],
-                                                 numLayers=[ecalBarrelLayers],
-                                                 readoutNames=[inputReadouts["ECAL_Barrel"]],
-                                                 layerFieldNames=["layer"],
-                                                 thetaRecalcWeights=[ecalBarrelThetaWeights],
-                                                 # do_photon_shapeVar=runPhotonIDTool,
-                                                 do_photon_shapeVar=True,  # we want these variables to train the photon ID BDT
-                                                 do_widthTheta_logE_weights=logEWeightInPhotonID,
-                                                 OutputLevel=INFO)
-        TopAlg += [augmentClusterAlg]
-        # since the non-decorated version of the clusters will be dropped, we update the list of clusters for which we store the truth links
-        outputSaveClusters.append("Augmented" + clusterAlg.clusters.Path)
-        outputSaveClusters.remove(clusterAlg.clusters.Path)
->>>>>>> patched
 
         # tool to identify resolved pi0->two photon cluster candidates
         # see: https://indico.cern.ch/event/1483299/contributions/6488594/attachments/3056315/5403634/ALLEGRO_photon_pi0_20250424.pdf

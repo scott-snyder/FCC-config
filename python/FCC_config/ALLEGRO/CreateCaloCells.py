@@ -5,18 +5,63 @@ from .DetIDs import detIDs
 
 # ECAL barrel parameters for digitization
 ecalBarrelLayers = 11
-ecalBarrelSamplingFraction = [0.3800493723322256,  #  0
-                              0.13494147915064658, #  1
-                              0.142866851721152,   #  2
-                              0.14839315921940666, #  3
-                              0.15298362570665006, #  4
-                              0.15709704561942747, #  5
-                              0.16063717490147533, #  6
-                              0.1641723795419055,  #  7
-                              0.16845490287689746, #  8
-                              0.17111520115997653, #  9
-                              0.1730605163148862,  # 10
+
+# e-, 10 GeV, flat theta, B field off
+# ecalBarrelSamplingFraction = [0.3800493723322256,  #  0
+#                               0.13494147915064658, #  1
+#                               0.142866851721152,   #  2
+#                               0.14839315921940666, #  3
+#                               0.15298362570665006, #  4
+#                               0.15709704561942747, #  5
+#                               0.16063717490147533, #  6
+#                               0.1641723795419055,  #  7
+#                               0.16845490287689746, #  8
+#                               0.17111520115997653, #  9
+#                               0.1730605163148862,  # 10
+#                               ]
+
+#  e-, 20 GeV, flat theta, B field on; LAr+Pb
+ecalBarrelSamplingFraction = [0.3790943904011486,  #  0
+                              0.1355600584387894,  #  1
+                              0.14628210607758893, #  2
+                              0.15274136994224854, #  3
+                              0.15817255837886351, #  4
+                              0.16290355087527258, #  5
+                              0.1674201708055751,  #  6
+                              0.1715846423182708,  #  7
+                              0.17558662106635545, #  8
+                              0.18002243792463576  #  9
+                              0.18288329976007917, # 10
                               ]
+
+# LKr+W
+# ecalBarrelSamplingFraction = [0.4806159038189229,  #  0
+#                               0.2822724529941907,  #  1
+#                               0.29324811578621524, #  2
+#                               0.2996356722403102,  #  3
+#                               0.3047116566166906,  #  4
+#                               0.3090324459212472,  #  5
+#                               0.3133282052725273,  #  6
+#                               0.3173868504112048,  #  7
+#                               0.3215311396527887,  #  8
+#                               0.32516920330802673, #  9
+#                               0.3318488881234955,  # 10
+#                               ]
+
+ecalBarrelUpstreamParameters = [[0.028158491043365624,
+                                 -1.564259408365951,
+                                 -76.52312805346982,
+                                 0.7442903558010191,
+                                 -34.894692961350195,
+                                 -74.19340877431723]]
+ecalBarrelDownstreamParameters = [[0.00010587711361028165,
+                                   0.0052371999097777355,
+                                   0.69906696456064,
+                                   -0.9348243433360095,
+                                   -0.0364714212117143,
+                                   8.360401126995626]]
+
+
 if ecalBarrelSamplingFraction and len(ecalBarrelSamplingFraction) > 0:
     assert (ecalBarrelLayers == len(ecalBarrelSamplingFraction))
 
@@ -33,7 +78,7 @@ if ecalBarrelSamplingFraction and len(ecalBarrelSamplingFraction) > 0:
 # which in the current design is 5*10+1*14+1*34 = 98
 # NB some cells near the inner and outer edges of the calorimeter are difficult
 # to calibrate as they are not part of the core of well-contained showers.
-# The calibrated values can be <0 or >1 for such cells, so these nonsenical
+# The calibrated values can be <0 or >1 for such cells, so these nonsensical
 # numbers are replaced by 1
 ecalEndcapLayers = 98
 ecalEndcapSamplingFraction = [
