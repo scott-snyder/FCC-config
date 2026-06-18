@@ -1,9 +1,10 @@
 {
   "version": 5,
-  "prev": "22f16f5fd315afe0c4a67b8b92926094cb65987c",
-  "head": "a46be623002c3c0ecaa07f9377c0f285fb90fee7",
+  "prev": "7a68ea1e17a6e718196d85bc63143fe9378e8a7b",
+  "head": "badc43dd00ca99d13dedbd005684a530e22e76c0",
   "applied": [
-    "gitignore"
+    "gitignore",
+    "cell-creation"
   ],
   "unapplied": [
     "cluster-creation",
@@ -14,6 +15,9 @@
     "ci"
   ],
   "patches": {
+    "cell-creation": {
+      "oid": "badc43dd00ca99d13dedbd005684a530e22e76c0"
+    },
     "ci": {
       "oid": "64746bd5afc52a5f4474857635f4cd990421895c"
     },
