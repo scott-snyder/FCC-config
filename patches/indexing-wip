@@ -1,0 +1,6 @@
+Bottom: b956c6d2fc2763400b93c2a9289cc111fa011ad0
+Top:    3bd85be911a2ac57e5df17a01bb36197db614874
+Author: scott snyder <snyder@bnl.gov>
+Date:   2026-06-18 11:09:28 -0400
+
+Configuration changes to support indexing.
