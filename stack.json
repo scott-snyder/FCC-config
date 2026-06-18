@@ -1,18 +1,19 @@
 {
   "version": 5,
-  "prev": "0568e57990858eae8b33acfa782e2a31a168afd0",
+  "prev": "d9d5e5224270126b3aadd41e2902271b40d0e41f",
   "head": "a46be623002c3c0ecaa07f9377c0f285fb90fee7",
   "applied": [
     "gitignore"
   ],
   "unapplied": [
-    "ci",
     "cell-creation",
     "cluster-creation",
     "outputsel-wip",
     "indexing-wip"
   ],
-  "hidden": [],
+  "hidden": [
+    "ci"
+  ],
   "patches": {
     "cell-creation": {
       "oid": "c2bae5242f9cbde59fead9a7cf4cfe2d580a1ff5"
