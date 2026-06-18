@@ -1,10 +1,11 @@
 {
   "version": 5,
-  "prev": "9c3787109915d84570cb489001dca4a4f0e68c3b",
-  "head": "badc43dd00ca99d13dedbd005684a530e22e76c0",
+  "prev": "bd707dc69e9b8baa7330e04e2d1614f00c290fa3",
+  "head": "4c40456e7a6d1a9a54d400ab2dd87d6761e4bc99",
   "applied": [
     "gitignore",
-    "cell-creation"
+    "cell-creation",
+    "cluster-creation"
   ],
   "unapplied": [
     "outputsel-wip",
@@ -19,6 +20,9 @@
     },
     "ci": {
       "oid": "64746bd5afc52a5f4474857635f4cd990421895c"
+    },
+    "cluster-creation": {
+      "oid": "4c40456e7a6d1a9a54d400ab2dd87d6761e4bc99"
     },
     "gitignore": {
       "oid": "a46be623002c3c0ecaa07f9377c0f285fb90fee7"
