@@ -1,12 +1,12 @@
 {
   "version": 5,
-  "prev": "40c0a61731a7597b7bb4c16ae477638872989ca4",
-  "head": "a46be623002c3c0ecaa07f9377c0f285fb90fee7",
+  "prev": "5587e8c35fc04d3e37bc767441ee5aad4fb41486",
+  "head": "1c126846aca193259c6302287fa3c920b57c53c5",
   "applied": [
-    "gitignore"
+    "gitignore",
+    "cell-creation"
   ],
   "unapplied": [
-    "cell-creation",
     "cluster-creation",
     "outputsel-wip",
     "indexing-wip"
