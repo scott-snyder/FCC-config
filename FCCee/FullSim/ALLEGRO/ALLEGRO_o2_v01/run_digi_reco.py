@@ -18,7 +18,7 @@ from GaudiKernel.PhysicalConstants import pi
 inputfile = "ALLEGRO_sim.root"             # input file produced with ddsim - can be overridden with IOSvc.Input
 outputfile = "ALLEGRO_sim_digi_reco.root"  # output file produced by this steering file - can be overridden with IOSvc.Output
 Nevts = -1                                 # -1 means all events in input file (can be overridden with -n or --num-events option of k4run
-dataFolderDef = "./"                       # directory containing the calibration files
+dataFolderDef = "data/"                       # directory containing the calibration files
 
 # - general settings not set via CLI
 filterNoiseThreshold = -1                  # if addNoise is true, and filterNoiseThreshold is >0, will filter away cells with abs(energy) below filterNoiseThreshold * expected sigma(noise)
