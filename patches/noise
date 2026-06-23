@@ -1,0 +1,9 @@
+Bottom: 1952ba7347e0b94e9eec5806dce15811b2ba740f
+Top:    1952ba7347e0b94e9eec5806dce15811b2ba740f
+Author: scott snyder <snyder@bnl.gov>
+Date:   2026-06-22 22:22:42 -0400
+
+Fix --addNoise configuration for ALLEGRO_o1_v03.
+
+Turning on --addNoise for ALLEGRO_o1_v03 would crash because augmentClusterAlg
+was not being defined.  Fixed.
