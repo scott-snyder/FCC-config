@@ -1,0 +1,9 @@
+Bottom: 66c2c3bd08e4870f5774b169782bae89d897dad0
+Top:    66c2c3bd08e4870f5774b169782bae89d897dad0
+Author: scott snyder <snyder@bnl.gov>
+Date:   2026-06-22 22:18:24 -0400
+
+Unify handling of ALLEGRO xtalk data files.
+
+Download ALLEGRO xtalk data files at the same time as the other data files.
+Done for both 01_v03 and 02_v01.
