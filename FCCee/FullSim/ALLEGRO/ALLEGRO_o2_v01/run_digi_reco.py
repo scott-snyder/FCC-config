@@ -53,6 +53,7 @@ parser.add_argument("--runTrkHitDigitization", type=str2bool, nargs="?", help="D
 parser.add_argument("--useLegacyVTXDigitizer", type=str2bool, nargs="?", help="Perform VTXdigitizer-based digitization of tracker hits", const=True, default=False)
 parser.add_argument("--runTrkFinder", type=str2bool, nargs="?", help="Run Geometric Graph Track Finding (GGTF) on digitized tracker hits", const=True, default=False)
 parser.add_argument("--runTrkFitter", type=str2bool, nargs="?", help="Run track fitter on tracks", const=True, default=False)
+parser.add_argument("--resegmentECalBarrel", type=str2bool, nargs="?", help="Resegment ECal barrel", const=True, default=False)
 
 opts = parser.parse_known_args()[0]
 dataFolder = opts.dataFolder                        # directory containing the calibration files
@@ -94,31 +95,12 @@ dropMuonHits = False
 
 # ECAL barrel parameters for digitization
 ecalBarrelLayers = 11
-ecalBarrelSamplingFraction = [0.3800493723322256] * 1 + [0.13494147915064658] * 1 + [0.142866851721152] * 1 + [0.14839315921940666] * 1 + [0.15298362570665006] * 1 + [0.15709704561942747] * 1 + [0.16063717490147533] * 1 + [0.1641723795419055] * 1 + [0.16845490287689746] * 1 + [0.17111520115997653] * 1 + [0.1730605163148862] * 1
 ecalBarrelUpstreamParameters = [[0.028158491043365624, -1.564259408365951, -76.52312805346982, 0.7442903558010191, -34.894692961350195, -74.19340877431723]]
 ecalBarrelDownstreamParameters = [[0.00010587711361028165, 0.0052371999097777355, 0.69906696456064, -0.9348243433360095, -0.0364714212117143, 8.360401126995626]]
-if ecalBarrelSamplingFraction and len(ecalBarrelSamplingFraction) > 0:
-    assert (ecalBarrelLayers == len(ecalBarrelSamplingFraction))
 # ECAL endcap parameters for digitization
-# the turbine endcap has calibration "layers" in the both the z and radial
-# directions, for each of the three wheels.  So the total number of layers
-# is given by:
-#
-#   ECalEndcapNumCalibZLayersWheel1*ECalEndcapNumCalibRhoLayersWheel1
-#  +ECalEndcapNumCalibZLayersWheel2*ECalEndcapNumCalibRhoLayersWheel2
-#  +ECalEndcapNumCalibZLayersWheel3*ECalEndcapNumCalibRhoLayersWheel3
-#
-# which in the current design is 5*10+1*14+1*34 = 98
-# NB some cells near the inner and outer edges of the calorimeter are difficult
-# to calibrate as they are not part of the core of well-contained showers.
-# The calibrated values can be <0 or >1 for such cells, so these nonsenical
-# numbers are replaced by 1
 ecalEndcapLayers = 98
-ecalEndcapSamplingFraction = [0.0897818] * 1+ [0.221318] * 1+ [0.0820002] * 1+ [0.994281] * 1+ [0.0414437] * 1+ [0.1148] * 1+ [0.178831] * 1+ [0.142449] * 1+ [0.181206] * 1+ [0.342843] * 1+ [0.137479] * 1+ [0.176479] * 1+ [0.153273] * 1+ [0.195836] * 1+ [0.0780405] * 1+ [0.150202] * 1+ [0.17846] * 1+ [0.164886] * 1+ [0.175758] * 1+ [0.10836] * 1+ [0.160243] * 1+ [0.183373] * 1+ [0.171818] * 1+ [0.194848] * 1+ [0.111899] * 1+ [0.170704] * 1+ [0.188455] * 1+ [0.178164] * 1+ [0.209113] * 1+ [0.105241] * 1+ [0.180637] * 1+ [0.192206] * 1+ [0.186096] * 1+ [0.211962] * 1+ [0.112019] * 1+ [0.180344] * 1+ [0.195684] * 1+ [0.190778] * 1+ [0.218259] * 1+ [0.118516] * 1+ [0.207786] * 1+ [0.204474] * 1+ [0.207048] * 1+ [0.225913] * 1+ [0.111325] * 1+ [0.147875] * 1+ [0.195625] * 1+ [0.173326] * 1+ [0.175449] * 1+ [0.104087] * 1+ [0.153645] * 1+ [0.161263] * 1+ [0.165499] * 1+ [0.171758] * 1+ [0.175789] * 1+ [0.180657] * 1+ [0.184563] * 1+ [0.187876] * 1+ [0.191762] * 1+ [0.19426] * 1+ [0.197959] * 1+ [0.199021] * 1+ [0.204428] * 1+ [0.195709] * 1+ [0.151751] * 1+ [0.171477] * 1+ [0.165509] * 1+ [0.172565] * 1+ [0.172961] * 1+ [0.175534] * 1+ [0.177989] * 1+ [0.18026] * 1+ [0.181898] * 1+ [0.183912] * 1+ [0.185654] * 1+ [0.187515] * 1+ [0.190408] * 1+ [0.188794] * 1+ [0.193699] * 1+ [0.192287] * 1+ [0.19755] * 1+ [0.190943] * 1+ [0.218553] * 1+ [0.161085] * 1+ [0.373086] * 1+ [0.122495] * 1+ [0.21103] * 1+ [1] * 1+ [0.138686] * 1+ [0.0545171] * 1+ [1] * 1+ [1] * 1+ [0.227945] * 1+ [0.0122872] * 1+ [0.00437334] * 1+ [0.00363533] * 1+ [1] * 1+ [1] * 1
-if ecalEndcapSamplingFraction and len(ecalEndcapSamplingFraction) > 0:
-    assert (ecalEndcapLayers == len(ecalEndcapSamplingFraction))
 
-resegmentECalBarrel = False
+resegmentECalBarrel = opts.resegmentECalBarrel
 
 # - parameters for clustering (could also be made configurable via CLI)
 doSWClustering = opts.doSWClustering
@@ -157,6 +139,7 @@ addPi0RecoTool = opts.reconstructPi0s
 #
 TopAlg = []  # alg sequence
 ExtSvc = []  # list of external services
+from FCC_config.ComponentAccumulator import ComponentAccumulator
 
 
 # Event counter
@@ -219,6 +202,18 @@ for constant in root.find('define').findall('constant'):
 # debug
 print("Subdetector IDs:")
 print(IDs)
+
+
+# Configuration flags.
+class Flags:
+    pass
+flags = Flags()
+flags.dataFiles = dataFolder
+from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
+defineCaloCellFlags(flags)
+flags.ECal.Barrel.addCrosstalk = addCrosstalk
+flags.compactFile = geoservice.detectors[0]
+
 
 # Input/Output handling
 from k4FWCore import IOSvc
@@ -509,9 +504,13 @@ if runTrkFitter:
 
 # Calorimeter digitization (merging hits into cells, EM scale calibration via sampling fractions)
 
+from FCC_config.ALLEGRO.CreateCaloCellsConfig import CalibrateECalBarrel, CalibrateECalEndcap, CalibrateHCalBarrel, CalibrateHCalEndcap, CellPositionsECalBarrel, CellPositionsECalEndcap, CellPositionsHCalBarrel, CellPositionsHCalEndcap, ReadCrosstalkMapECalBarrel, ECalBarrelNoiseTool, ECalBarrelGeometryTool, CreateECalBarrelCellsCfg
+
 # - ECAL readouts
 ecalBarrelReadoutName = "ECalBarrelModuleThetaMerged"      # barrel, original segmentation (baseline)
 ecalBarrelReadoutName2 = "ECalBarrelModuleThetaMerged2"    # barrel, after re-segmentation (for optimisation studies)
+ecalBarrelHitsMergedName = 'ECalBarrelCellsMerged'
+ecalBarrelPositionedCellsName2 = ecalBarrelReadoutName2 + "Positioned"
 ecalEndcapReadoutName = "ECalEndcapTurbine"                # endcap, turbine-like (baseline)
 # - HCAL readouts
 if runHCal:
@@ -522,134 +521,13 @@ else:
     hcalBarrelReadoutName = ""
     hcalEndcapReadoutName = ""
 
-# - EM scale calibration (sampling fraction)
-from Configurables import CalibrateInLayersTool
-#   * ECAL barrel
-calibEcalBarrel = CalibrateInLayersTool("CalibrateECalBarrel",
-                                        samplingFraction=ecalBarrelSamplingFraction,
-                                        readoutName=ecalBarrelReadoutName,
-                                        layerFieldName="layer")
-#   * ECAL endcap
-calibEcalEndcap = CalibrateInLayersTool("CalibrateECalEndcap",
-                                        samplingFraction=ecalEndcapSamplingFraction,
-                                        readoutName=ecalEndcapReadoutName,
-                                        layerFieldName="layer")
-
-if runHCal:
-    from Configurables import CalibrateCaloHitsTool
-    # HCAL barrel
-    calibHCalBarrel = CalibrateCaloHitsTool(
-        "CalibrateHCalBarrel", invSamplingFraction="29.4202")
-    # HCAL endcap
-    calibHCalEndcap = CalibrateCaloHitsTool(
-        "CalibrateHCalEndcap", invSamplingFraction="29.4202")  # FIXME: to be updated for ddsim
-
-# - cell positioning tools
-from Configurables import CellPositionsECalBarrelModuleThetaSegTool
-cellPositionEcalBarrelTool = CellPositionsECalBarrelModuleThetaSegTool(
-    "CellPositionsECalBarrel",
-    readoutName=ecalBarrelReadoutName,
-    OutputLevel=INFO
-)
-# the noise tool needs the positioning tool, but if I reuse the previous one the code crashes..
-cellPositionEcalBarrelToolForNoise = CellPositionsECalBarrelModuleThetaSegTool(
-    "CellPositionsECalBarrelForNoise",
-    readoutName=ecalBarrelReadoutName,
-    OutputLevel=INFO
-)
-if resegmentECalBarrel:
-    cellPositionEcalBarrelTool2 = CellPositionsECalBarrelModuleThetaSegTool(
-        "CellPositionsECalBarrel2",
-        readoutName=ecalBarrelReadoutName2,
-        OutputLevel=INFO
-    )
-
-from Configurables import CellPositionsECalEndcapTurbineSegTool
-cellPositionEcalEndcapTool = CellPositionsECalEndcapTurbineSegTool(
-    "CellPositionsECalEndcap",
-    readoutName=ecalEndcapReadoutName,
-    OutputLevel=INFO
-)
-
-if runHCal:
-    from Configurables import CellPositionsHCalPhiThetaSegTool
-    cellPositionHCalBarrelTool = CellPositionsHCalPhiThetaSegTool(
-        "CellPositionsHCalBarrel",
-        readoutName=hcalBarrelReadoutName,
-        detectorName="HCalBarrel",
-        OutputLevel=INFO
-    )
-    cellPositionHCalEndcapTool = CellPositionsHCalPhiThetaSegTool(
-        "CellPositionsHCalEndcap",
-        readoutName=hcalEndcapReadoutName,
-        detectorName="HCalThreePartsEndcap",
-        numLayersHCalThreeParts=[6, 9, 22],
-        OutputLevel=INFO
-    )
-
-# - crosstalk tool
-if addCrosstalk:
-    from Configurables import ReadCaloCrosstalkMap
-    # read the crosstalk map
-    readCrosstalkMap = ReadCaloCrosstalkMap("ReadCrosstalkMap",
-                                            fileName=dataFolder+"xtalk_neighbours_map_ecalB_thetamodulemerged.root",
-                                            OutputLevel=INFO)
-else:
-    readCrosstalkMap = None
-
-# - noise tool
-if addNoise:
-    ecalBarrelNoisePath = dataFolder + "elecNoise_ecalBarrelFCCee_theta.root"
-    ecalBarrelNoiseRMSHistName = "h_elecNoise_fcc_"
-    from Configurables import NoiseCaloCellsVsThetaFromFileTool
-    ecalBarrelNoiseTool = NoiseCaloCellsVsThetaFromFileTool("ecalBarrelNoiseTool",
-                                                            cellPositionsTool=cellPositionEcalBarrelToolForNoise,
-                                                            readoutName=ecalBarrelReadoutName,
-                                                            noiseFileName=ecalBarrelNoisePath,
-                                                            elecNoiseRMSHistoName=ecalBarrelNoiseRMSHistName,
-                                                            setNoiseOffset=False,
-                                                            activeFieldName="layer",
-                                                            addPileup=False,
-                                                            filterNoiseThreshold=filterNoiseThreshold,
-                                                            useAbsInFilter=True,
-                                                            numRadialLayers=ecalBarrelLayers,
-                                                            scaleFactor=1 / 1000.,  # MeV to GeV
-                                                            OutputLevel=INFO)
-
-    from Configurables import TubeLayerModuleThetaCaloTool
-    ecalBarrelGeometryTool = TubeLayerModuleThetaCaloTool("ecalBarrelGeometryTool",
-                                                          readoutName=ecalBarrelReadoutName,
-                                                          activeVolumeName="LAr_sensitive",
-                                                          activeFieldName="layer",
-                                                          activeVolumesNumber=ecalBarrelLayers,
-                                                          fieldNames=["system"],
-                                                          fieldValues=[IDs["ECAL_Barrel"]],
-                                                          OutputLevel=INFO)
-else:
-    ecalBarrelNoiseTool = None
-    ecalBarrelGeometryTool = None
-
 # Create cells in ECal barrel (calibrated and positioned - optionally with xtalk and noise added)
 # from uncalibrated cells (+cellID info) from ddsim
+from Configurables import CreatePositionedCaloCells
 ecalBarrelPositionedCellsName = ecalBarrelReadoutName + "Positioned"
 ecalBarrelLinks = ecalBarrelPositionedCellsName + "SimCaloHitLinks"
-from Configurables import CreatePositionedCaloCells
-createEcalBarrelCells = CreatePositionedCaloCells("CreatePositionedECalBarrelCells",
-                                                  doCellCalibration=True,
-                                                  calibTool=calibEcalBarrel,
-                                                  positionsTool=cellPositionEcalBarrelTool,
-                                                  addCrosstalk=addCrosstalk,
-                                                  crosstalkTool=readCrosstalkMap,
-                                                  addCellNoise=False,
-                                                  filterCellNoise=False,
-                                                  noiseTool=None,
-                                                  geometryTool=ecalBarrelGeometryTool,
-                                                  OutputLevel=INFO,
-                                                  hits=ecalBarrelReadoutName,
-                                                  cells=ecalBarrelPositionedCellsName,
-                                                  links=ecalBarrelLinks
-                                                  )
-TopAlg += [createEcalBarrelCells]
+caldigi_cfg = ComponentAccumulator()
+caldigi_cfg.merge(CreateECalBarrelCellsCfg(flags))
 
 # -  now, if we want to also save cells with coarser granularity:
 if resegmentECalBarrel:
@@ -658,128 +536,55 @@ if resegmentECalBarrel:
     # Add noise at this step if you derived the noise already assuming merged cells
     # Step a: compute new cellID of cells based on new readout
     # (merged module-theta segmentation with variable merging vs layer)
-    from Configurables import RedoSegmentation
-    resegmentEcalBarrelTool = RedoSegmentation("ReSegmentationEcal",
-                                               # old bitfield (readout)
-                                               oldReadoutName=ecalBarrelReadoutName,
-                                               # specify which fields are going to be altered (deleted/rewritten)
-                                               oldSegmentationIds=["module", "theta"],
-                                               # new bitfield (readout), with new segmentation (merged modules and theta cells)
-                                               newReadoutName=ecalBarrelReadoutName2,
-                                               OutputLevel=INFO,
-                                               debugPrint=200,
-                                               inhits=ecalBarrelPositionedCellsName,
-                                               outhits="ECalBarrelCellsMerged")
+    from FCC_config.ALLEGRO.CreateCaloCellsConfig import ReSegmentationECalBarrelCfg
+    caldigi_cfg.merge (
+        ReSegmentationECalBarrelCfg(flags,
+                                    newReadoutName = ecalBarrelReadoutName2,
+                                    newCellsName = ecalBarrelHitsMergedName))
 
     # Step b: merge new cells with same cellID together
     # do not apply cell calibration again since cells were already
     # calibrated in Step 1
     # noise and xtalk off assuming they were applied earlier
-    ecalBarrelPositionedCellsName2 = ecalBarrelReadoutName2 + "Positioned"
-    ecalBarrelLinks2 = ecalBarrelPositionedCellsName2 + "SimCaloHitLinks"
-    createEcalBarrelCells2 = CreatePositionedCaloCells("CreatePositionedECalBarrelCells2",
-                                                       doCellCalibration=False,
-                                                       positionsTool=cellPositionEcalBarrelTool2,
-                                                       calibTool=None,
-                                                       crosstalkTool=None,
-                                                       addCrosstalk=False,
-                                                       addCellNoise=False,
-                                                       filterCellNoise=False,
-                                                       OutputLevel=INFO,
-                                                       hits="ECalBarrelCellsMerged",
-                                                       cells=ecalBarrelPositionedCellsName2,
-                                                       links=ecalBarrelLinks2)
-    TopAlg += [
-        resegmentEcalBarrelTool,
-        createEcalBarrelCells2,
-    ]
+    caldigi_cfg.merge (
+        CreateECalBarrelCellsCfg(flags,
+                                 'CreatePositionedECalBarrelCells2',
+                                 hits = ecalBarrelHitsMergedName,
+                                 readoutName=ecalBarrelReadoutName2,
+                                 addCrosstalk = False,
+                                 doCellCalibration = False))
 
 # Create cells in ECal endcap (needed if one wants to apply cell calibration,
 # which is not performed by ddsim)
 ecalEndcapPositionedCellsName = ecalEndcapReadoutName + "Positioned"
 ecalEndcapLinks = ecalEndcapPositionedCellsName + "SimCaloHitLinks"
-createEcalEndcapCells = CreatePositionedCaloCells("CreatePositionedECalEndcapCells",
-                                                  doCellCalibration=True,
-                                                  positionsTool=cellPositionEcalEndcapTool,
-                                                  calibTool=calibEcalEndcap,
-                                                  crosstalkTool=None,
-                                                  addCrosstalk=False,
-                                                  addCellNoise=False,
-                                                  filterCellNoise=False,
-                                                  OutputLevel=INFO,
-                                                  hits=ecalEndcapReadoutName,
-                                                  cells=ecalEndcapPositionedCellsName,
-                                                  links=ecalEndcapLinks)
-TopAlg += [createEcalEndcapCells]
+from FCC_config.ALLEGRO.CreateCaloCellsConfig import CreateECalEndcapCellsCfg
+caldigi_cfg.merge(CreateECalEndcapCellsCfg(flags))
 
 if addNoise:
     # cells with noise not filtered
-    ecalBarrelCellsNoiseLinks = ecalBarrelPositionedCellsName + "WithNoise" + "SimCaloHitLinks"
-    createEcalBarrelCellsNoise = CreatePositionedCaloCells("CreatePositionedECalBarrelCellsWithNoise",
-                                                           doCellCalibration=True,
-                                                           calibTool=calibEcalBarrel,
-                                                           positionsTool=cellPositionEcalBarrelTool,
-                                                           addCrosstalk=addCrosstalk,
-                                                           crosstalkTool=readCrosstalkMap,
-                                                           addCellNoise=True,
-                                                           filterCellNoise=False,
-                                                           noiseTool=ecalBarrelNoiseTool,
-                                                           geometryTool=ecalBarrelGeometryTool,
-                                                           OutputLevel=INFO,
-                                                           hits=ecalBarrelReadoutName,
-                                                           cells=ecalBarrelPositionedCellsName + "WithNoise",
-                                                           links=ecalBarrelCellsNoiseLinks)
-    TopAlg += [createEcalBarrelCellsNoise]
+    caldigi_cfg.merge(
+        CreateECalBarrelCellsCfg (flags,
+                                  'CreatePositionedECalBarrelCellsWithNoise',
+                                  addNoise = True,
+                                  cellsNameSuffix = 'WithNoise'))
 
     # cells with noise filtered
-    ecalBarrelCellsNoiseFilteredLinks = ecalBarrelPositionedCellsName + "WithNoiseFiltered" + "SimCaloHitLinks"
-    createEcalBarrelCellsNoiseFiltered = CreatePositionedCaloCells("CreatePositionedECalBarrelCellsWithNoiseFiltered",
-                                                                   doCellCalibration=True,
-                                                                   calibTool=calibEcalBarrel,
-                                                                   positionsTool=cellPositionEcalBarrelTool,
-                                                                   addCrosstalk=addCrosstalk,
-                                                                   crosstalkTool=readCrosstalkMap,
-                                                                   addCellNoise=True,
-                                                                   filterCellNoise=True,
-                                                                   noiseTool=ecalBarrelNoiseTool,
-                                                                   geometryTool=ecalBarrelGeometryTool,
-                                                                   OutputLevel=INFO,
-                                                                   hits=ecalBarrelReadoutName,  # uncalibrated & unpositioned cells without noise
-                                                                   cells=ecalBarrelPositionedCellsName + "WithNoiseFiltered",
-                                                                   links=ecalBarrelCellsNoiseFilteredLinks
-                                                                   )
-    TopAlg += [createEcalBarrelCellsNoiseFiltered]
+    caldigi_cfg.merge(
+        CreateECalBarrelCellsCfg (flags,
+                                  'CreatePositionedECalBarrelCellsWithNoiseFiltered',
+                                  addNoise = True,
+                                  filterCellNoise = True,
+                                  cellsNameSuffix = 'WithNoiseFiltered'))
 
 if runHCal:
-    # Apply calibration and positioning to cells in HCal barrel
-    hcalBarrelPositionedCellsName = hcalBarrelReadoutName + "Positioned"
-    hcalBarrelLinks = hcalBarrelPositionedCellsName + "SimCaloHitLinks"
-    createHCalBarrelCells = CreatePositionedCaloCells("CreatePositionedHCalBarrelCells",
-                                                      doCellCalibration=True,
-                                                      calibTool=calibHCalBarrel,
-                                                      positionsTool=cellPositionHCalBarrelTool,
-                                                      addCellNoise=False,
-                                                      filterCellNoise=False,
-                                                      hits=hcalBarrelReadoutName,
-                                                      cells=hcalBarrelPositionedCellsName,
-                                                      links=hcalBarrelLinks,
-                                                      OutputLevel=INFO)
-    TopAlg += [createHCalBarrelCells]
+    from FCC_config.ALLEGRO.CreateCaloCellsConfig import \
+         CreateHCalBarrelCellsCfg, CreateHCalEndcapCellsCfg
+    caldigi_cfg.merge(CreateHCalBarrelCellsCfg(flags))
+    caldigi_cfg.merge(CreateHCalEndcapCellsCfg(flags))
 
-    # Apply calibration and positioning to cells in HCal endcap
-    hcalEndcapPositionedCellsName = hcalEndcapReadoutName + "Positioned"
-    hcalEndcapLinks = hcalEndcapPositionedCellsName + "SimCaloHitLinks"
-    createHCalEndcapCells = CreatePositionedCaloCells("CreatePositionedHCalEndcapCells",
-                                                      doCellCalibration=True,
-                                                      calibTool=calibHCalEndcap,
-                                                      addCellNoise=False,
-                                                      filterCellNoise=False,
-                                                      positionsTool=cellPositionHCalEndcapTool,
-                                                      OutputLevel=INFO,
-                                                      hits=hcalEndcapReadoutName,
-                                                      cells=hcalEndcapPositionedCellsName,
-                                                      links=hcalEndcapLinks)
-    TopAlg += [createHCalEndcapCells]
+TopAlg += caldigi_cfg.algs()
+ExtSvc += caldigi_cfg.svcs()
 
 
 # Muon cells [add longitudinal segmentation to detector?]
