@@ -54,6 +54,7 @@ parser.add_argument("--runTrkHitDigitization", type=str2bool, nargs="?", help="D
 parser.add_argument("--useLegacyVTXDigitizer", type=str2bool, nargs="?", help="Perform VTXdigitizer-based digitization of tracker hits", const=True, default=False)
 parser.add_argument("--runTrkFinder", type=str2bool, nargs="?", help="Run Geometric Graph Track Finding (GGTF) on digitized tracker hits", const=True, default=False)
 parser.add_argument("--runTrkFitter", type=str2bool, nargs="?", help="Run track fitter on tracks", const=True, default=False)
+parser.add_argument("--resegmentECalBarrel", type=str2bool, nargs="?", help="Resegment ECal barrel", const=True, default=False)
 
 opts = parser.parse_known_args()[0]
 dataFolder = opts.dataFolder                        # directory containing the calibration files
@@ -126,7 +127,7 @@ ecalEndcapSamplingFraction = [0.0897818] * 1+ [0.221318] * 1+ [0.0820002] * 1+ [
 if ecalEndcapSamplingFraction and len(ecalEndcapSamplingFraction) > 0:
     assert (ecalEndcapLayers == len(ecalEndcapSamplingFraction))
 
-resegmentECalBarrel = False
+resegmentECalBarrel = opts.resegmentECalBarrel
 
 ecalEndcapWheels = 3
 hcalBarrelLayers = 13
