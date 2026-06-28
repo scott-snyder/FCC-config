@@ -56,6 +56,7 @@ def add_parser_args(parser):
     parser.add_argument("--runTrkFitter", type=str2bool, nargs="?", help="Run track fitter on tracks found by GGTF", const=True, default=False)
     parser.add_argument("--runConformalTracking", type=str2bool, nargs="?", help="Run conformal tracking on digitized tracker hits", const=True, default=False)
     parser.add_argument("--runTrkValidation", type=str2bool, nargs="?", help="Run tracking validation", const=True, default=False)
+    parser.add_argument("--resegmentECalBarrel", type=str2bool, nargs="?", help="Resegment ECal barrel", const=True, default=False)
 
 
 # ---------------------------------------------------------------------------
@@ -711,7 +712,7 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
     if ecalEndcapSamplingFraction and len(ecalEndcapSamplingFraction) > 0:
         assert (ecalEndcapLayers == len(ecalEndcapSamplingFraction))
 
-    resegmentECalBarrel = False
+    resegmentECalBarrel = opts.resegmentECalBarrel
 
     ecalEndcapWheels = 3
     hcalBarrelLayers = 13
