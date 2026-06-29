@@ -1,16 +1,16 @@
 {
   "version": 5,
-  "prev": "b8ff74e317de1bb0b66b2bf71a4d4a43a31f0f4c",
-  "head": "285f77e2c4f6ad8d1f701acaaeba0b7abb0aac9e",
+  "prev": "23e0032cadccd3c8577c90de3b14bbbc91d575c2",
+  "head": "7edcd15bb5a6ac1734d5be12ccfc25dbd7db5df9",
   "applied": [
     "gitignore",
     "xtalkfile",
-    "localdata",
     "noise",
     "resegment",
     "cell-creation"
   ],
   "unapplied": [
+    "localdata",
     "cluster-creation",
     "outputsel-wip",
     "local-wip",
@@ -24,17 +24,17 @@
     "xtalkfile": {
       "oid": "2de3bcdf60f6fef54135a1d691f4dc6486337862"
     },
-    "localdata": {
-      "oid": "2053b87fe5e81fbb41387bf1a9a4547822e21f6b"
-    },
     "noise": {
-      "oid": "7d8c56f6a0c50f0ea1de6891d1520f94b7f51a48"
+      "oid": "9d7ea871afc284b380b83d28a455a1b175911400"
     },
     "resegment": {
-      "oid": "8741f39a7740601218367bc5fdb19b3af0746a9e"
+      "oid": "37b674a9913842b9e0b47290f858442c55ff23e4"
     },
     "cell-creation": {
-      "oid": "285f77e2c4f6ad8d1f701acaaeba0b7abb0aac9e"
+      "oid": "7edcd15bb5a6ac1734d5be12ccfc25dbd7db5df9"
+    },
+    "localdata": {
+      "oid": "2053b87fe5e81fbb41387bf1a9a4547822e21f6b"
     },
     "cluster-creation": {
       "oid": "c8da73ffef5124f5d1b7f957e9a590273a4781e9"
