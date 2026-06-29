@@ -178,41 +178,18 @@ geoservice.detectors = [
 ]
 ExtSvc += [geoservice]
 
-# retrieve subdetector IDs
-import xml.etree.ElementTree as ET
-tree = ET.parse(path_to_detector + 'DectDimensions.xml')
-root = tree.getroot()
-IDs = {}
-for constant in root.find('define').findall('constant'):
-    if (
-        constant.get('name') == 'DetID_VXD_Barrel'
-        or constant.get('name') == 'DetID_VXD_Disks'
-        or constant.get('name') == 'DetID_STT'
-        or constant.get('name') == 'DetID_SiWr_Barrel'
-        or constant.get('name') == 'DetID_SiWr_Disks'
-        or constant.get('name') == 'DetID_ECAL_Barrel'
-        or constant.get('name') == 'DetID_ECAL_Endcap'
-        or constant.get('name') == 'DetID_HCAL_Barrel'
-        or constant.get('name') == 'DetID_HCAL_Endcap'
-        or constant.get('name') == 'DetID_Muon_Barrel'
-    ):
-        IDs[constant.get("name")[6:]] = int(constant.get('value'))
-    if (constant.get('name') == 'DetID_Muon_Endcap_1'):
-        IDs[constant.get("name")[6:-2]] = int(constant.get('value'))
-# debug
-print("Subdetector IDs:")
-print(IDs)
+from FCC_config.DetIDs import detIDs
 
 
 # Configuration flags.
 class Flags:
     pass
 flags = Flags()
+flags.compactFile = geoservice.detectors[0]
 flags.dataFiles = dataFolder
 from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
 defineCaloCellFlags(flags)
 flags.ECal.Barrel.addCrosstalk = addCrosstalk
-flags.compactFile = geoservice.detectors[0]
 
 
 # Input/Output handling
@@ -242,11 +219,12 @@ if addTracks:
                                                     OutputMCRecoTrackParticleAssociation=["TracksFromGenParticlesAssociation"],
                                                     ExtrapolateToECal=True,
                                                     KeepOnlyBestExtrapolation=False,
-                                                    TrackerIDs=[IDs["VXD_Barrel"],
-                                                                IDs["VXD_Disks"],
-                                                                IDs["STT"],
-                                                                IDs["SiWr_Barrel"],
-                                                                IDs["SiWr_Disks"]],
+                                                    TrackerIDs=detIDs(flags,
+                                                                      ["VXD_Barrel",
+                                                                       "VXD_Disks",
+                                                                       "STT",
+                                                                       "SiWr_Barrel",
+                                                                       "SiWr_Disks"]),
                                                     OutputLevel=INFO)
     TopAlg += [tracksFromGenParticles]
 
@@ -504,35 +482,22 @@ if runTrkFitter:
 
 # Calorimeter digitization (merging hits into cells, EM scale calibration via sampling fractions)
 
-from FCC_config.ALLEGRO.CreateCaloCellsConfig import CalibrateECalBarrel, CalibrateECalEndcap, CalibrateHCalBarrel, CalibrateHCalEndcap, CellPositionsECalBarrel, CellPositionsECalEndcap, CellPositionsHCalBarrel, CellPositionsHCalEndcap, ReadCrosstalkMapECalBarrel, ECalBarrelNoiseTool, ECalBarrelGeometryTool, CreateECalBarrelCellsCfg
+caldigi_cfg = ComponentAccumulator()
 
 # - ECAL readouts
-ecalBarrelReadoutName = "ECalBarrelModuleThetaMerged"      # barrel, original segmentation (baseline)
 ecalBarrelReadoutName2 = "ECalBarrelModuleThetaMerged2"    # barrel, after re-segmentation (for optimisation studies)
 ecalBarrelHitsMergedName = 'ECalBarrelCellsMerged'
 ecalBarrelPositionedCellsName2 = ecalBarrelReadoutName2 + "Positioned"
-ecalEndcapReadoutName = "ECalEndcapTurbine"                # endcap, turbine-like (baseline)
-# - HCAL readouts
-if runHCal:
-    hcalBarrelReadoutName = "HCalBarrelReadout"            # barrel, original segmentation (phi-theta)
-    # hcalBarrelReadoutName = "HCalBarrelReadoutPhiRow"    # barrel, alternative segmentation (phi-row)
-    hcalEndcapReadoutName = "HCalEndcapReadout"            # endcap, original segmentation
-else:
-    hcalBarrelReadoutName = ""
-    hcalEndcapReadoutName = ""
 
 # Create cells in ECal barrel (calibrated and positioned - optionally with xtalk and noise added)
 # from uncalibrated cells (+cellID info) from ddsim
-from Configurables import CreatePositionedCaloCells
-ecalBarrelPositionedCellsName = ecalBarrelReadoutName + "Positioned"
-ecalBarrelLinks = ecalBarrelPositionedCellsName + "SimCaloHitLinks"
-caldigi_cfg = ComponentAccumulator()
+from FCC_config.ALLEGRO.CreateCaloCellsConfig import CreateECalBarrelCellsCfg
 caldigi_cfg.merge(CreateECalBarrelCellsCfg(flags))
 
 # -  now, if we want to also save cells with coarser granularity:
 if resegmentECalBarrel:
     # rewrite the cellId using the merged theta-module segmentation
-    # (merging several modules and severla theta readout cells).
+    # (merging several modules and several theta readout cells).
     # Add noise at this step if you derived the noise already assuming merged cells
     # Step a: compute new cellID of cells based on new readout
     # (merged module-theta segmentation with variable merging vs layer)
@@ -556,8 +521,6 @@ if resegmentECalBarrel:
 
 # Create cells in ECal endcap (needed if one wants to apply cell calibration,
 # which is not performed by ddsim)
-ecalEndcapPositionedCellsName = ecalEndcapReadoutName + "Positioned"
-ecalEndcapLinks = ecalEndcapPositionedCellsName + "SimCaloHitLinks"
 from FCC_config.ALLEGRO.CreateCaloCellsConfig import CreateECalEndcapCellsCfg
 caldigi_cfg.merge(CreateECalEndcapCellsCfg(flags))
 
@@ -601,6 +564,7 @@ if runMuon:
         OutputLevel=INFO
     )
 
+    from Configurables import CreatePositionedCaloCells
     from Configurables import NoiseCaloCellsFlatTool
     MuonBarrelNoiseTool = NoiseCaloCellsFlatTool("MuonBarrelNoiseTool",
                                                  cellNoiseRMS=0.0005,  # in GeV
@@ -715,7 +679,7 @@ def setupSWClusters(inputCells,
     caloIDs = []
     for (k, v) in inputCells.items():
         cells.append(v)
-        caloIDs.append(IDs[k])
+        caloIDs.append(detIDs(flags, k))
     # DEBUG
     print("Input cells")
     print(cells)
@@ -756,7 +720,7 @@ def setupSWClusters(inputCells,
         correctClusterAlg = CorrectCaloClusters("Correct" + outputClusters,
                                                 inClusters=clusterAlg.clusters.Path,
                                                 outClusters="Corrected" + clusterAlg.clusters.Path,
-                                                systemIDs=[IDs["ECAL_Barrel"]],
+                                                systemIDs=detIDs(flags,["ECAL_Barrel"]),
                                                 numLayers=[ecalBarrelLayers],
                                                 firstLayerIDs=[0],
                                                 lastLayerIDs=[ecalBarrelLayers - 1],
@@ -775,7 +739,7 @@ def setupSWClusters(inputCells,
         augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
                                                  inClusters=clusterAlg.clusters.Path,
                                                  outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                 systemIDs=[IDs["ECAL_Barrel"]],
+                                                 systemIDs=detIDs(flags,["ECAL_Barrel"]),
                                                  systemNames=["EMB"],
                                                  numLayers=[ecalBarrelLayers],
                                                  readoutNames=[inputReadouts["ECAL_Barrel"]],
@@ -803,7 +767,7 @@ def setupSWClusters(inputCells,
         calibrateClustersAlg = CalibrateCaloClusters("Calibrate" + outputClusters,
                                                      inClusters=inClusters,
                                                      outClusters="Calibrated" + clusterAlg.clusters.Path,
-                                                     systemIDs=[IDs["ECAL_Barrel"]],
+                                                     systemIDs=detIDs(flags,["ECAL_Barrel"]),
                                                      systemNames=["EMB"],
                                                      numLayers=[ecalBarrelLayers],
                                                      firstLayerIDs=[0],
@@ -859,7 +823,7 @@ def setupTopoClusters(inputCells,
     caloIDs = []
     for (k, v) in inputCells.items():
         cells.append(v)
-        caloIDs.append(IDs[k])
+        caloIDs.append(detIDs(flags, k))
 
     # Clustering parameters
     seedSigma = 6
@@ -900,7 +864,7 @@ def setupTopoClusters(inputCells,
         correctClusterAlg = CorrectCaloClusters("Correct" + outputClusters,
                                                 inClusters=clusterAlg.clusters.Path,
                                                 outClusters="Corrected" + clusterAlg.clusters.Path,
-                                                systemIDs=[IDs["ECAL_Barrel"]],
+                                                systemIDs=detIDs(flags,["ECAL_Barrel"]),
                                                 numLayers=[ecalBarrelLayers],
                                                 firstLayerIDs=[0],
                                                 lastLayerIDs=[ecalBarrelLayers - 1],
@@ -919,7 +883,7 @@ def setupTopoClusters(inputCells,
         augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
                                                  inClusters=clusterAlg.clusters.Path,
                                                  outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                 systemIDs=[IDs["ECAL_Barrel"]],
+                                                 systemIDs=detIDs(flags,["ECAL_Barrel"]),
                                                  systemNames=["EMB"],
                                                  numLayers=[ecalBarrelLayers],
                                                  readoutNames=[inputReadouts["ECAL_Barrel"]],
@@ -963,7 +927,7 @@ def setupTopoClusters(inputCells,
         calibrateClustersAlg = CalibrateCaloClusters("Calibrate" + outputClusters,
                                                      inClusters=inClusters,
                                                      outClusters="Calibrated" + clusterAlg.clusters.Path,
-                                                     systemIDs=[IDs["ECAL_Barrel"]],
+                                                     systemIDs=detIDs(flags,["ECAL_Barrel"]),
                                                      systemNames=["EMB"],
                                                      numLayers=[ecalBarrelLayers],
                                                      firstLayerIDs=[0],
@@ -997,8 +961,8 @@ def setupTopoClusters(inputCells,
 
 if doSWClustering:
     # SW ECAL barrel clusters
-    EMBCaloClusterInputs = {"ECAL_Barrel": ecalBarrelPositionedCellsName}
-    EMBCaloClusterReadouts = {"ECAL_Barrel": ecalBarrelReadoutName}
+    EMBCaloClusterInputs = {"ECAL_Barrel": flags.ECal.Barrel.cellsName}
+    EMBCaloClusterReadouts = {"ECAL_Barrel": flags.ECal.Barrel.readoutName}
     setupSWClusters(EMBCaloClusterInputs,
                     EMBCaloClusterReadouts,
                     "EMBCaloClusters",
@@ -1009,8 +973,8 @@ if doSWClustering:
                     runPhotonIDTool)
 
     # SW ECAL endcap clusters
-    EMECCaloClusterInputs = {"ECAL_Endcap": ecalEndcapPositionedCellsName}
-    EMECCaloClusterReadouts = {"ECAL_Endcap": ecalEndcapReadoutName}
+    EMECCaloClusterInputs = {"ECAL_Endcap": flags.ECal.Endcap.cellsName}
+    EMECCaloClusterReadouts = {"ECAL_Endcap": flags.ECal.Endcap.readoutName}
     setupSWClusters(EMECCaloClusterInputs,
                     EMECCaloClusterReadouts,
                     "EMECCaloClusters",
@@ -1022,7 +986,7 @@ if doSWClustering:
 
     # SW ECAL barrel clusters with noise
     if addNoise:
-        EMBCaloClusterInputsWithNoise = {"ECAL_Barrel": ecalBarrelPositionedCellsName + "WithNoise" if filterNoiseThreshold < 0 else ecalBarrelPositionedCellsName + "WithNoiseFiltered"}
+        EMBCaloClusterInputsWithNoise = {"ECAL_Barrel": flags.ECal.Barrel.cellsName + "WithNoise" if filterNoiseThreshold < 0 else flags.ECal.Barrel.cellsName + "WithNoiseFiltered"}
         setupSWClusters(EMBCaloClusterInputsWithNoise,
                         EMBCaloClusterReadouts,
                         "EMBCaloClustersWithNoise" if filterNoiseThreshold < 0 else "EMBCaloClustersWithNoiseFiltered",
@@ -1041,10 +1005,10 @@ if doSWClustering:
             "HCAL_Endcap": flags.HCal.Endcap.cellsName,
         }
         CaloClusterReadouts = {
-            "ECAL_Barrel": ecalBarrelReadoutName,
-            "ECAL_Endcap": ecalEndcapReadoutName,
-            "HCAL_Barrel": hcalBarrelReadoutName,
-            "HCAL_Endcap": hcalEndcapReadoutName,
+            "ECAL_Barrel": flags.ECal.Barrel.readoutName,
+            "ECAL_Endcap": flags.ECal.Endcap.readoutName,
+            "HCAL_Barrel": flags.HCal.Barrel.readoutName,
+            "HCAL_Endcap": flags.HCal.Endcap.readoutName,
         }
         setupSWClusters(CaloClusterInputs,
                         CaloClusterReadouts,
@@ -1077,8 +1041,8 @@ if doSWClustering:
 
 if doTopoClustering:
     # ECAL barrel topoclusters
-    EMBCaloTopoClusterInputs = {"ECAL_Barrel": ecalBarrelPositionedCellsName}
-    EMBCaloTopoClusterReadouts = {"ECAL_Barrel": ecalBarrelReadoutName}
+    EMBCaloTopoClusterInputs = {"ECAL_Barrel": flags.ECal.Barrel.cellsName}
+    EMBCaloTopoClusterReadouts = {"ECAL_Barrel": flags.ECal.Barrel.readoutName}
     setupTopoClusters(EMBCaloTopoClusterInputs,
                       EMBCaloTopoClusterReadouts,
                       "EMBCaloTopoClusters",
@@ -1091,8 +1055,8 @@ if doTopoClustering:
                       runPhotonIDTool)
 
     # ECAL endcap topoclusters
-    EMECCaloTopoClusterInputs = {"ECAL_Endcap": ecalEndcapPositionedCellsName}
-    EMECCaloTopoClusterReadouts = {"ECAL_Endcap": ecalEndcapReadoutName}
+    EMECCaloTopoClusterInputs = {"ECAL_Endcap": flags.ECal.Endcap.cellsName}
+    EMECCaloTopoClusterReadouts = {"ECAL_Endcap": flags.ECal.Endcap.readoutName}
     setupTopoClusters(EMECCaloTopoClusterInputs,
                       EMECCaloTopoClusterReadouts,
                       "EMECCaloTopoClusters",
@@ -1106,7 +1070,7 @@ if doTopoClustering:
 
     # ECAL topoclusters with noise
     if addNoise:
-        EMBCaloTopoClusterInputsWithNoise = {"ECAL_Barrel": ecalBarrelPositionedCellsName + "WithNoise" if filterNoiseThreshold < 0 else ecalBarrelPositionedCellsName + "WithNoiseFiltered"}
+        EMBCaloTopoClusterInputsWithNoise = {"ECAL_Barrel": flags.ECal.Barrel.cellsName + "WithNoise" if filterNoiseThreshold < 0 else flags.ECal.Barrel.cellsName + "WithNoiseFiltered"}
         setupTopoClusters(EMBCaloTopoClusterInputsWithNoise,
                           EMBCaloTopoClusterReadouts,
                           "EMBCaloTopoClustersWithNoise" if filterNoiseThreshold < 0 else "EMBCaloTopoClustersWithNoiseFiltered",
@@ -1127,10 +1091,10 @@ if doTopoClustering:
             "HCAL_Endcap": flags.HCal.Endcap.cellsName,
         }
         CaloTopoClusterReadouts = {
-            "ECAL_Barrel": ecalBarrelReadoutName,
-            "ECAL_Endcap": ecalEndcapReadoutName,
-            "HCAL_Barrel": hcalBarrelReadoutName,
-            "HCAL_Endcap": hcalEndcapReadoutName,
+            "ECAL_Barrel": flags.ECal.Barrel.readoutName,
+            "ECAL_Endcap": flags.ECal.Endcap.readoutName,
+            "HCAL_Barrel": flags.HCal.Barrel.readoutName,
+            "HCAL_Endcap": flags.HCal.Endcap.readoutName,
         }
         # note: the neighbour map links ecal and hcal barrels, and hcal barrel-endcap, but does not link (yet) the others
         setupTopoClusters(CaloTopoClusterInputs,
@@ -1171,12 +1135,12 @@ io_svc.outputCommands = ["keep *",
 
 # drop the uncalibrated cells
 if dropUncalibratedCells:
-    io_svc.outputCommands.append("drop %s" % ecalBarrelReadoutName)
+    io_svc.outputCommands.append("drop %s" % flags.ECal.Barrel.readoutName)
     io_svc.outputCommands.append("drop %s" % ecalBarrelReadoutName2)
-    io_svc.outputCommands.append("drop %s" % ecalEndcapReadoutName)
+    io_svc.outputCommands.append("drop %s" % flags.ECal.Endcap.readoutName)
     if runHCal:
-        io_svc.outputCommands.append("drop %s" % hcalBarrelReadoutName)
-        io_svc.outputCommands.append("drop %s" % hcalEndcapReadoutName)
+        io_svc.outputCommands.append("drop %s" % flags.HCal.Barrel.readoutName)
+        io_svc.outputCommands.append("drop %s" % flags.HCal.Endcap.readoutName)
     else:
         io_svc.outputCommands += ["drop HCal*"]
 
@@ -1201,18 +1165,18 @@ if dropMuonHits:
 
 # drop hits/positioned cells/cluster cells if desired
 if not saveHits:
-    io_svc.outputCommands.append("drop *%sContributions" % ecalBarrelReadoutName)
+    io_svc.outputCommands.append("drop *%sContributions" % flags.ECal.Barrel.readoutName)
     io_svc.outputCommands.append("drop *%sContributions" % ecalBarrelReadoutName2)
-    io_svc.outputCommands.append("drop *%sContributions" % ecalEndcapReadoutName)
+    io_svc.outputCommands.append("drop *%sContributions" % flags.ECal.Endcap.readoutName)
     if runHCal:
-        io_svc.outputCommands.append("drop *%sContributions" % hcalBarrelReadoutName)
-        io_svc.outputCommands.append("drop *%sContributions" % hcalEndcapReadoutName)
+        io_svc.outputCommands.append("drop *%sContributions" % flags.HCal.Barrel.readoutName)
+        io_svc.outputCommands.append("drop *%sContributions" % flags.HCal.Endcap.readoutName)
 if not saveCells:
-    io_svc.outputCommands.append("drop %s" % ecalBarrelPositionedCellsName)
-    io_svc.outputCommands.append("drop %s" % ecalEndcapPositionedCellsName)
+    io_svc.outputCommands.append("drop %s" % flags.ECal.Barrel.cellsName)
+    io_svc.outputCommands.append("drop %s" % flags.ECal.Endcap.cellsName)
     if addNoise:
-        io_svc.outputCommands.append("drop %sWithNoise*" % ecalBarrelPositionedCellsName)
-        io_svc.outputCommands.append("drop %sWithNoise*" % ecalEndcapPositionedCellsName)
+        io_svc.outputCommands.append("drop %sWithNoise*" % flags.ECal.Barrel.cellsName)
+        io_svc.outputCommands.append("drop %sWithNoise*" % flags.ECal.Endcap.cellsName)
     if resegmentECalBarrel:
         io_svc.outputCommands.append("drop %s" % ecalBarrelPositionedCellsName2)
     if runHCal:

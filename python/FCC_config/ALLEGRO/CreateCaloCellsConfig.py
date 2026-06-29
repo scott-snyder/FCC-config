@@ -4,6 +4,44 @@
 # Date: Jun, 2026
 # Purpose: ALLEGRO job configuration functions for creating calorimeter cells.
 #
+# ComponentAccumulator style configuration functions for ALLEGRO calorimeter
+# cell making.
+#
+# Here is an example of using these to configure cell reconstruction for
+# both ECal and HCAL with default parameters:
+#
+#    class Flags:
+#        pass
+#    flags = Flags()
+#    flags.compactFile = os.environ.get("K4GEO", "") + "/FCCee/ALLEGRO/compact/ALLEGRO_o1_v03/ALLEGRO_o1_v03.xml"
+#    from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
+#    defineCaloCellFlags(flags)
+#
+#    from FCC_config.ComponentAccumulator import ComponentAccumulator
+#    caldigi_cfg = ComponentAccumulator()
+#    from FCC_config.ALLEGRO.CreateCaloCellsConfig import \
+#      CreateECalBarrelCellsCfg, CreateECalBarrelCellsCfg, \
+#      CreateHCalBarrelCellsCfg, CreateHCalEndcapCellsCfg
+#    caldigi_cfg.merge(CreateECalBarrelCellsCfg(flags))
+#    caldigi_cfg.merge(CreateECalEndcapCellsCfg(flags))
+#    caldigi_cfg.merge(CreateHCalBarrelCellsCfg(flags))
+#    caldigi_cfg.merge(CreateHCalEndcapCellsCfg(flags))
+#
+#    TopAlg += caldigi_cfg.algs()
+#    ExtSvc += caldigi_cfg.svcs()
+#
+# The behavior can be changed via arguments to the above functions.
+# For example, to enable noise and crosstalk:
+#
+#    caldigi_cfg.merge(CreateECalBarrelCellsCfg(flags,
+#                                               name = 'ECalCellsWithNoise',
+#                                               addNoise = True,
+#                                               addCrosstalk = True,
+#                                               cellsNameSuffix = 'WithNoise'))
+#
+# Some defaults can also be overridden via the flags object.
+# See the code for details.
+#
 
 
 from FCC_config.ComponentAccumulator import ComponentAccumulator
