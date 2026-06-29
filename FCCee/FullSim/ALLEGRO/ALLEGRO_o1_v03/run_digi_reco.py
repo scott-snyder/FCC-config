@@ -1121,10 +1121,10 @@ if doSWClustering:
     # ECAL + HCAL clusters
     if runHCal:
         CaloClusterInputs = {
-            "ECAL_Barrel": ecalBarrelPositionedCellsName,
-            "ECAL_Endcap": ecalEndcapPositionedCellsName,
-            "HCAL_Barrel": hcalBarrelPositionedCellsName,
-            "HCAL_Endcap": hcalEndcapPositionedCellsName,
+            "ECAL_Barrel": flags.ECal.Barrel.cellsName,
+            "ECAL_Endcap": flags.ECal.Endcap.cellsName,
+            "HCAL_Barrel": flags.HCal.Barrel.cellsName,
+            "HCAL_Endcap": flags.HCal.Endcap.cellsName,
         }
         CaloClusterReadouts = {
             "ECAL_Barrel": ecalBarrelReadoutName,
@@ -1207,10 +1207,10 @@ if doTopoClustering:
     # ECAL + HCAL
     if runHCal:
         CaloTopoClusterInputs = {
-            "ECAL_Barrel": ecalBarrelPositionedCellsName,
-            "ECAL_Endcap": ecalEndcapPositionedCellsName,
-            "HCAL_Barrel": hcalBarrelPositionedCellsName,
-            "HCAL_Endcap": hcalEndcapPositionedCellsName,
+            "ECAL_Barrel": flags.ECal.Barrel.cellsName,
+            "ECAL_Endcap": flags.ECal.Endcap.cellsName,
+            "HCAL_Barrel": flags.HCal.Barrel.cellsName,
+            "HCAL_Endcap": flags.HCal.Endcap.cellsName,
         }
         CaloTopoClusterReadouts = {
             "ECAL_Barrel": ecalBarrelReadoutName,
@@ -1234,9 +1234,9 @@ if doTopoClustering:
 # Create CaloHit<->MCParticle links (needed for training datasets for MLPF)
 # Also store Cluster<->MCParticle links (for truth matching for efficiency and purity studies)
 from Configurables import CreateTruthLinks
-caloLinks = [ecalBarrelLinks, ecalEndcapLinks]
+caloLinks = [flags.ECal.Barrel.linksName, flags.ECal.Endcap.linksName]
 if runHCal:
-    caloLinks += [hcalBarrelLinks, hcalEndcapLinks]
+    caloLinks += [flags.HCal.Barrel.linksName, flags.HCal.Endcap.linksName]
 if runMuon:
     caloLinks += [muonBarrelLinks, muonEndcapLinks]
 createTruthLinks = CreateTruthLinks("CreateTruthLinks",
