@@ -3,4 +3,15 @@ Top:    b14eb88b244947c837f53f148985cc8270c0854e
 Author: scott snyder <snyder@bnl.gov>
 Date:   2025-10-16 22:54:13 -0400
 
-Modularize cell creation.
+Introduce ComponentAccumulator-style cell reconstruction for ALLEGRO.
+
+Introduce CreateCaloCellsConfig.py, which contains ComponentAccumulator-style
+configuration functions for ALLEGRO cell reconstruction.  Update configuration
+scripts for ALLEGRO_o1_v03 and ALLEGRO_o2_v01 to use these functions.
+
+This is a start at factoring out common configuration code to reduce
+duplication.
+
+This changes reconstruction results for o2_v01 because that configuration
+was still using the old ECAL sampling fractions.  This change ensures that
+the configurations are consistent.
