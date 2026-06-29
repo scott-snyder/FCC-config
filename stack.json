@@ -1,15 +1,15 @@
 {
   "version": 5,
-  "prev": "244b3fdc324511e454fa703aa3e2e918f1606257",
-  "head": "37b674a9913842b9e0b47290f858442c55ff23e4",
+  "prev": "e37e0f2f008e90a8e5314d8ec3db8b26631660e5",
+  "head": "7edcd15bb5a6ac1734d5be12ccfc25dbd7db5df9",
   "applied": [
     "gitignore",
     "xtalkfile",
     "noise",
-    "resegment"
+    "resegment",
+    "cell-creation"
   ],
   "unapplied": [
-    "cell-creation",
     "localdata",
     "cluster-creation",
     "outputsel-wip",
