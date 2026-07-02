@@ -173,6 +173,11 @@ class Flags:
 flags = Flags()
 flags.compactFile = geoservice.detectors[0]
 flags.dataFiles = dataFolder
+flags.IO = Flags()
+flags.IO.inputFile = [inputfile]
+flags.IO.outputFile = outputfile
+flags.saveHits = saveHits   # should be elsewhere?
+flags.saveCells = saveCells
 
 from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
 defineCaloCellFlags(flags)
@@ -192,6 +197,10 @@ from Configurables import EventDataSvc
 io_svc = IOSvc("IOSvc")
 io_svc.Input = inputfile
 io_svc.Output = outputfile
+io_svc.outputCommands = ['drop *',
+                         'keep EventHeader',
+                         'keep MCParticles']
+ExtSvc += [io_svc]
 ExtSvc += [EventDataSvc("EventDataSvc")]
 
 if addTruthTracks or runTrkHitDigitization or addNoise:
@@ -234,6 +243,27 @@ if addTruthTracks:
                                            FillFactor=1.0,
                                            OutputLevel=ERROR)
     TopAlg += [dNdxFromTracks]
+
+
+io_svc.outputCommands += ['keep SiWrBDigis',
+                          'keep SiWrBSimDigiLinks',
+                          'keep SiWrDDigis',
+                          'keep SiWrDSimDigiLinks',
+                          'keep VTXBDigis',
+                          'keep VTXBSimDigiLinks',
+                          'keep VTXDDigis',
+                          'keep VTXDSimDigiLinks',
+                          'keep DCH_DigiCollection',
+                          'keep DCH_DigiSimAssociationCollection',
+                          'keep DCHdNdxCollection']
+if not dropDCHHits:
+    io_svc.outputCommands += ['keep DCHCollection']
+if not dropSiWrHits:
+    io_svc.outputCommands += ['keep SiWrBCollection',
+                              'keep SiWrDCollection']
+if not dropMuonHits:
+    io_svc.outputCommands += ['keep VertexBarrelCollection',
+                              'keep VertexEndcapCollection']
 
 
 # Tracker digitization
@@ -419,6 +449,8 @@ if runTrkHitDigitization:
         OutputLevel=INFO,
     )
     TopAlg += [dch_digitizer]
+io_svc.outputCommands += ['keep TracksFromGenParticles',
+                          'keep TracksFromGenParticlesAssociation',]
 
 if runTrkFinder:
     # Run consistency checks first
@@ -523,6 +555,8 @@ if runTrkValidation:
         OutputLevel=INFO)
     TopAlg += [trackValidation]
 
+
+#############################################################################
 
 # Calorimeter digitization (merging hits into cells, EM scale calibration via sampling fractions)
 
@@ -672,13 +706,32 @@ if runMuon:
                                                       links=muonEndcapLinks
                                                       )
     TopAlg += [createMuonEndcapCells]
+
+    if not dropMuonHits:
+        io_svc.outputCommands += [f'keep {muonBarrelPositionedCellsName}',
+                                  f'keep {muonEndcapPositionedCellsName}',
+                                  f'keep {muonBarrelReadoutName}',
+                                  f'keep {muonBarrelReadoutName}Contributions',
+                                  f'keep {muonEndcapReadoutName}',
+                                  f'keep {muonEndcapReadoutName}Contributions']
 else:
+    if not dropMuonHits:
+        io_svc.outputCommands += ['keep MuonTaggerBarrelPhiTheta',
+                                  'keep MuonTaggerBarrelPhiThetaContributions',
+                                  'keep MuonTaggerEndcapPhiTheta',
+                                  'keep MuonTaggerBarrelPhiThetaContributions']
+
     muonBarrelReadoutName = ""
     muonEndcapReadoutName = ""
     muonBarrelPositionedCellsName = ""
     muonEndcapPositionedCellsName = ""
     muonBarrelLinks = ""
     muonEndcapLinks = ""
+
+
+if saveHits and saveCells:
+    io_svc.outputCommands += ['keep MuonTaggerBarrelPhiThetaPositionedSimCaloHitLinks',
+                              'keep MuonTaggerEndcapPhiThetaPositionedSimCaloHitLinks']
 
 
 calclust_cfg = ComponentAccumulator()
@@ -771,6 +824,7 @@ if doSWClustering:
                               addShapeParameters = False,
                               runPhotonID = False))
 
+
 if doTopoClustering:
     from FCC_config.ALLEGRO.CreateCaloClustersConfig import CaloTopoClusterCfg
 
@@ -834,6 +888,9 @@ if doTopoClustering:
 
 calclust_cfg.toVars (TopAlg, ExtSvc)
 
+########################################################################
+
+
 # Create CaloHit<->MCParticle links (needed for training datasets for MLPF)
 # Also store Cluster<->MCParticle links (for truth matching for efficiency and purity studies)
 from Configurables import CreateTruthLinks
@@ -850,76 +907,8 @@ createTruthLinks = CreateTruthLinks("CreateTruthLinks",
                                     cluster_mcparticle_links="ClusterMCParticleLinks",
                                     OutputLevel=INFO)
 TopAlg += [createTruthLinks]
-
-
-# Configure the output
-
-# drop the empty cells
-io_svc.outputCommands = ["keep *",
-                         "drop emptyCaloCells"]
-
-# drop the uncalibrated cells
-if dropUncalibratedCells:
-    io_svc.outputCommands.append("drop %s" % flags.ECal.Barrel.readoutName)
-    io_svc.outputCommands.append("drop %s" % ecalBarrelReadoutName2)
-    io_svc.outputCommands.append("drop %s" % flags.ECal.Endcap.readoutName)
-    if runHCal:
-        io_svc.outputCommands.append("drop %s" % flags.HCal.Barrel.readoutName)
-        io_svc.outputCommands.append("drop %s" % flags.HCal.Endcap.readoutName)
-    else:
-        io_svc.outputCommands += ["drop HCal*"]
-
-    # drop the intermediate ecal barrel cells in case of a resegmentation
-    if resegmentECalBarrel:
-        io_svc.outputCommands.append("drop ECalBarrelCellsMerged")
-
-# drop lumi, vertex, DCH, Muons (unless want to keep for event display)
-if dropLumiCalHits:
-    io_svc.outputCommands.append("drop Lumi*")
-if dropVertexHits:
-    io_svc.outputCommands.append("drop VertexBarrelCollection*")
-    io_svc.outputCommands.append("drop VertexEndcapCollection*")
-if dropDCHHits:
-    io_svc.outputCommands.append("drop DCHCollection*")
-if dropSiWrHits:
-    io_svc.outputCommands.append("drop SiWrBCollection*")
-    io_svc.outputCommands.append("drop SiWrDCollection*")
-if dropMuonHits:
-    io_svc.outputCommands.append("drop MuonTagger*PhiThetaContributions")   # hits
-    io_svc.outputCommands.append("drop MuonTagger*PhiTheta")                # uncalibrated cells
-    io_svc.outputCommands.append("drop MuonTagger*PhiThetaPositioned")      # calibrated cells
-
-# drop hits/positioned cells/cluster cells if desired
-if not saveHits:
-    io_svc.outputCommands.append("drop *%sContributions" % flags.ECal.Barrel.readoutName)
-    io_svc.outputCommands.append("drop *%sContributions" % ecalBarrelReadoutName2)
-    io_svc.outputCommands.append("drop *%sContributions" % flags.ECal.Endcap.readoutName)
-    if runHCal:
-        io_svc.outputCommands.append("drop *%sContributions" % flags.HCal.Barrel.readoutName)
-        io_svc.outputCommands.append("drop *%sContributions" % flags.HCal.Endcap.readoutName)
-if not saveCells:
-    io_svc.outputCommands.append("drop %s" % flags.ECal.Barrel.cellsName)
-    io_svc.outputCommands.append("drop %s" % flags.ECal.Endcap.cellsName)
-    if addNoise:
-        io_svc.outputCommands.append("drop %sWithNoise*" % flags.ECal.Barrel.cellsName)
-        io_svc.outputCommands.append("drop %sWithNoise*" % flags.ECal.Endcap.cellsName)
-    if resegmentECalBarrel:
-        io_svc.outputCommands.append("drop %s" % ecalBarrelPositionedCellsName2)
-    if runHCal:
-        io_svc.outputCommands.append("drop %s" % hcalBarrelPositionedCellsName)
-        io_svc.outputCommands.append("drop %s" % hcalEndcapPositionedCellsName)
-# only save cluster cells if the user creates these collections
-if not flags.CaloSW.createClusterCellCollections and not flags.CaloTopo.createClusterCellCollections:
-    io_svc.outputCommands.append("drop *Calo*Cluster*Cells*")
-# drop hits<->cells links if either of the two collections are not saved
-if not saveHits or not saveCells:
-    io_svc.outputCommands.append("drop *SimCaloHitLinks")
-
-# if we decorate the clusters, we can drop the non-decorated ones
-if flags.CaloSW.addShapeParameters or flags.CaloTopo.addShapeParameters:
-    for algo in TopAlg:
-        if algo.__class__.__name__ == "AugmentClustersFCCee":
-            io_svc.outputCommands.append("drop %s" % algo.inClusters)
+io_svc.outputCommands += ['keep CaloHitMCParticleLinks',
+                          'keep ClusterMCParticleLinks']
 
 
 # configure the application
