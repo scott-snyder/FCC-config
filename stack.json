@@ -1,15 +1,14 @@
 {
   "version": 5,
-  "prev": "cbf6a0e7ec2d053955be0093862454c858dade6e",
-  "head": "9a9989a06870afc283d73b02678128a0fb8a319d",
+  "prev": "00e5b164a42ac74cc1a43d77ac6d539d0e766fbf",
+  "head": "e64cdcab3c6ccffdd7d5ca49e8f881542c331bde",
   "applied": [
     "gitignore",
     "xtalkfile",
     "noise",
     "resegment",
     "cell-creation",
-    "cluster-creation",
-    "refresh-temp"
+    "cluster-creation"
   ],
   "unapplied": [
     "localdata",
@@ -35,10 +34,7 @@
       "oid": "03679b2af93487bd2975bf59c144096a265b10ba"
     },
     "cluster-creation": {
-      "oid": "3c76b548d70ac1c4d24740565f0a2dcb3a4feef9"
-    },
-    "refresh-temp": {
-      "oid": "9a9989a06870afc283d73b02678128a0fb8a319d"
+      "oid": "e64cdcab3c6ccffdd7d5ca49e8f881542c331bde"
     },
     "localdata": {
       "oid": "2053b87fe5e81fbb41387bf1a9a4547822e21f6b"
