@@ -9,6 +9,7 @@
 #
 # xxx need to fill this in
 # algo check topo noise changes; use toVars
+# MR description
 #
 
 from FCC_config.ComponentAccumulator import ComponentAccumulator
