@@ -27,8 +27,7 @@
 #    caldigi_cfg.merge(CreateHCalBarrelCellsCfg(flags))
 #    caldigi_cfg.merge(CreateHCalEndcapCellsCfg(flags))
 #
-#    TopAlg += caldigi_cfg.algs()
-#    ExtSvc += caldigi_cfg.svcs()
+#    caldigi_cfg.toVars (TopAlg, ExtSvc)
 #
 # The behavior can be changed via arguments to the above functions.
 # For example, to enable noise and crosstalk:
