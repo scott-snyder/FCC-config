@@ -156,6 +156,103 @@ hcalBarrelLayers = 13
 hcalEndcapLayers = 22
 
     
+def ECalBarrelGeometryTool (flags, name = 'ECalBarrelGeometryTool',
+                            readoutName = None):
+    """Return calorimeter tool for ECal barrel.
+
+Use the default readout if readoutName is not supplied."""
+
+    if readoutName is None: readoutName = flags.ECal.Barrel.readoutName
+    return C.TubeLayerModuleThetaCaloTool(name,
+                                          readoutName=readoutName,
+                                          activeVolumeName="LAr_sensitive",
+                                          activeFieldName="layer",
+                                          activeVolumesNumber=ecalBarrelLayers,
+                                          fieldNames=["system"],
+                                          fieldValues=[detIDs(flags, 'ECAL_Barrel')],
+                                          )
+
+
+def ECalEndcapGeometryTool (flags, name = 'ECalEndcapGeometryTool',
+                            readoutName = None):
+    """Return calorimeter tool for ECal endcap.
+
+Use the default readout if readoutName is not supplied."""
+    
+    if readoutName is None: readoutName = flags.ECal.Endcap.readoutName
+    return C.TurbineEndcapCaloTool (name,
+                                    readoutName=readoutName)
+
+
+def HCalBarrelGeometryTool (flags, name = 'HCalBarrelGeometryTool',
+                            readoutName = None):
+    """Return calorimeter tool for HCal barrel.
+
+Use the default readout if readoutName is not supplied."""
+    
+    if readoutName is None: readoutName = flags.HCal.Barrel.readoutName
+    return C.HCalPhiThetaCaloTool(name,
+                                  readoutName=readoutName)
+
+
+def HCalEndcapGeometryTool (flags, name = 'HCalEndcapGeometryTool',
+                            readoutName = None):
+    """Return calorimeter tool for HCal endcap.
+
+Use the default readout if readoutName is not supplied."""
+    
+    if readoutName is None: readoutName = flags.HCal.Endcap.readoutName
+    return C.HCalPhiThetaCaloTool(name,
+                                  readoutName=readoutName)
+
+
+class CaloCellIndexerSvc:
+    """Helper to handle merging of CaloCellIndexerSvc."""
+    def __init__ (self, name, GeoTools = []):
+        self._name = name
+        self.GeoTools = GeoTools
+        return
+    def name (self):
+        return self._name
+
+    def mergeTo (self, old):
+        if not isinstance (old, CaloCellIndexerSvc): return False
+        oldnames = [x.name() for x in old.GeoTools]
+        for tool in self.GeoTools:
+            if tool.name() not in oldnames:
+                old.GeoTools.append (tool)
+        return True
+
+    def convertTo (self):
+        return C.k4__recCalo__CaloCellIndexerSvc (self.name(),
+                                                  GeoTools = self.GeoTools)
+
+
+def CaloCellIndexerSvcCfg (flags,
+                           name = 'k4::recCalo::CaloCellIndexerSvc',
+                           detectors = [],
+                           tools = []):
+    """Return CA for an indexer service for a given set of geometry tools.
+
+The detectors argument is a list of subdirectory names for which to create
+geometry tools.  Any explicitly given by the tools argument will also be
+added.
+"""
+    _geometry_tools = {
+        'ECAL_Barrel' : ECalBarrelGeometryTool,
+        'ECAL_Endcap' : ECalEndcapGeometryTool,
+        'HCAL_Barrel' : HCalBarrelGeometryTool,
+        'HCAL_Endcap' : HCalEndcapGeometryTool,
+    }
+    cfg = ComponentAccumulator()
+    tools = tools[:]
+    for d in detectors:
+        tools.append (_geometry_tools[d](flags))
+    svc = CaloCellIndexerSvc (name, GeoTools = tools)
+    cfg.addSvc (svc)
+    return cfg
+
+
 def CalibrateECalBarrel (flags, name = 'CalibrateECalBarrel'):
     """Return tool to calibrate ECal barrel cells."""
     return C.CalibrateInLayersTool(name,
@@ -225,41 +322,26 @@ def CellPositionsHCalEndcap (flags,
 
 def ReadCrosstalkMapECalBarrel (flags, name = 'ReadCrosstalkMapECalBarrel'):
     """Return crosstalk tool for ECal barrel"""
-    return C.ReadCaloCrosstalkMap(name, fileName = flags.ECal.Barrel.xtalkPath)
+    return C.ReadCaloCrosstalkMap(name,
+                                  #detID = detIDs(flags, 'ECAL_Barrel'),
+                                  fileName = flags.ECal.Barrel.xtalkPath)
 
 
 def ECalBarrelNoiseTool (flags, name = 'ECalBarrelNoiseTool'):
     """Return noise tool for ECal barrel."""
-    return C.NoiseCaloCellsVsThetaFromFileTool (name,
-                                                cellPositionsTool=CellPositionsECalBarrel(flags),
-                                                readoutName=flags.ECal.Barrel.readoutName,
-                                                noiseFileName=flags.ECal.Barrel.noisePath,
-                                                elecNoiseRMSHistoName=flags.ECal.Barrel.noiseRMSHistName,
-                                                setNoiseOffset=False,
-                                                activeFieldName="layer",
-                                                addPileup=False,
-                                                filterNoiseThreshold=flags.ECal.Barrel.filterNoiseThreshold,
-                                                useAbsInFilter=True,
-                                                numRadialLayers=ecalBarrelLayers,
-                                                scaleFactor=1 / 1000.,  # MeV to GeV
-                                                )
-
-
-def ECalBarrelGeometryTool (flags, name = 'ECalBarrelGeometryTool',
-                            readoutName = None):
-    """Return calorimeter for ECal barrel.
-
-Use the default readout if readoutName is not supplied."""
-
-    if readoutName is None: readoutName = flags.ECal.Barrel.readoutName
-    return C.TubeLayerModuleThetaCaloTool(name,
-                                          readoutName=readoutName,
-                                          activeVolumeName="LAr_sensitive",
-                                          activeFieldName="layer",
-                                          activeVolumesNumber=ecalBarrelLayers,
-                                          fieldNames=["system"],
-                                          fieldValues=[detIDs(flags, 'ECAL_Barrel')],
-                                          )
+    return C.NoiseCaloCellsFromFileBarrelTool (name,
+                                               cellPositionsTool=CellPositionsECalBarrel(flags),
+                                               readoutName=flags.ECal.Barrel.readoutName,
+                                               noiseFileName=flags.ECal.Barrel.noisePath,
+                                               elecNoiseRMSHistoName=flags.ECal.Barrel.noiseRMSHistName,
+                                               setNoiseOffset=False,
+                                               activeFieldName="layer",
+                                               addPileup=False,
+                                               filterNoiseThreshold=flags.ECal.Barrel.filterNoiseThreshold,
+                                               useAbsInFilter=True,
+                                               numHistograms=ecalBarrelLayers,
+                                               scaleFactor=1 / 1000.,  # MeV to GeV
+                                               )
 
 
 def CreateECalBarrelCellsCfg (flags,
@@ -287,6 +369,7 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
 """
 
     cfg = ComponentAccumulator()
+    cfg.merge (CaloCellIndexerSvcCfg (flags, detectors = ['ECAL_Barrel']))
     if hits is None: hits = flags.ECal.Barrel.readoutName
     if readoutName is None: readoutName = flags.ECal.Barrel.readoutName
     if addCrosstalk is None: addCrosstalk = flags.ECal.Barrel.addCrosstalk
@@ -295,6 +378,11 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
     kw.setdefault('links', kw['cells'] + flags.linksNamePart)
 
     kw.setdefault('calibTool', CalibrateECalBarrel(flags) if doCellCalibration else None)
+    if addCrosstalk:
+        kw['crosstalkTool'] = ReadCrosstalkMapECalBarrel(flags)
+    else:
+        kw['crosstalkTool'] = None
+       
     kw.setdefault('crosstalkTool', ReadCrosstalkMapECalBarrel(flags) if addCrosstalk else None)
     kw.setdefault('noiseTool', ECalBarrelNoiseTool(flags) if addNoise else None)
     kw.setdefault('geometryTool', ECalBarrelGeometryTool(flags) if addNoise else None)
@@ -334,6 +422,7 @@ output cell container.
 Passing alg allows overriding the algorithm type used for the reconstruction.
 """
     cfg = ComponentAccumulator()
+    cfg.merge (CaloCellIndexerSvcCfg (flags, detectors = ['ECAL_Endcap']))
     if hits is None: hits = flags.ECal.Endcap.readoutName
 
     kw.setdefault('cells', hits + flags.cellsNamePart + cellsNameSuffix)
@@ -372,6 +461,7 @@ output cell container.
 Passing alg allows overriding the algorithm type used for the reconstruction.
 """
     cfg = ComponentAccumulator()
+    cfg.merge (CaloCellIndexerSvcCfg (flags, detectors = ['HCAL_Barrel']))
     if hits is None: hits = flags.HCal.Barrel.readoutName
 
     kw.setdefault('cells', hits + flags.cellsNamePart + cellsNameSuffix)
@@ -410,6 +500,7 @@ output cell container.
 Passing alg allows overriding the algorithm type used for the reconstruction.
 """
     cfg = ComponentAccumulator()
+    cfg.merge (CaloCellIndexerSvcCfg (flags, detectors = ['HCAL_Endcap']))
     if hits is None: hits = flags.HCal.Endcap.readoutName
 
     kw.setdefault('cells', hits + flags.cellsNamePart + cellsNameSuffix)

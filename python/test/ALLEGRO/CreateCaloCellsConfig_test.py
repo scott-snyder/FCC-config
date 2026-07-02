@@ -56,6 +56,74 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         return
 
 
+    def test_ECalBarrelGeometryTool (self):
+        flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        flags.compactFile = compactFile
+        tool = CreateCaloCellsConfig.ECalBarrelGeometryTool (flags)
+        self.assertEqual (tool.getFullName(), 'TubeLayerModuleThetaCaloTool/ECalBarrelGeometryTool')
+        return
+        
+
+    def test_ECalEndcapGeometryTool (self):
+        flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        tool = CreateCaloCellsConfig.ECalEndcapGeometryTool (flags)
+        self.assertEqual (tool.getFullName(), 'TurbineEndcapCaloTool/ECalEndcapGeometryTool')
+        return
+        
+
+    def test_HCalBarrelGeometryTool (self):
+        flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        tool = CreateCaloCellsConfig.HCalBarrelGeometryTool (flags)
+        self.assertEqual (tool.getFullName(), 'HCalPhiThetaCaloTool/HCalBarrelGeometryTool')
+        return
+        
+
+    def test_HCalEndcapGeometryTool (self):
+        flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        tool = CreateCaloCellsConfig.HCalEndcapGeometryTool (flags)
+        self.assertEqual (tool.getFullName(), 'HCalPhiThetaCaloTool/HCalEndcapGeometryTool')
+        return
+        
+
+    def test_CaloCellIndexerSvcCfg (self):
+        flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        flags.compactFile = compactFile
+        ca1 = CreateCaloCellsConfig.CaloCellIndexerSvcCfg (flags,
+                                                           detectors = ['ECAL_Barrel',
+                                                                        'ECAL_Endcap'])
+        self.assertEqual (len(ca1.svcs()), 1)
+        self.assertEqual (len(ca1.algs()), 0)
+        svc1 = ca1.svcs()[0]
+        self.assertEqual (svc1.name(), 'k4::recCalo::CaloCellIndexerSvc')
+        self.assertEqual (len(svc1.GeoTools), 2)
+        self.assertEqual (svc1.GeoTools[0].getFullName(), 'TubeLayerModuleThetaCaloTool/ECalBarrelGeometryTool')
+        self.assertEqual (svc1.GeoTools[1].getFullName(), 'TurbineEndcapCaloTool/ECalEndcapGeometryTool')
+
+        ca2 = CreateCaloCellsConfig.CaloCellIndexerSvcCfg (flags,
+                                                           detectors = ['ECAL_Barrel',
+                                                                        'HCAL_Barrel'])
+        self.assertEqual (len(ca2.svcs()), 1)
+        self.assertEqual (len(ca2.algs()), 0)
+        svc2 = ca2.svcs()[0]
+        self.assertEqual (svc2.name(), 'k4::recCalo::CaloCellIndexerSvc')
+        self.assertEqual (len(svc2.GeoTools), 2)
+        self.assertEqual (svc2.GeoTools[0].getFullName(), 'TubeLayerModuleThetaCaloTool/ECalBarrelGeometryTool')
+        self.assertEqual (svc2.GeoTools[1].getFullName(), 'HCalPhiThetaCaloTool/HCalBarrelGeometryTool')
+
+        ca1.merge (ca2)
+        self.assertEqual (len(ca1.svcs()), 1)
+        self.assertEqual (len(ca1.algs()), 0)
+        svc1 = ca1.svcs()[0]
+        self.assertEqual (svc1.name(), 'k4::recCalo::CaloCellIndexerSvc')
+        self.assertEqual (len(svc1.GeoTools), 3)
+        
+        self.assertEqual (svc1.GeoTools[0].getFullName(), 'TubeLayerModuleThetaCaloTool/ECalBarrelGeometryTool')
+        self.assertEqual (svc1.GeoTools[1].getFullName(), 'TurbineEndcapCaloTool/ECalEndcapGeometryTool')
+        self.assertEqual (svc1.GeoTools[2].getFullName(), 'HCalPhiThetaCaloTool/HCalBarrelGeometryTool')
+        
+        return
+        
+
     def test_CalibrateECalBarrel (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
         tool = CreateCaloCellsConfig.CalibrateECalBarrel (flags)
@@ -136,6 +204,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
 
     def test_ReadCrosstalkMapECalBarrel (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        flags.compactFile = compactFile
         tool = CreateCaloCellsConfig.ReadCrosstalkMapECalBarrel (flags)
         self.assertEqual (tool.getFullName(), 'ReadCaloCrosstalkMap/ReadCrosstalkMapECalBarrel')
         return
@@ -144,15 +213,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
     def test_ECalBarrelNoiseTool (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
         tool = CreateCaloCellsConfig.ECalBarrelNoiseTool (flags)
-        self.assertEqual (tool.getFullName(), 'NoiseCaloCellsVsThetaFromFileTool/ECalBarrelNoiseTool')
-        return
-        
-
-    def test_ECalBarrelGeometryTool (self):
-        flags = CreateCaloCellsConfig.defineCaloCellFlags()
-        flags.compactFile = compactFile
-        tool = CreateCaloCellsConfig.ECalBarrelGeometryTool (flags)
-        self.assertEqual (tool.getFullName(), 'TubeLayerModuleThetaCaloTool/ECalBarrelGeometryTool')
+        self.assertEqual (tool.getFullName(), 'NoiseCaloCellsFromFileBarrelTool/ECalBarrelNoiseTool')
         return
         
 
@@ -161,8 +222,8 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         flags.compactFile = compactFile
 
         ca = CreateCaloCellsConfig.CreateECalBarrelCellsCfg (flags)
-        assert len(ca.svcs()) == 0
-        assert len(ca.algs()) == 1
+        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/CreatePositionedECalBarrelCells')
         self.assertEqual (alg.hits, 'ECalBarrelModuleThetaMerged')
@@ -177,11 +238,15 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         self.assertEqual (alg.calibTool.readoutName, 'ECalBarrelModuleThetaMerged')
         self.assertEqual (alg.positionsTool.getFullName(), 'CellPositionsECalBarrelModuleThetaSegTool/CellPositionsECalBarrel')
         self.assertEqual (alg.positionsTool.readoutName, 'ECalBarrelModuleThetaMerged')
+        svc = ca.svcs()[0]
+        self.assertEqual (svc.name(), 'k4::recCalo::CaloCellIndexerSvc')
+        self.assertEqual (len(svc.GeoTools), 1)
+        self.assertEqual (svc.GeoTools[0].getFullName(), 'TubeLayerModuleThetaCaloTool/ECalBarrelGeometryTool')
 
         ca = CreateCaloCellsConfig.CreateECalBarrelCellsCfg (flags, name='ecalb_cells2', doCellCalibration=False, hits='ecalb', cellsNameSuffix='2',
                                                              addNoise=True, addCrosstalk=True, filterCellNoise=True)
-        assert len(ca.svcs()) == 0
-        assert len(ca.algs()) == 1
+        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/ecalb_cells2')
         self.assertEqual (alg.hits, 'ecalb')
@@ -191,7 +256,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         self.assertEqual (alg.addCrosstalk, True)
         self.assertEqual (alg.addCellNoise, True)
         self.assertEqual (alg.filterCellNoise, True)
-        self.assertEqual (alg.noiseTool.getFullName(), 'NoiseCaloCellsVsThetaFromFileTool/ECalBarrelNoiseTool')
+        self.assertEqual (alg.noiseTool.getFullName(), 'NoiseCaloCellsFromFileBarrelTool/ECalBarrelNoiseTool')
         self.assertEqual (alg.calibTool.getFullName(), '')
         self.assertEqual (alg.positionsTool.getFullName(), 'CellPositionsECalBarrelModuleThetaSegTool/CellPositionsECalBarrelModuleThetaMerged')
         self.assertEqual (alg.positionsTool.readoutName, 'ECalBarrelModuleThetaMerged')
@@ -204,8 +269,8 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
 
         ca = CreateCaloCellsConfig.CreateECalEndcapCellsCfg (flags)
-        assert len(ca.svcs()) == 0
-        assert len(ca.algs()) == 1
+        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/CreatePositionedECalEndcapCells')
         self.assertEqual (alg.hits, 'ECalEndcapTurbine')
@@ -220,10 +285,14 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         self.assertEqual (alg.calibTool.readoutName, 'ECalEndcapTurbine')
         self.assertEqual (alg.positionsTool.getFullName(), 'CellPositionsECalEndcapTurbineSegTool/CellPositionsECalEndcap')
         self.assertEqual (alg.positionsTool.readoutName, 'ECalEndcapTurbine')
+        svc = ca.svcs()[0]
+        self.assertEqual (svc.name(), 'k4::recCalo::CaloCellIndexerSvc')
+        self.assertEqual (len(svc.GeoTools), 1)
+        self.assertEqual (svc.GeoTools[0].getFullName(), 'TurbineEndcapCaloTool/ECalEndcapGeometryTool')
 
         ca = CreateCaloCellsConfig.CreateECalEndcapCellsCfg (flags, name='ecale_cells2', doCellCalibration=False, hits='ecale', cellsNameSuffix='2')
-        assert len(ca.svcs()) == 0
-        assert len(ca.algs()) == 1
+        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/ecale_cells2')
         self.assertEqual (alg.hits, 'ecale')
@@ -244,8 +313,8 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
 
         ca = CreateCaloCellsConfig.CreateHCalBarrelCellsCfg (flags)
-        assert len(ca.svcs()) == 0
-        assert len(ca.algs()) == 1
+        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/CreatePositionedHCalBarrelCells')
         self.assertEqual (alg.hits, 'HCalBarrelReadout')
@@ -259,10 +328,14 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         self.assertEqual (alg.calibTool.getFullName(), 'CalibrateCaloHitsTool/CalibrateHCalBarrel')
         self.assertEqual (alg.positionsTool.getFullName(), 'CellPositionsHCalPhiThetaSegTool/CellPositionsHCalBarrel')
         self.assertEqual (alg.positionsTool.readoutName, 'HCalBarrelReadout')
+        svc = ca.svcs()[0]
+        self.assertEqual (svc.name(), 'k4::recCalo::CaloCellIndexerSvc')
+        self.assertEqual (len(svc.GeoTools), 1)
+        self.assertEqual (svc.GeoTools[0].getFullName(), 'HCalPhiThetaCaloTool/HCalBarrelGeometryTool')
 
         ca = CreateCaloCellsConfig.CreateHCalBarrelCellsCfg (flags, name='hcalb_cells2', doCellCalibration=False, hits='hcalb', cellsNameSuffix='2')
-        assert len(ca.svcs()) == 0
-        assert len(ca.algs()) == 1
+        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/hcalb_cells2')
         self.assertEqual (alg.hits, 'hcalb')
@@ -283,8 +356,8 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
 
         ca = CreateCaloCellsConfig.CreateHCalEndcapCellsCfg (flags)
-        assert len(ca.svcs()) == 0
-        assert len(ca.algs()) == 1
+        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/CreatePositionedHCalEndcapCells')
         self.assertEqual (alg.hits, 'HCalEndcapReadout')
@@ -298,10 +371,14 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         self.assertEqual (alg.calibTool.getFullName(), 'CalibrateCaloHitsTool/CalibrateHCalEndcap')
         self.assertEqual (alg.positionsTool.getFullName(), 'CellPositionsHCalPhiThetaSegTool/CellPositionsHCalEndcap')
         self.assertEqual (alg.positionsTool.readoutName, 'HCalEndcapReadout')
+        svc = ca.svcs()[0]
+        self.assertEqual (svc.name(), 'k4::recCalo::CaloCellIndexerSvc')
+        self.assertEqual (len(svc.GeoTools), 1)
+        self.assertEqual (svc.GeoTools[0].getFullName(), 'HCalPhiThetaCaloTool/HCalEndcapGeometryTool')
 
         ca = CreateCaloCellsConfig.CreateHCalEndcapCellsCfg (flags, name='hcale_cells2', doCellCalibration=False, hits='hcale', cellsNameSuffix='2')
-        assert len(ca.svcs()) == 0
-        assert len(ca.algs()) == 1
+        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/hcale_cells2')
         self.assertEqual (alg.hits, 'hcale')
@@ -322,8 +399,8 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
 
         ca = CreateCaloCellsConfig.ReSegmentationECalBarrelCfg (flags)
-        assert len(ca.svcs()) == 0
-        assert len(ca.algs()) == 1
+        self.assertEqual (len(ca.svcs()), 0)
+        self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'RedoSegmentation/ReSegmentationEcal')
         self.assertEqual (alg.oldReadoutName, 'ECalBarrelModuleThetaMerged')
