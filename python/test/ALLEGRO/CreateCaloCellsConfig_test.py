@@ -136,6 +136,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
 
     def test_ReadCrosstalkMapECalBarrel (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        flags.compactFile = compactFile
         tool = CreateCaloCellsConfig.ReadCrosstalkMapECalBarrel (flags)
         self.assertEqual (tool.getFullName(), 'ReadCaloCrosstalkMap/ReadCrosstalkMapECalBarrel')
         return

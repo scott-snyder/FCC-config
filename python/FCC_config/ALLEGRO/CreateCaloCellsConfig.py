@@ -225,24 +225,26 @@ def CellPositionsHCalEndcap (flags,
 
 def ReadCrosstalkMapECalBarrel (flags, name = 'ReadCrosstalkMapECalBarrel'):
     """Return crosstalk tool for ECal barrel"""
-    return C.ReadCaloCrosstalkMap(name, fileName = flags.ECal.Barrel.xtalkPath)
+    return C.ReadCaloCrosstalkMap(name,
+                                  #detID = detIDs(flags, 'ECAL_Barrel'),
+                                  fileName = flags.ECal.Barrel.xtalkPath)
 
 
 def ECalBarrelNoiseTool (flags, name = 'ECalBarrelNoiseTool'):
     """Return noise tool for ECal barrel."""
-    return C.NoiseCaloCellsVsThetaFromFileTool (name,
-                                                cellPositionsTool=CellPositionsECalBarrel(flags),
-                                                readoutName=flags.ECal.Barrel.readoutName,
-                                                noiseFileName=flags.ECal.Barrel.noisePath,
-                                                elecNoiseRMSHistoName=flags.ECal.Barrel.noiseRMSHistName,
-                                                setNoiseOffset=False,
-                                                activeFieldName="layer",
-                                                addPileup=False,
-                                                filterNoiseThreshold=flags.ECal.Barrel.filterNoiseThreshold,
-                                                useAbsInFilter=True,
-                                                numRadialLayers=ecalBarrelLayers,
-                                                scaleFactor=1 / 1000.,  # MeV to GeV
-                                                )
+    return C.NoiseCaloCellsFromFileBarrelTool (name,
+                                               cellPositionsTool=CellPositionsECalBarrel(flags),
+                                               readoutName=flags.ECal.Barrel.readoutName,
+                                               noiseFileName=flags.ECal.Barrel.noisePath,
+                                               elecNoiseRMSHistoName=flags.ECal.Barrel.noiseRMSHistName,
+                                               setNoiseOffset=False,
+                                               activeFieldName="layer",
+                                               addPileup=False,
+                                               filterNoiseThreshold=flags.ECal.Barrel.filterNoiseThreshold,
+                                               useAbsInFilter=True,
+                                               numHistograms=ecalBarrelLayers,
+                                               scaleFactor=1 / 1000.,  # MeV to GeV
+                                               )
 
 
 def ECalBarrelGeometryTool (flags, name = 'ECalBarrelGeometryTool',
@@ -260,6 +262,24 @@ Use the default readout if readoutName is not supplied."""
                                           fieldNames=["system"],
                                           fieldValues=[detIDs(flags, 'ECAL_Barrel')],
                                           )
+
+
+class CaloCellIndexerSvc (C.k4__recCalo__CaloCellIndexerSvc):
+    def mergeTo (self, old):
+        if not isinstance (old, CaloCellIndexerSvc): return False
+        oldnames = [x.name() for x in old.GeoTools]
+        for tool in self.GeoTools:
+            if tool.name() not in oldnames:
+                old.GeoTools.append (tool)
+        return True
+
+def CaloCellIndexerSvcCfg (flags, name = 'k4::recCalo::CaloCellIndexerSvc'):
+    cfg = ComponentAccumulator()
+    svc = CaloCellIndexerSvc (name,
+                              GeoTools = [ECalBarrelGeometryTool(flags)])
+
+    cfg.addSvc (svc)
+    return cfg
 
 
 def CreateECalBarrelCellsCfg (flags,
@@ -295,6 +315,12 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
     kw.setdefault('links', kw['cells'] + flags.linksNamePart)
 
     kw.setdefault('calibTool', CalibrateECalBarrel(flags) if doCellCalibration else None)
+    if addCrosstalk:
+        cfg.merge (CaloCellIndexerSvcCfg (flags))
+        kw['crosstalkTool'] = ReadCrosstalkMapECalBarrel(flags)
+    else:
+        kw['crosstalkTool'] = None
+       
     kw.setdefault('crosstalkTool', ReadCrosstalkMapECalBarrel(flags) if addCrosstalk else None)
     kw.setdefault('noiseTool', ECalBarrelNoiseTool(flags) if addNoise else None)
     kw.setdefault('geometryTool', ECalBarrelGeometryTool(flags) if addNoise else None)
