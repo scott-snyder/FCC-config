@@ -152,6 +152,10 @@ if ecalEndcapSamplingFraction and len(ecalEndcapSamplingFraction) > 0:
     assert (ecalEndcapLayers == len(ecalEndcapSamplingFraction))
 
 
+hcalBarrelLayers = 13
+hcalEndcapLayers = 22
+
+    
 def CalibrateECalBarrel (flags, name = 'CalibrateECalBarrel'):
     """Return tool to calibrate ECal barrel cells."""
     return C.CalibrateInLayersTool(name,
