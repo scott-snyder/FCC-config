@@ -549,8 +549,7 @@ if runHCal:
     caldigi_cfg.merge(CreateHCalBarrelCellsCfg(flags))
     caldigi_cfg.merge(CreateHCalEndcapCellsCfg(flags))
 
-TopAlg += caldigi_cfg.algs()
-ExtSvc += caldigi_cfg.svcs()
+caldigi_cfg.toVars (TopAlg, ExtSvc)
 
 
 # Muon cells [add longitudinal segmentation to detector?]
