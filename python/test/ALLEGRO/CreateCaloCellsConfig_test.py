@@ -11,6 +11,9 @@ import os
 from FCC_config.ALLEGRO import CreateCaloCellsConfig
 
 
+compactFile = os.environ.get("K4GEO", "") + "/FCCee/ALLEGRO/compact/ALLEGRO_o1_v03/ALLEGRO_o1_v03.xml"
+
+
 class Flags:
     pass
 
@@ -147,7 +150,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
 
     def test_ECalBarrelGeometryTool (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
-        flags.compactFile = os.environ.get("K4GEO", "") + "/FCCee/ALLEGRO/compact/ALLEGRO_o1_v03/ALLEGRO_o1_v03.xml"
+        flags.compactFile = compactFile
         tool = CreateCaloCellsConfig.ECalBarrelGeometryTool (flags)
         self.assertEqual (tool.getFullName(), 'TubeLayerModuleThetaCaloTool/ECalBarrelGeometryTool')
         return
@@ -155,7 +158,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
 
     def test_CreateECalBarrelCellsCfg (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
-        flags.compactFile = os.environ.get("K4GEO", "") + "/FCCee/ALLEGRO/compact/ALLEGRO_o1_v03/ALLEGRO_o1_v03.xml"
+        flags.compactFile = compactFile
 
         ca = CreateCaloCellsConfig.CreateECalBarrelCellsCfg (flags)
         assert len(ca.svcs()) == 0
