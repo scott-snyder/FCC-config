@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "prev": "f5ea9c3dcf3bdc235c137c02d80e003be4b5659b",
+  "prev": "743a4f5e393e8a0d6a1ecc2ebcb2b9fb9921263f",
   "head": "ff062d0272ce9bbef453e03db45ccd06d3b91f57",
   "applied": [
     "gitignore",
@@ -12,9 +12,7 @@
     "outputsel-wip",
     "indexing-wip"
   ],
-  "unapplied": [
-    "indexing-wip2"
-  ],
+  "unapplied": [],
   "hidden": [],
   "patches": {
     "gitignore": {
@@ -40,9 +38,6 @@
     },
     "indexing-wip": {
       "oid": "ff062d0272ce9bbef453e03db45ccd06d3b91f57"
-    },
-    "indexing-wip2": {
-      "oid": "d18c7826f09ac89b907b172de30de1ff1c436a9b"
     }
   }
 }
