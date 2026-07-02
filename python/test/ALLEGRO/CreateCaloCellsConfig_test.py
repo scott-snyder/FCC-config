@@ -16,6 +16,12 @@ compactFile = os.environ.get("K4GEO", "") + "/FCCee/ALLEGRO/compact/ALLEGRO_o1_v
 
 class Flags:
     pass
+def defineIOFlags (flags):
+    flags.saveCells = True
+    flags.saveHits = True
+    flags.IO = Flags()
+    flags.IO.inputFile = 'input.file'
+    flags.IO.outputFile = 'output.file'
 
 class TestCreateCaloCellsConfig (unittest.TestCase):
     def test_defineCaloCellFlags1 (self):
@@ -227,9 +233,10 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
     def test_CreateECalBarrelCellsCfg (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
         flags.compactFile = compactFile
+        defineIOFlags (flags)
 
         ca = CreateCaloCellsConfig.CreateECalBarrelCellsCfg (flags)
-        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.svcs()), 2)
         self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/CreatePositionedECalBarrelCells')
@@ -252,7 +259,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
 
         ca = CreateCaloCellsConfig.CreateECalBarrelCellsCfg (flags, name='ecalb_cells2', doCellCalibration=False, hits='ecalb', cellsNameSuffix='2',
                                                              addNoise=True, addCrosstalk=True, filterCellNoise=True)
-        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.svcs()), 2)
         self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/ecalb_cells2')
@@ -274,9 +281,10 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
 
     def test_CreateECalEndcapCellsCfg (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        defineIOFlags (flags)
 
         ca = CreateCaloCellsConfig.CreateECalEndcapCellsCfg (flags)
-        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.svcs()), 2)
         self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/CreatePositionedECalEndcapCells')
@@ -299,7 +307,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
 
         ca = CreateCaloCellsConfig.CreateECalEndcapCellsCfg (flags, name='ecale_cells2', doCellCalibration=False, hits='ecale', cellsNameSuffix='2',
                                                              addNoise=True, filterCellNoise=True)
-        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.svcs()), 2)
         self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/ecale_cells2')
@@ -319,9 +327,10 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
 
     def test_CreateHCalBarrelCellsCfg (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        defineIOFlags (flags)
 
         ca = CreateCaloCellsConfig.CreateHCalBarrelCellsCfg (flags)
-        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.svcs()), 2)
         self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/CreatePositionedHCalBarrelCells')
@@ -342,7 +351,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         self.assertEqual (svc.GeoTools[0].getFullName(), 'HCalPhiThetaCaloTool/HCalBarrelGeometryTool')
 
         ca = CreateCaloCellsConfig.CreateHCalBarrelCellsCfg (flags, name='hcalb_cells2', doCellCalibration=False, hits='hcalb', cellsNameSuffix='2')
-        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.svcs()), 2)
         self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/hcalb_cells2')
@@ -362,9 +371,10 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
 
     def test_CreateHCalEndcapCellsCfg (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        defineIOFlags (flags)
 
         ca = CreateCaloCellsConfig.CreateHCalEndcapCellsCfg (flags)
-        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.svcs()), 2)
         self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/CreatePositionedHCalEndcapCells')
@@ -385,7 +395,7 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         self.assertEqual (svc.GeoTools[0].getFullName(), 'HCalPhiThetaCaloTool/HCalEndcapGeometryTool')
 
         ca = CreateCaloCellsConfig.CreateHCalEndcapCellsCfg (flags, name='hcale_cells2', doCellCalibration=False, hits='hcale', cellsNameSuffix='2')
-        self.assertEqual (len(ca.svcs()), 1)
+        self.assertEqual (len(ca.svcs()), 2)
         self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/hcale_cells2')
