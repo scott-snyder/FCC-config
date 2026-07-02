@@ -3,4 +3,15 @@ Top:    5086f54b5b3e48d5ca6f990ff52601e81914d797
 Author: scott snyder <snyder@bnl.gov>
 Date:   2025-10-29 13:02:09 -0400
 
-Modularize calo cluster creation.
+Introduce ComponentAccumulator-style cluster reconstruction for ALLEGRO.
+
+Introduce CreateCaloClustersConfig.py, which contains ComponentAccumulator-style
+configuration functions for ALLEGRO cluster reconstruction.  Update configuration
+scripts for ALLEGRO_o1_v03 and ALLEGRO_o2_v01 to use these functions.
+
+This continues factoring out common configuration code to reduce
+duplication.
+
+This changes reconstruction results for o2_v01 because that configuration
+did not include the cluster augmentation updates that were in o1_v03.
+This change ensures that the configurations are consistent.
