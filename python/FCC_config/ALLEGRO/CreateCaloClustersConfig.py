@@ -7,10 +7,34 @@
 # ComponentAccumulator style configuration functions for ALLEGRO calorimeter
 # cluster making.
 #
-# xxx need to fill this in
-# algo check topo noise changes; use toVars
-# MR description
+# The main configuration functiosns for clsuter making are
+# CaloSWClusterCfg and CaloTopoClusterCfg.  See those two below,
+# as well as CaloClusterCfg (which does most of the work), for details.
+# Here is an example of configuring sliding-window clustering:
 #
+#    class Flags:
+#        pass
+#    flags = Flags()
+#    flags.compactFile = os.environ.get("K4GEO", "") + "/FCCee/ALLEGRO/compact/ALLEGRO_o1_v03/ALLEGRO_o1_v03.xml"
+#    from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
+#    from FCC_config.ALLEGRO.CreateCaloClustersConfig import defineCaloClsuterFlags
+#    defineCaloCellFlags(flags)
+#    defineCaloClusterFlags(flags)
+#
+#    outputSaveClusters = []
+#    from FCC_config.ComponentAccumulator import ComponentAccumulator
+#    from FCC_config.ALLEGRO.CreateCaloClustersConfig import CaloSWClusterCfg
+#    calclus_cfg = ComponentAccumulator()
+#    calclus_cfg.merge (
+#      CaloSWClusterCfg (flags,
+#                       { 'ECAL_Barrel' : flags.ECal.Barrel.cellsName },
+#                       'EMBCaloClusters',
+#                       0.04,  # threshold
+#                       'StandardSize',
+#                       outputSaveClusters))
+#    calclus_cfg.toVars (TopAlg, ExtSvc)
+#
+
 
 from FCC_config.ComponentAccumulator import ComponentAccumulator
 import Configurables as C
