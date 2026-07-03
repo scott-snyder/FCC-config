@@ -1,10 +1,11 @@
 {
   "version": 5,
-  "prev": "7a5aa0adc5b4b1423d5665e173d9f838235d6b5c",
-  "head": "e85fa0a98b8bd0617b22fb05d675273f45212dda",
-  "applied": [],
+  "prev": "e4a1d8b78025c28413cb91bff55d5dfd3c776310",
+  "head": "244a4b985e9063d39b7843c58d82a562707bd504",
+  "applied": [
+    "gitignore"
+  ],
   "unapplied": [
-    "gitignore",
     "xtalkfile",
     "noise",
     "resegment",
@@ -16,7 +17,7 @@
   "hidden": [],
   "patches": {
     "gitignore": {
-      "oid": "623a5273d33290c5d62448c7779672d1f6b54d14"
+      "oid": "244a4b985e9063d39b7843c58d82a562707bd504"
     },
     "xtalkfile": {
       "oid": "2de3bcdf60f6fef54135a1d691f4dc6486337862"
