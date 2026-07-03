@@ -640,20 +640,20 @@ if addNoise:
                                                           fieldValues=[IDs["ECAL_Barrel"]],
                                                           OutputLevel=INFO)
 
-    from Configurables import NoiseCaloCellsFromFileTurbineEndcapTool
-    ecalEndcapNoiseTool = NoiseCaloCellsFromFileTurbineEndcapTool("ecalEndcapNoiseTool",
-                                                                  cellPositionsTool=cellPositionEcalEndcapToolForNoise,
-                                                                  readoutName=ecalEndcapReadoutName,
-                                                                  noiseFileName=ecalEndcapNoisePath,
-                                                                  elecNoiseRMSHistoName=ecalEndcapNoiseRMSHistName,
-                                                                  setNoiseOffset=False,
-                                                                  activeFieldName="wheel",
-                                                                  addPileup=False,
-                                                                  filterNoiseThreshold=1,
-                                                                  useAbsInFilter=True,
-                                                                  numHistograms=ecalEndcapWheels,  # 3 wheels
-                                                                  scaleFactor=1 / 1000.,  # MeV to GeV
-                                                                  OutputLevel=INFO)
+    # from Configurables import NoiseCaloCellsFromFileTurbineEndcapTool
+    # ecalEndcapNoiseTool = NoiseCaloCellsFromFileTurbineEndcapTool("ecalEndcapNoiseTool",
+    #                                                               cellPositionsTool=cellPositionEcalEndcapTool,
+    #                                                               readoutName=ecalEndcapReadoutName,
+    #                                                               noiseFileName=ecalEndcapNoisePath,
+    #                                                               elecNoiseRMSHistoName=ecalEndcapNoiseRMSHistName,
+    #                                                               setNoiseOffset=False,
+    #                                                               activeFieldName="wheel",
+    #                                                               addPileup=False,
+    #                                                               filterNoiseThreshold=1,
+    #                                                               useAbsInFilter=True,
+    #                                                               numHistograms=ecalEndcapWheels,  # 3 wheels
+    #                                                               scaleFactor=1 / 1000.,  # MeV to GeV
+    #                                                               OutputLevel=INFO)
 
     # need to implement geometry tool for ecal endcap
     ecalEndcapGeometryTool = None
