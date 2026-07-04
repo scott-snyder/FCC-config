@@ -3,7 +3,8 @@ Top:    da97ee958e66795e52b0eb568fc5a33e84eb2869
 Author: scott snyder <snyder@bnl.gov>
 Date:   2026-06-22 22:22:42 -0400
 
-Fix --addNoise configuration for ALLEGRO_o1_v03.
+Fix --addNoise configuration for ALLEGRO..
 
-Turning on --addNoise for ALLEGRO_o1_v03 would crash because augmentClusterAlg
-was not being defined.  Fixed.
+Turning on --addNoise for ALLEGRO would crash because augmentClusterAlg
+was not being defined.  Fixed.  Also the endcap noise configuration was
+incomplete; commented it out.
