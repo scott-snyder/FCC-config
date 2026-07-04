@@ -1,12 +1,12 @@
 {
   "version": 5,
-  "prev": "7695425aeeff13bc96177cf5a7a0688b9899a7e4",
-  "head": "1f88331c0ab37fd03a11b708a19b6e3ea4323ec3",
+  "prev": "9dd18578d85ac5d461ab7f747611c498db2083ae",
+  "head": "eebd27325c194492e2853b6ea46432a208d9dc9c",
   "applied": [
-    "gitignore"
+    "gitignore",
+    "indexing-config"
   ],
   "unapplied": [
-    "indexing-config",
     "resegment",
     "noise",
     "ci",
@@ -21,7 +21,7 @@
       "oid": "1f88331c0ab37fd03a11b708a19b6e3ea4323ec3"
     },
     "indexing-config": {
-      "oid": "bb4f59accf62efbc5da3044e5b3fd118cf28b2aa"
+      "oid": "eebd27325c194492e2853b6ea46432a208d9dc9c"
     },
     "resegment": {
       "oid": "0f7dcb7a8c5824f18cbb8939e26cc9f08ae3890e"
