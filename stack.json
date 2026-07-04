@@ -1,15 +1,14 @@
 {
   "version": 5,
-  "prev": "e8d41bba9590e6df5f9bd70cac5b2eff8e49b6f5",
-  "head": "caf13e73e04520ad0a6a21f4574b19d352d68fa4",
-  "applied": [
+  "prev": "d1ae63e774d5e662538b47ac712ae1c27c1dcbd2",
+  "head": "e85fa0a98b8bd0617b22fb05d675273f45212dda",
+  "applied": [],
+  "unapplied": [
     "gitignore",
     "xtalkfile",
     "indexing-config",
     "resegment",
-    "noise"
-  ],
-  "unapplied": [
+    "noise",
     "ci",
     "cell-creation",
     "cluster-creation",
