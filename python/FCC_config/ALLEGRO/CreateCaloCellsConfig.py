@@ -226,25 +226,25 @@ def CellPositionsHCalEndcap (flags,
 def ReadCrosstalkMapECalBarrel (flags, name = 'ReadCrosstalkMapECalBarrel'):
     """Return crosstalk tool for ECal barrel"""
     return C.ReadCaloCrosstalkMap(name,
-                                  detID = detIDs(flags, 'ECAL_Barrel'),
+                                  #detID = detIDs(flags, 'ECAL_Barrel'),
                                   fileName = flags.ECal.Barrel.xtalkPath)
 
 
 def ECalBarrelNoiseTool (flags, name = 'ECalBarrelNoiseTool'):
     """Return noise tool for ECal barrel."""
-    return C.NoiseCaloCellsVsThetaFromFileTool (name,
-                                                cellPositionsTool=CellPositionsECalBarrel(flags),
-                                                readoutName=flags.ECal.Barrel.readoutName,
-                                                noiseFileName=flags.ECal.Barrel.noisePath,
-                                                elecNoiseRMSHistoName=flags.ECal.Barrel.noiseRMSHistName,
-                                                setNoiseOffset=False,
-                                                activeFieldName="layer",
-                                                addPileup=False,
-                                                filterNoiseThreshold=flags.ECal.Barrel.filterNoiseThreshold,
-                                                useAbsInFilter=True,
-                                                numRadialLayers=ecalBarrelLayers,
-                                                scaleFactor=1 / 1000.,  # MeV to GeV
-                                                )
+    return C.NoiseCaloCellsFromFileBarrelTool (name,
+                                               cellPositionsTool=CellPositionsECalBarrel(flags),
+                                               readoutName=flags.ECal.Barrel.readoutName,
+                                               noiseFileName=flags.ECal.Barrel.noisePath,
+                                               elecNoiseRMSHistoName=flags.ECal.Barrel.noiseRMSHistName,
+                                               setNoiseOffset=False,
+                                               activeFieldName="layer",
+                                               addPileup=False,
+                                               filterNoiseThreshold=flags.ECal.Barrel.filterNoiseThreshold,
+                                               useAbsInFilter=True,
+                                               numHistograms=ecalBarrelLayers,
+                                               scaleFactor=1 / 1000.,  # MeV to GeV
+                                               )
 
 
 def ECalBarrelGeometryTool (flags, name = 'ECalBarrelGeometryTool',
@@ -276,7 +276,7 @@ class CaloCellIndexerSvc (C.k4__recCalo__CaloCellIndexerSvc):
 def CaloCellIndexerSvcCfg (flags, name = 'k4::recCalo::CaloCellIndexerSvc'):
     cfg = ComponentAccumulator()
     svc = CaloCellIndexerSvc (name,
-                              GeoTools = [eCalBarrelGeometryTool(flags)])
+                              GeoTools = [ECalBarrelGeometryTool(flags)])
 
     cfg.addSvc (svc)
     return cfg
