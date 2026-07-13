@@ -1,5 +1,5 @@
 Bottom: aaa3652d21e64cd4e783c16b4a5582fd83d661d9
-Top:    c674dccf53f862484cef5850bbfbf19de3acf160
+Top:    d859bd767ae3eac24cdde38b9629ba132c07c7bf
 Author: scott snyder <snyder@bnl.gov>
 Date:   2025-10-16 22:54:13 -0400
 
@@ -11,7 +11,3 @@ scripts for ALLEGRO_o1_v03 and ALLEGRO_o2_v01 to use these functions.
 
 This is a start at factoring out common configuration code to reduce
 duplication.
-
-This changes reconstruction results for o2_v01 because that configuration
-was still using the old ECAL sampling fractions.  This change ensures that
-the configurations are consistent.
