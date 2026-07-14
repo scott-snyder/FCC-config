@@ -1,18 +1,18 @@
 {
   "version": 5,
-  "prev": "d6ed729b85fcb76971a2a32f9faf1449794c839c",
-  "head": "d3e0ce4243db4339708958f8d3925d699358020a",
+  "prev": "1f2022a4276a9deacf0b5a8ecfa74a9508d58cbf",
+  "head": "707c4af547abf248c3ecf3a69889faf50f8a62c5",
   "applied": [
     "gitignore",
-    "indexing-config"
+    "indexing-config",
+    "ci"
   ],
   "unapplied": [
     "resegment",
     "noise",
     "cell-creation",
     "cluster-creation",
-    "outputsel-wip",
-    "ci"
+    "outputsel-wip"
   ],
   "hidden": [],
   "patches": {
@@ -21,6 +21,9 @@
     },
     "indexing-config": {
       "oid": "d3e0ce4243db4339708958f8d3925d699358020a"
+    },
+    "ci": {
+      "oid": "707c4af547abf248c3ecf3a69889faf50f8a62c5"
     },
     "resegment": {
       "oid": "cda1e4a934d0e1acce087b6b6997419799b05cae"
@@ -36,9 +39,6 @@
     },
     "outputsel-wip": {
       "oid": "e9675e5814cda6a63b1619ea712de1ee0bb2f800"
-    },
-    "ci": {
-      "oid": "12d23331766865922d8b2cdfb0b8a38222bb6b1c"
     }
   }
 }
