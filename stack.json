@@ -1,10 +1,11 @@
 {
   "version": 5,
-  "prev": "c4e2d0cea0c91050e545dd68360f7c538e4c91f8",
-  "head": "216472807fa936fe2e2b8b3a9eb53fa659eeb953",
-  "applied": [],
+  "prev": "1cf8ba294f1dbd19cef24d69ed0b10b0300e51eb",
+  "head": "0cfa98df5048bec0bf4ad37d3c3a2f1b2c92108b",
+  "applied": [
+    "gitignore"
+  ],
   "unapplied": [
-    "gitignore",
     "indexing-config",
     "resegment",
     "noise",
@@ -16,7 +17,7 @@
   "hidden": [],
   "patches": {
     "gitignore": {
-      "oid": "1f88331c0ab37fd03a11b708a19b6e3ea4323ec3"
+      "oid": "0cfa98df5048bec0bf4ad37d3c3a2f1b2c92108b"
     },
     "indexing-config": {
       "oid": "eebd27325c194492e2853b6ea46432a208d9dc9c"
