@@ -1,7 +1,7 @@
 Bottom: ab5a1f930081a09d289b27df3f990c6478579078
-Top:    ab5a1f930081a09d289b27df3f990c6478579078
+Top:    8486520ce96456fd22c2c29ef4f2705b7174e35b
 Author: scott snyder <snyder@bnl.gov>
-Date:   2026-07-13 22:16:41 -0400
+Date:   2026-07-13 22:24:55 -0400
 
 Fix --addNoise configuration for ALLEGRO..
 
