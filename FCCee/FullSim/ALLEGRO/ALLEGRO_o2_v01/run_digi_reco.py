@@ -79,8 +79,6 @@ dropUncalibratedCells = not opts.keepUncalibratedCells
 # cluster cells are not needed for the training of the MVA energy regression nor the photon ID since needed quantities are stored in cluster shapeParameters
 saveHits = opts.saveHits
 saveCells = opts.saveCells
-# only save cluster cells if the user creates these collections
-saveClusterCells = opts.createClusterCellCollections
 
 dropLumiCalHits = True
 
@@ -94,14 +92,6 @@ dropSTTHits = False
 dropSiWrHits = False
 dropMuonHits = False
 
-
-# ECAL barrel parameters for digitization
-# TODO: extract number of layers (for ECAL and HCAL) directly from the detector segmentations
-ecalBarrelLayers = 11
-ecalBarrelUpstreamParameters = [[0.028158491043365624, -1.564259408365951, -76.52312805346982, 0.7442903558010191, -34.894692961350195, -74.19340877431723]]
-ecalBarrelDownstreamParameters = [[0.00010587711361028165, 0.0052371999097777355, 0.69906696456064, -0.9348243433360095, -0.0364714212117143, 8.360401126995626]]
-# ECAL endcap parameters for digitization
-ecalEndcapLayers = 98
 
 resegmentECalBarrel = opts.resegmentECalBarrel
 
@@ -122,25 +112,6 @@ outputSaveClusters = []  # list of clusters for which we want to create the trut
 # superseded by MVA calibration, but can be turned on here for the purpose of testing that the code is not broken - will end up in separate cluster collection
 applyUpDownstreamCorrections = False
 
-# BDT regression from total cluster energy and fraction of energy in each layer (after correction for sampling fraction)
-# not to be applied (yet) for ECAL+HCAL clustering (MVA trained only on ECAL so far)
-# applyMVAClusterEnergyCalibration = True
-applyMVAClusterEnergyCalibration = opts.calibrateClusters
-
-# calculate cluster energy and barycenter per layer and save it as extra parameters
-addShapeParameters = True
-ecalBarrelThetaWeights = [-1, 3.0, 3.0, 3.0, 4.25, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]  # to be recalculated for V03, separately for topo and calo clusters...
-# ecalBarrelThetaWeights = [-1]*11
-
-# run photon ID algorithm
-# not run by default in production, but to be turned on here for the purpose of testing that the code is not broken
-# currently off till we provide the onnx files
-# runPhotonIDTool = False
-runPhotonIDTool = opts.runPhotonID
-logEWeightInPhotonID = False
-
-# resolved pi0 reconstruction by cluster pairing
-addPi0RecoTool = opts.reconstructPi0s
 
 #
 # ALGORITHMS AND SERVICES SETUP
@@ -195,9 +166,17 @@ class Flags:
 flags = Flags()
 flags.compactFile = geoservice.detectors[0]
 flags.dataFiles = dataFolder
+
 from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
 defineCaloCellFlags(flags)
 flags.ECal.Barrel.addCrosstalk = addCrosstalk
+
+from FCC_config.ALLEGRO.CreateCaloClustersConfig import defineCaloClusterFlags
+defineCaloClusterFlags(flags,
+                       calibrateClusters = opts.calibrateClusters,
+                       createClusterCellCollections = opts.createClusterCellCollections,
+                       reconstructPi0s = opts.reconstructPi0s,
+                       runPhotonID = opts.runPhotonID)
 
 
 # Input/Output handling
@@ -645,463 +624,49 @@ else:
     muonEndcapLinks = ""
 
 
-
-# Function that sets up the sequence for producing SW clusters given an input cell collection
-def setupSWClusters(inputCells,
-                    inputReadouts,
-                    outputClusters,
-                    clusteringThreshold,
-                    applyUpDownstreamCorrections,
-                    applyMVAClusterEnergyCalibration,
-                    addShapeParameters,
-                    runPhotonIDTool,
-                    clusterType="StandardSize"):
-
-    global TopAlg
-
-    from Configurables import CaloTowerToolFCCee
-    from Configurables import CreateCaloClustersSlidingWindowFCCee
-
-    # Clustering parameters
-    # - phi-theta window sizes
-    if clusterType == "ReducedSize":
-        # to be tested: about -2% of energy but smaller cluster, less noise
-        windT = 7
-        windP = 9
-        posT = 5
-        posP = 7
-        dupT = 7
-        dupP = 9
-        finT = 7
-        finP = 9
-    elif clusterType == "MuonSize":
-        # muon clusters
-        windT = 3
-        windP = 5
-        posT = 3
-        posP = 5
-        dupT = 3
-        dupP = 5
-        finT = 3
-        finP = 5
-    else:  # default
-        windT = 9
-        windP = 17
-        posT = 5
-        posP = 11
-        dupT = 7
-        dupP = 13
-        finT = 9
-        finP = 17
-
-    # - minimal energy to create a cluster in GeV (FCC-ee detectors have to reconstruct low energy particles)
-    threshold = clusteringThreshold
-
-    cells = []
-    caloIDs = []
-    for (k, v) in inputCells.items():
-        cells.append(v)
-        caloIDs.append(detIDs(flags, k))
-    # DEBUG
-    print("Input cells")
-    print(cells)
-    print("Calo IDs")
-    print(caloIDs)
-    # note: caloIDs is optional, needed only when createClusterCellCollection=True to save in metadata the mapping between
-    # cell collections and systemID
-    towerTool = CaloTowerToolFCCee(outputClusters + "TowerTool",
-                                   deltaThetaTower=4 * 0.009817477 / 4, deltaPhiTower=2 * 2 * pi / 1536.,
-                                   thetaMin=0.0, thetaMax=pi,
-                                   phiMin=-pi, phiMax=pi,
-                                   cells=cells,
-                                   calorimeterIDs=caloIDs,
-                                   nSubDetectors=3,
-                                   OutputLevel=INFO)
-
-    # note that the energyThreshold cut seems to be on ET rather than E...
-    clusterAlg = CreateCaloClustersSlidingWindowFCCee("Create" + outputClusters,
-                                                      towerTool=towerTool,
-                                                      nThetaWindow=windT, nPhiWindow=windP,
-                                                      nThetaPosition=posT, nPhiPosition=posP,
-                                                      nThetaDuplicates=dupT, nPhiDuplicates=dupP,
-                                                      nThetaFinal=finT, nPhiFinal=finP,
-                                                      energyThreshold=threshold,
-                                                      energySharingCorrection=False,
-                                                      createClusterCellCollection=doCreateClusterCellCollection,
-                                                      OutputLevel=INFO
-                                                      )
-    clusterAlg.clusters.Path = outputClusters
-    clusterAlg.clusterCells.Path = outputClusters.replace("Clusters", "Cluster") + "Cells"
-    TopAlg += [clusterAlg]
-    outputSaveClusters.append(outputClusters)
-
-    if applyUpDownstreamCorrections:
-        # note that this only works for ecal barrel given various hardcoded quantities
-        # to be generalized, pass more input parameters to function
-        from Configurables import CorrectCaloClusters
-        correctClusterAlg = CorrectCaloClusters("Correct" + outputClusters,
-                                                inClusters=clusterAlg.clusters.Path,
-                                                outClusters="Corrected" + clusterAlg.clusters.Path,
-                                                systemIDs=detIDs(flags,["ECAL_Barrel"]),
-                                                numLayers=[ecalBarrelLayers],
-                                                firstLayerIDs=[0],
-                                                lastLayerIDs=[ecalBarrelLayers - 1],
-                                                readoutNames=[inputReadouts["ECAL_Barrel"]],
-                                                upstreamParameters=ecalBarrelUpstreamParameters,
-                                                upstreamFormulas=[['[0]+[1]/(x-[2])', '[0]+[1]/(x-[2])']],
-                                                downstreamParameters=ecalBarrelDownstreamParameters,
-                                                downstreamFormulas=[['[0]+[1]*x', '[0]+[1]/sqrt(x)', '[0]+[1]/x']],
-                                                OutputLevel=INFO
-                                                )
-        TopAlg += [correctClusterAlg]
-
-    if addShapeParameters:
-        if outputClusters.startswith(("EMBCaloClusters", "EMECCaloClusters", "CaloClusters")):
-            from Configurables import AugmentClustersFCCee
-            if outputClusters.startswith("EMBCaloClusters"):
-                augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
-                                                         inClusters=clusterAlg.clusters.Path,
-                                                         outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         systemIDs=[IDs["ECAL_Barrel"]],
-                                                         systemNames=["EMB"],
-                                                         numLayers=[ecalBarrelLayers],
-                                                         readoutNames=[inputReadouts["ECAL_Barrel"]],
-                                                         layerFieldNames=["layer"],
-                                                         thetaRecalcWeights=[ecalBarrelThetaWeights],
-                                                         # do_photon_shapeVar=runPhotonIDTool,
-                                                         do_photon_shapeVar=True,  # we want these variables to train the photon ID BDT (but only for ECAL-only clusters!)
-                                                         do_widthTheta_logE_weights=logEWeightInPhotonID,
-                                                         OutputLevel=INFO
-                                                         )
-            elif outputClusters.startswith("EMECCaloClusters"):
-                augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
-                                                         inClusters=clusterAlg.clusters.Path,
-                                                         outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         systemIDs=[IDs["ECAL_Endcap"]],
-                                                         systemNames=["EMEC"],
-                                                         numLayers=[ecalEndcapLayers],
-                                                         readoutNames=[inputReadouts["ECAL_Endcap"]],
-                                                         layerFieldNames=["layer"],
-                                                         thetaRecalcWeights=[[-1]*ecalEndcapLayers],
-                                                         do_photon_shapeVar=False,
-                                                         do_widthTheta_logE_weights=logEWeightInPhotonID,
-                                                         OutputLevel=INFO
-                                                         )
-            elif outputClusters.startswith("CaloClusters"):
-                # temporary to demonstrate possibility of doing an MVA calibration of pions reconstructed by ECAL+HCAL
-                augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
-                                                         inClusters=clusterAlg.clusters.Path,
-                                                         outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         #systemIDs=caloIDs,
-                                                         #systemNames=["EMB", "EMEC", "HCALB", "HCALEC"],
-                                                         #numLayers=[ecalBarrelLayers, ecalEndcapLayers, hcalBarrelLayers, hcalEndcapLayers],
-                                                         #readoutNames=[inputReadouts["ECAL_Barrel"], inputReadouts["ECAL_Endcap"], inputReadouts["HCAL_Barrel"], inputReadouts["HCAL_Endcap"]],
-                                                         #layerFieldNames=["layer"]*4,  # would make more sense to use pseudolayers for endcaps
-                                                         #thetaFieldNames=["theta"]*4,  # will be ignored for systems!=EMB
-                                                         #moduleFieldNames=["module"]*4,  # will be ignored for systems!=EMB
-                                                         #thetaRecalcWeights=[ecalBarrelThetaWeights, [-1]*ecalEndcapLayers, [-1]*hcalBarrelLayers, [-1]*hcalEndcapLayers],
-                                                         systemIDs=[IDs["ECAL_Barrel"],IDs["HCAL_Barrel"]],
-                                                         systemNames=["EMB", "HCALB"],
-                                                         numLayers=[ecalBarrelLayers, hcalBarrelLayers],
-                                                         readoutNames=[inputReadouts["ECAL_Barrel"], inputReadouts["HCAL_Barrel"]],
-                                                         layerFieldNames=["layer"]*2,
-                                                         thetaFieldNames=["theta"]*2,  # will be ignored for systems!=EMB
-                                                         moduleFieldNames=["module"]*2,  # will be ignored for systems!=EMB
-                                                         thetaRecalcWeights=[ecalBarrelThetaWeights, [-1]*hcalBarrelLayers],
-                                                         do_photon_shapeVar=False,
-                                                         do_widthTheta_logE_weights=logEWeightInPhotonID,
-                                                         OutputLevel=INFO
-                                                         )
-            TopAlg += [augmentClusterAlg]
-            # since the non-decorated version of the clusters will be dropped, we update the list of clusters for which we store the truth links
-            outputSaveClusters.append("Augmented" + clusterAlg.clusters.Path)
-            outputSaveClusters.remove(clusterAlg.clusters.Path)
-        else:
-            addShapeParameters = False
-
-    if applyMVAClusterEnergyCalibration:
-        # note that this only works for ecal barrel given various hardcoded quantities
-        inClusters = ""
-        if addShapeParameters:
-            inClusters = augmentClusterAlg.outClusters.Path
-        else:
-            inClusters = clusterAlg.clusters.Path
-
-        from Configurables import CalibrateCaloClusters
-        calibrateClustersAlg = CalibrateCaloClusters("Calibrate" + outputClusters,
-                                                     inClusters=inClusters,
-                                                     outClusters="Calibrated" + clusterAlg.clusters.Path,
-                                                     systemIDs=detIDs(flags,["ECAL_Barrel"]),
-                                                     systemNames=["EMB"],
-                                                     numLayers=[ecalBarrelLayers],
-                                                     firstLayerIDs=[0],
-                                                     readoutNames=[inputReadouts["ECAL_Barrel"]],
-                                                     layerFieldNames=["layer"],
-                                                     calibrationFile=dataFolder + "lgbm_calibration-CaloClusters.onnx",
-                                                     OutputLevel=INFO
-                                                     )
-        TopAlg += [calibrateClustersAlg]
-
-    if runPhotonIDTool:
-        if not addShapeParameters:
-            print("Photon ID tool cannot be run if shower shape parameters are not calculated")
-            runPhotonIDTool = False
-        else:
-            inClusters = ""
-            if applyMVAClusterEnergyCalibration:
-                inClusters = calibrateClustersAlg.outClusters.Path
-            else:
-                inClusters = augmentClusterAlg.outClusters.Path
-
-            from Configurables import PhotonIDTool
-            photonIDAlg = PhotonIDTool("PhotonID" + outputClusters,
-                                       inClusters=inClusters,
-                                       outClusters="PhotonID" + inClusters,
-                                       mvaModelFile=dataFolder + "bdt-photonid-weights-EMBCaloClusters.onnx",
-                                       mvaInputsFile=dataFolder + "bdt-photonid-settings-EMBCaloClusters.json",
-                                       OutputLevel=INFO
-                                       )
-            TopAlg += [photonIDAlg]
-
-
-# Function that sets up the sequence for producing Topo clusters given an input cell collection
-def setupTopoClusters(inputCells,
-                      inputReadouts,
-                      outputClusters,
-                      clusteringThreshold,
-                      neighboursMap,
-                      noiseMap,
-                      applyUpDownstreamCorrections,
-                      applyMVAClusterEnergyCalibration,
-                      addShapeParameters,
-                      runPhotonIDTool):
-
-    global TopAlg
-
-    from Configurables import TopoCaloNeighbours
-    from Configurables import TopoCaloNoisyCells
-    from Configurables import CaloTopoClusterFCCee
-
-    # list of input cells and of calorimeter systemIDs
-    cells = []
-    caloIDs = []
-    for (k, v) in inputCells.items():
-        cells.append(v)
-        caloIDs.append(detIDs(flags, k))
-
-    # Clustering parameters
-    seedSigma = 6
-    neighbourSigma = 2
-    lastNeighbourSigma = 0
-
-    # tool providing the map of cell neighbours
-    neighboursTool = TopoCaloNeighbours(outputClusters + "NeighboursMap",
-                                        fileName=neighboursMap,
-                                        OutputLevel=INFO)
-
-    # tool providing expected noise levels per cell
-    noiseTool = TopoCaloNoisyCells(outputClusters + "NoiseMap",
-                                   fileName=noiseMap,
-                                   OutputLevel=INFO)
-
-    # algorithm creating the topoclusters
-    clusterAlg = CaloTopoClusterFCCee("Create" + outputClusters,
-                                      cells=cells,
-                                      clusters=outputClusters,
-                                      clusterCells=outputClusters.replace("Clusters", "Cluster") + "Cells",
-                                      neigboursTool=neighboursTool,
-                                      noiseTool=noiseTool,
-                                      seedSigma=seedSigma,
-                                      neighbourSigma=neighbourSigma,
-                                      lastNeighbourSigma=lastNeighbourSigma,
-                                      minClusterEnergy=clusteringThreshold,
-                                      calorimeterIDs=caloIDs,
-                                      createClusterCellCollection=doCreateClusterCellCollection,
-                                      OutputLevel=INFO)
-    TopAlg += [clusterAlg]
-    outputSaveClusters.append(outputClusters)
-
-    if applyUpDownstreamCorrections:
-        # note that this only works for ecal barrel given various hardcoded quantities
-        # to be generalized, pass more input parameters to function
-        from Configurables import CorrectCaloClusters
-        correctClusterAlg = CorrectCaloClusters("Correct" + outputClusters,
-                                                inClusters=clusterAlg.clusters.Path,
-                                                outClusters="Corrected" + clusterAlg.clusters.Path,
-                                                systemIDs=detIDs(flags,["ECAL_Barrel"]),
-                                                numLayers=[ecalBarrelLayers],
-                                                firstLayerIDs=[0],
-                                                lastLayerIDs=[ecalBarrelLayers - 1],
-                                                readoutNames=[inputReadouts["ECAL_Barrel"]],
-                                                upstreamParameters=ecalBarrelUpstreamParameters,
-                                                upstreamFormulas=[['[0]+[1]/(x-[2])', '[0]+[1]/(x-[2])']],
-                                                downstreamParameters=ecalBarrelDownstreamParameters,
-                                                downstreamFormulas=[['[0]+[1]*x', '[0]+[1]/sqrt(x)', '[0]+[1]/x']],
-                                                OutputLevel=INFO
-                                                )
-        TopAlg += [correctClusterAlg]
-
-    if addShapeParameters:
-        if outputClusters.startswith(("EMBCaloTopoClusters", "EMECCaloTopoClusters", "CaloTopoClusters")):
-            from Configurables import AugmentClustersFCCee
-            if outputClusters.startswith("EMBCaloTopoClusters"):
-                augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
-                                                         inClusters=clusterAlg.clusters.Path,
-                                                         outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         systemIDs=[IDs["ECAL_Barrel"]],
-                                                         systemNames=["EMB"],
-                                                         numLayers=[ecalBarrelLayers],
-                                                         readoutNames=[inputReadouts["ECAL_Barrel"]],
-                                                         layerFieldNames=["layer"],
-                                                         thetaRecalcWeights=[ecalBarrelThetaWeights],
-                                                         # do_photon_shapeVar=runPhotonIDTool,
-                                                         do_photon_shapeVar=True,  # we want these variables to train the photon ID BDT
-                                                         do_widthTheta_logE_weights=logEWeightInPhotonID,
-                                                         OutputLevel=INFO
-                                                         )
-            elif outputClusters.startswith("EMECCaloTopoClusters"):
-                augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
-                                                         inClusters=clusterAlg.clusters.Path,
-                                                         outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         systemIDs=[IDs["ECAL_Endcap"]],
-                                                         systemNames=["EMEC"],
-                                                         numLayers=[ecalEndcapLayers],
-                                                         readoutNames=[inputReadouts["ECAL_Endcap"]],
-                                                         layerFieldNames=["layer"],
-                                                         thetaRecalcWeights=[[-1]*ecalEndcapLayers],
-                                                         do_photon_shapeVar=False,
-                                                         do_widthTheta_logE_weights=logEWeightInPhotonID,
-                                                         OutputLevel=INFO
-                                                         )
-            elif outputClusters.startswith("CaloTopoClusters"):
-                # temporary to demonstrate possibility of doing an MVA calibration of pions reconstructed by ECAL+HCAL
-                augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
-                                                         inClusters=clusterAlg.clusters.Path,
-                                                         outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         #systemIDs=caloIDs,
-                                                         #systemNames=["EMB", "EMEC", "HCALB", "HCALEC"],
-                                                         #numLayers=[ecalBarrelLayers, ecalEndcapLayers, hcalBarrelLayers, hcalEndcapLayers],
-                                                         #readoutNames=[inputReadouts["ECAL_Barrel"], inputReadouts["ECAL_Endcap"], inputReadouts["HCAL_Barrel"], inputReadouts["HCAL_Endcap"]],
-                                                         #layerFieldNames=["layer"]*4,  # would make more sense to use pseudolayers for endcaps
-                                                         #thetaFieldNames=["theta"]*4,  # will be ignored for systems!=EMB
-                                                         #moduleFieldNames=["module"]*4,  # will be ignored for systems!=EMB
-                                                         #thetaRecalcWeights=[ecalBarrelThetaWeights, [-1]*ecalEndcapLayers, [-1]*hcalBarrelLayers, [-1]*hcalEndcapLayers],
-                                                         systemIDs=[IDs["ECAL_Barrel"],IDs["HCAL_Barrel"]],
-                                                         systemNames=["EMB", "HCALB"],
-                                                         numLayers=[ecalBarrelLayers, hcalBarrelLayers],
-                                                         readoutNames=[inputReadouts["ECAL_Barrel"], inputReadouts["HCAL_Barrel"]],
-                                                         layerFieldNames=["layer"]*2,
-                                                         thetaFieldNames=["theta"]*2,  # will be ignored for systems!=EMB
-                                                         moduleFieldNames=["module"]*2,  # will be ignored for systems!=EMB
-                                                         thetaRecalcWeights=[ecalBarrelThetaWeights, [-1]*hcalBarrelLayers],
-                                                         do_photon_shapeVar=False,
-                                                         do_widthTheta_logE_weights=logEWeightInPhotonID,
-                                                         OutputLevel=INFO
-                                                         )
-            TopAlg += [augmentClusterAlg]
-            # since the non-decorated version of the clusters will be dropped, we update the list of clusters for which we store the truth links
-            outputSaveClusters.append("Augmented" + clusterAlg.clusters.Path)
-            outputSaveClusters.remove(clusterAlg.clusters.Path)
-        else:
-            addShapeParameters = False
-
-        # tool to identify resolved pi0->two photon cluster candidates
-        # see: https://indico.cern.ch/event/1483299/contributions/6488594/attachments/3056315/5403634/ALLEGRO_photon_pi0_20250424.pdf
-        if addPi0RecoTool:
-            from Configurables import PairCaloClustersPi0
-            Pi0RecoAlg = PairCaloClustersPi0(
-                "resolvedPi0FromClusterPair" + outputClusters,
-                inClusters=augmentClusterAlg.outClusters.Path,
-                unpairedClusters="Unpaired" + augmentClusterAlg.outClusters.Path,
-                pairedClusters="Paired" + augmentClusterAlg.outClusters.Path,
-                reconstructedPi0="ResolvedPi0Particle" + outputClusters,
-                massPeak=0.122201, # values determined from a dedicated study
-                massLow=0.0754493,
-                massHigh=0.153543,
-                OutputLevel=INFO
-            )
-            TopAlg += [Pi0RecoAlg]
-
-    if applyMVAClusterEnergyCalibration:
-        # note that this only works for ecal barrel given various hardcoded quantities
-        inClusters = ""
-        if addShapeParameters:
-            inClusters = "Augmented" + clusterAlg.clusters.Path
-        else:
-            inClusters = clusterAlg.clusters.Path
-
-        from Configurables import CalibrateCaloClusters
-        calibrateClustersAlg = CalibrateCaloClusters("Calibrate" + outputClusters,
-                                                     inClusters=inClusters,
-                                                     outClusters="Calibrated" + clusterAlg.clusters.Path,
-                                                     systemIDs=detIDs(flags,["ECAL_Barrel"]),
-                                                     systemNames=["EMB"],
-                                                     numLayers=[ecalBarrelLayers],
-                                                     firstLayerIDs=[0],
-                                                     readoutNames=[inputReadouts["ECAL_Barrel"]],
-                                                     layerFieldNames=["layer"],
-                                                     calibrationFile=dataFolder + "lgbm_calibration-CaloTopoClusters.onnx",
-                                                     OutputLevel=INFO
-                                                     )
-        TopAlg += [calibrateClustersAlg]
-
-    if runPhotonIDTool:
-        if not addShapeParameters:
-            print("Photon ID tool cannot be run if shower shape parameters are not calculated")
-            runPhotonIDTool = False
-        else:
-            inClusters = ""
-            if applyMVAClusterEnergyCalibration:
-                inClusters = calibrateClustersAlg.outClusters.Path
-            else:
-                inClusters = augmentClusterAlg.outClusters.Path
-
-            from Configurables import PhotonIDTool
-            photonIDAlg = PhotonIDTool("PhotonID" + outputClusters,
-                                       inClusters=inClusters,
-                                       outClusters="PhotonID" + inClusters,
-                                       mvaModelFile=dataFolder + "bdt-photonid-weights-EMBCaloTopoClusters.onnx",
-                                       mvaInputsFile=dataFolder + "bdt-photonid-settings-EMBCaloTopoClusters.json",
-                                       OutputLevel=INFO)
-            TopAlg += [photonIDAlg]
-
+calclust_cfg = ComponentAccumulator()
 
 if doSWClustering:
+    from FCC_config.ALLEGRO.CreateCaloClustersConfig import CaloSWClusterCfg
+
     # SW ECAL barrel clusters
-    EMBCaloClusterInputs = {"ECAL_Barrel": flags.ECal.Barrel.cellsName}
-    EMBCaloClusterReadouts = {"ECAL_Barrel": flags.ECal.Barrel.readoutName}
-    setupSWClusters(EMBCaloClusterInputs,
-                    EMBCaloClusterReadouts,
-                    "EMBCaloClusters",
-                    0.04,
-                    applyUpDownstreamCorrections,
-                    applyMVAClusterEnergyCalibration,
-                    addShapeParameters,
-                    runPhotonIDTool)
+    calclust_cfg.merge (
+        CaloSWClusterCfg (flags,
+                          {"ECAL_Barrel": flags.ECal.Barrel.cellsName},
+                          'EMBCaloClusters',
+                          0.04,  # threshold,
+                          'StandardSize',
+                          outputSaveClusters))
 
     # SW ECAL endcap clusters
-    EMECCaloClusterInputs = {"ECAL_Endcap": flags.ECal.Endcap.cellsName}
-    EMECCaloClusterReadouts = {"ECAL_Endcap": flags.ECal.Endcap.readoutName}
-    setupSWClusters(EMECCaloClusterInputs,
-                    EMECCaloClusterReadouts,
-                    "EMECCaloClusters",
-                    0.04,
-                    False,
-                    False,
-                    addShapeParameters,
-                    False)
+    calclust_cfg.merge (
+        CaloSWClusterCfg (flags,
+                          {"ECAL_Endcap": flags.ECal.Endcap.cellsName},
+                          'EMECCaloClusters',
+                          0.04,  # threshold,
+                          'StandardSize',
+                          outputSaveClusters,
+                          runPhotonID = False,
+                          calibrateClusters = False,
+                          ))
 
     # SW ECAL barrel and endcap clusters with noise
     if addNoise:
-        EMBCaloClusterInputsWithNoise = {"ECAL_Barrel": flags.ECal.Barrel.cellsName + "WithNoise" if filterNoiseThreshold < 0 else flags.ECal.Barrel.cellsName + "WithNoiseFiltered"}
-        setupSWClusters(EMBCaloClusterInputsWithNoise,
-                        EMBCaloClusterReadouts,
-                        "EMBCaloClustersWithNoise" if filterNoiseThreshold < 0 else "EMBCaloClustersWithNoiseFiltered",
-                        0.1,  # large number of clusters with noise, consider raising to 0.3 if not looking at low-energy cluster reconstruction, or use filtered cells
-                        applyUpDownstreamCorrections,
-                        applyMVAClusterEnergyCalibration,
-                        addShapeParameters,
-                        runPhotonIDTool)
+        suffix = 'WithNoise'
+        if filterNoiseThreshold >= 0:
+            suffix += 'Filtered'
+ 
+        calclust_cfg.merge (
+            CaloSWClusterCfg (flags,
+                              {'ECAL_Barrel': flags.ECal.Barrel.cellsName + suffix},
+                              'EMBCaloClusters' + suffix,
+                              # threshold --- large number of clusters
+                              # with noise, consider raising to 0.3 if not
+                              # looking at low-energy cluster
+                              # reconstruction, or use filtered cells
+                              0.1,
+                              'StandardSize',
+                              outputSaveClusters))
 
         EMECCaloClusterInputsWithNoise = {"ECAL_Endcap": ecalEndcapPositionedCellsName + "WithNoise" if filterNoiseThreshold < 0 else ecalEndcapPositionedCellsName + "WithNoiseFiltered"}
         setupSWClusters(EMECCaloClusterInputsWithNoise,
@@ -1115,89 +680,70 @@ if doSWClustering:
 
     # ECAL + HCAL clusters
     if runHCal:
-        CaloClusterInputs = {
-            "ECAL_Barrel": flags.ECal.Barrel.cellsName,
-            "ECAL_Endcap": flags.ECal.Endcap.cellsName,
-            "HCAL_Barrel": flags.HCal.Barrel.cellsName,
-            "HCAL_Endcap": flags.HCal.Endcap.cellsName,
-        }
-        CaloClusterReadouts = {
-            "ECAL_Barrel": flags.ECal.Barrel.readoutName,
-            "ECAL_Endcap": flags.ECal.Endcap.readoutName,
-            "HCAL_Barrel": flags.HCal.Barrel.readoutName,
-            "HCAL_Endcap": flags.HCal.Endcap.readoutName,
-        }
-        setupSWClusters(CaloClusterInputs,
-                        CaloClusterReadouts,
-                        "CaloClusters",
-                        0.04,
-                        False,
-                        False,
-                        addShapeParameters,
-                        False)
+        calclust_cfg.merge (
+            CaloSWClusterCfg (flags,
+                              {'ECAL_Barrel': flags.ECal.Barrel.cellsName,
+                               'ECAL_Endcap': flags.ECal.Endcap.cellsName,
+                               'HCAL_Barrel': flags.HCal.Barrel.cellsName,
+                               'HCAL_Endcap': flags.HCal.Endcap.cellsName,
+                               },
+                              'CaloClusters',
+                              0.04,  # threshold,
+                              'StandardSize',
+                              outputSaveClusters,
+                              calibrateClusters = False,
+                              runPhotonID = False))
 
     # experimental: MUON clusters
-    if (runMuon):
-        MuonCaloClusterInputs = {
-            "Muon_Barrel": muonBarrelPositionedCellsName,
-            "Muon_Endcap": muonEndcapPositionedCellsName,
-        }
-        MuonCaloClusterReadouts = {
-            "Muon_Barrel": muonBarrelReadoutName,
-            "Muon_Endcap": muonEndcapReadoutName,
-        }
-        setupSWClusters(MuonCaloClusterInputs,
-                        MuonCaloClusterReadouts,
-                        "MuonCaloClusters",
-                        0.0,
-                        False,
-                        False,
-                        False,
-                        False,
-                        "MuonSize")
+    if runMuon:
+        calclust_cfg.merge (
+            CaloSWClusterCfg (flags,
+                              {'Muon_Barrel': muonBarrelPositionedCellsName,
+                               'Muon_Endcap': muonEndcapPositionedCellsName,
+                               },
+                              'MuonCaloClusters',
+                              0.00,  # threshold,
+                              'MuonSize',
+                              outputSaveClusters,
+                              calibrateClusters = False,
+                              addShapeParameters = False,
+                              runPhotonID = False))
 
 if doTopoClustering:
+    from FCC_config.ALLEGRO.CreateCaloClustersConfig import CaloTopoClusterCfg
+
     # ECAL barrel topoclusters
-    EMBCaloTopoClusterInputs = {"ECAL_Barrel": flags.ECal.Barrel.cellsName}
-    EMBCaloTopoClusterReadouts = {"ECAL_Barrel": flags.ECal.Barrel.readoutName}
-    setupTopoClusters(EMBCaloTopoClusterInputs,
-                      EMBCaloTopoClusterReadouts,
-                      "EMBCaloTopoClusters",
-                      0.0,
-                      dataFolder + "neighbours_map_ecalB_thetamodulemerged.root",
-                      dataFolder + "cellNoise_map_electronicsNoiseLevel_ecalB_thetamodulemerged.root",
-                      applyUpDownstreamCorrections,
-                      applyMVAClusterEnergyCalibration,
-                      addShapeParameters,
-                      runPhotonIDTool)
+    calclust_cfg.merge (
+        CaloTopoClusterCfg (flags,
+                            {'ECAL_Barrel': flags.ECal.Barrel.cellsName},
+                            'EMBCaloTopoClusters',
+                            0,  # threshold,
+                            outputSaveClusters))
+
 
     # ECAL endcap topoclusters
-    EMECCaloTopoClusterInputs = {"ECAL_Endcap": flags.ECal.Endcap.cellsName}
-    EMECCaloTopoClusterReadouts = {"ECAL_Endcap": flags.ECal.Endcap.readoutName}
-    setupTopoClusters(EMECCaloTopoClusterInputs,
-                      EMECCaloTopoClusterReadouts,
-                      "EMECCaloTopoClusters",
-                      0.0,
-                      dataFolder + "neighbours_map_ecalE_turbine.root",
-                      dataFolder + "cellNoise_map_endcapTurbine_electronicsNoiseLevel.root",
-                      False,
-                      False,
-                      addShapeParameters,
-                      False)
+    calclust_cfg.merge (
+        CaloTopoClusterCfg (flags,
+                            {'ECAL_Endcap': flags.ECal.Endcap.cellsName},
+                            'EMECCaloTopoClusters',
+                            0,  # threshold,
+                            outputSaveClusters,
+                            runPhotonID = False,
+                            calibrateClusters = False,
+                            ))
 
     # ECAL topoclusters with noise
     if addNoise:
-        EMBCaloTopoClusterInputsWithNoise = {"ECAL_Barrel": flags.ECal.Barrel.cellsName + "WithNoise" if filterNoiseThreshold < 0 else flags.ECal.Barrel.cellsName + "WithNoiseFiltered"}
-        setupTopoClusters(EMBCaloTopoClusterInputsWithNoise,
-                          EMBCaloTopoClusterReadouts,
-                          "EMBCaloTopoClustersWithNoise" if filterNoiseThreshold < 0 else "EMBCaloTopoClustersWithNoiseFiltered",
-                          0.1,
-                          dataFolder + "neighbours_map_ecalB_thetamodulemerged.root",
-                          dataFolder + "cellNoise_map_electronicsNoiseLevel_ecalB_thetamodulemerged.root",
-                          applyUpDownstreamCorrections,
-                          applyMVAClusterEnergyCalibration,
-                          addShapeParameters,
-                          runPhotonIDTool)
+        suffix = 'WithNoise'
+        if filterNoiseThreshold >= 0:
+            suffix += 'Filtered'
+
+        calclust_cfg.merge(
+            CaloTopoClusterCfg (flags,
+                                {'ECAL_Barrel': flags.ECal.Barrel.cellsName + suffix},
+                                'EMBCaloTopoClusters' + suffix,
+                                0.1,  # threshold,
+                                outputSaveClusters))
 
         EMECCaloTopoClusterInputsWithNoise = {"ECAL_Endcap": ecalEndcapPositionedCellsName + "WithNoise" if filterNoiseThreshold < 0 else ecalEndcapPositionedCellsName + "WithNoiseFiltered"}
         setupTopoClusters(EMECCaloTopoClusterInputsWithNoise,
@@ -1213,29 +759,20 @@ if doTopoClustering:
 
     # ECAL + HCAL
     if runHCal:
-        CaloTopoClusterInputs = {
-            "ECAL_Barrel": flags.ECal.Barrel.cellsName,
-            "ECAL_Endcap": flags.ECal.Endcap.cellsName,
-            "HCAL_Barrel": flags.HCal.Barrel.cellsName,
-            "HCAL_Endcap": flags.HCal.Endcap.cellsName,
-        }
-        CaloTopoClusterReadouts = {
-            "ECAL_Barrel": flags.ECal.Barrel.readoutName,
-            "ECAL_Endcap": flags.ECal.Endcap.readoutName,
-            "HCAL_Barrel": flags.HCal.Barrel.readoutName,
-            "HCAL_Endcap": flags.HCal.Endcap.readoutName,
-        }
-        # note: the neighbour map links ecal and hcal barrels, and hcal barrel-endcap, but does not link (yet) the others
-        setupTopoClusters(CaloTopoClusterInputs,
-                          CaloTopoClusterReadouts,
-                          "CaloTopoClusters",
-                          0.0,
-                          dataFolder + "neighbours_map_ecalB_thetamodulemerged_ecalE_turbine_hcalB_hcalEndcap_phitheta.root",
-                          dataFolder + "cellNoise_map_electronicsNoiseLevel_ecalB_ECalBarrelModuleThetaMerged_ecalE_ECalEndcapTurbine_hcalB_HCalBarrelReadout_hcalE_HCalEndcapReadout.root",
-                          False,
-                          False,
-                          addShapeParameters,
-                          False)
+        calclust_cfg.merge (
+            CaloTopoClusterCfg (flags,
+                                {'ECAL_Barrel': flags.ECal.Barrel.cellsName,
+                                 'ECAL_Endcap': flags.ECal.Endcap.cellsName,
+                                 'HCAL_Barrel': flags.HCal.Barrel.cellsName,
+                                 'HCAL_Endcap': flags.HCal.Endcap.cellsName,
+                                 },
+                                'CaloTopoClusters',
+                                0, # threshold
+                                outputSaveClusters,
+                                calibrateClusters = False,
+                                runPhotonID = False))
+
+calclust_cfg.toVars (TopAlg, ExtSvc)
 
 
 # Create CaloHit<->MCParticle links (needed for training datasets for MLPF)
@@ -1312,14 +849,15 @@ if not saveCells:
     if runHCal:
         io_svc.outputCommands.append("drop %s" % hcalBarrelPositionedCellsName)
         io_svc.outputCommands.append("drop %s" % hcalEndcapPositionedCellsName)
-if not saveClusterCells:
+# only save cluster cells if the user creates these collections
+if not flags.CaloSW.createClusterCellCollections and not flags.CaloTopo.createClusterCellCollections:
     io_svc.outputCommands.append("drop *Calo*Cluster*Cells*")
 # drop hits<->cells links if either of the two collections are not saved
 if not saveHits or not saveCells:
     io_svc.outputCommands.append("drop *SimCaloHitLinks")
 
 # if we decorate the clusters, we can drop the non-decorated ones
-if addShapeParameters:
+if flags.CaloSW.addShapeParameters or flags.CaloTopo.addShapeParameters:
     for algo in TopAlg:
         if algo.__class__.__name__ == "AugmentClustersFCCee":
             io_svc.outputCommands.append("drop %s" % algo.inClusters)
