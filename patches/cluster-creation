@@ -1,6 +1,0 @@
-Bottom: b6eee76b2b4cc05ada03ef4f858a301cd2ca920d
-Top:    835d02a93c2d8a6378e35cfc0a31933f30dd30de
-Author: scott snyder <snyder@bnl.gov>
-Date:   2026-06-18 15:58:31 -0400
-
-Modularize calo cluster creation.
