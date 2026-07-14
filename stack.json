@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "prev": "f599a2cefb2500f7867d949d5e963dfdb0515fdc",
+  "prev": "8689d1c287603176ca91288cb8ab2bf1fd21007d",
   "head": "d87ce6c47a08a5b39cb1557c214322e01fdaa131",
   "applied": [
     "gitignore",
@@ -11,7 +11,6 @@
   ],
   "unapplied": [
     "noise",
-    "outputsel-wip",
     "indexing-wip"
   ],
   "hidden": [
@@ -38,9 +37,6 @@
     },
     "noise": {
       "oid": "b6ef3942012e65e2a997449eb172bc78ec038452"
-    },
-    "outputsel-wip": {
-      "oid": "c7eafafb51e114aa68b4db60e7e127d255780b57"
     },
     "resegment": {
       "oid": "a517cc2dbe3beb6907584287370900d1feaafc11"
