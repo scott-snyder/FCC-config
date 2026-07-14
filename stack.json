@@ -1,9 +1,10 @@
 {
   "version": 5,
-  "prev": "763c86c847a4ce4ee2cf81d24e46399c2795dbcb",
-  "head": "86baf4a7be8e01eee3adb49a86a3637129bdee0b",
+  "prev": "6990523639d8df35414987955b2ba365ad38cbed",
+  "head": "aa911e3ece13dc89a6dad8f71ff8be28eb919716",
   "applied": [
-    "gitignore"
+    "gitignore",
+    "indexing-config"
   ],
   "unapplied": [
     "cell-creation",
@@ -26,6 +27,9 @@
     },
     "gitignore": {
       "oid": "86baf4a7be8e01eee3adb49a86a3637129bdee0b"
+    },
+    "indexing-config": {
+      "oid": "aa911e3ece13dc89a6dad8f71ff8be28eb919716"
     },
     "indexing-wip": {
       "oid": "2b1e5ab22e3c5de94562b9e1af2af680614ccbf2"
