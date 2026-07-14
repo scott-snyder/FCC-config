@@ -1,12 +1,12 @@
 {
   "version": 5,
-  "prev": "543f31c963695a73ad2561a7ece3cf154f5ddb64",
-  "head": "cda1e4a934d0e1acce087b6b6997419799b05cae",
+  "prev": "e4fb5825039c33ada1779d73b2420ac53395c963",
+  "head": "0cfa98df5048bec0bf4ad37d3c3a2f1b2c92108b",
   "applied": [
-    "gitignore",
-    "resegment"
+    "gitignore"
   ],
   "unapplied": [
+    "resegment",
     "indexing-config",
     "noise",
     "cell-creation",
