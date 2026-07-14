@@ -217,6 +217,13 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         return
         
 
+    def test_ECalEndcapNoiseTool (self):
+        flags = CreateCaloCellsConfig.defineCaloCellFlags()
+        tool = CreateCaloCellsConfig.ECalEndcapNoiseTool (flags)
+        self.assertEqual (tool.getFullName(), 'NoiseCaloCellsFromFileTurbineEndcapTool/ECalEndcapNoiseTool')
+        return
+        
+
     def test_CreateECalBarrelCellsCfg (self):
         flags = CreateCaloCellsConfig.defineCaloCellFlags()
         flags.compactFile = compactFile
@@ -290,21 +297,22 @@ class TestCreateCaloCellsConfig (unittest.TestCase):
         self.assertEqual (len(svc.GeoTools), 1)
         self.assertEqual (svc.GeoTools[0].getFullName(), 'TurbineEndcapCaloTool/ECalEndcapGeometryTool')
 
-        ca = CreateCaloCellsConfig.CreateECalEndcapCellsCfg (flags, name='ecale_cells2', doCellCalibration=False, hits='ecale', cellsNameSuffix='2')
+        ca = CreateCaloCellsConfig.CreateECalEndcapCellsCfg (flags, name='ecale_cells2', doCellCalibration=False, hits='ecale', cellsNameSuffix='2',
+                                                             addNoise=True, filterCellNoise=True)
         self.assertEqual (len(ca.svcs()), 1)
         self.assertEqual (len(ca.algs()), 1)
         alg = ca.algs()[0]
         self.assertEqual (alg.getFullName(), 'CreatePositionedCaloCells/ecale_cells2')
         self.assertEqual (alg.hits, 'ecale')
-        self.assertEqual (alg.cells, 'ecalePositioned2')
-        self.assertEqual (alg.links, 'ecalePositioned2SimCaloHitLinks')
+        self.assertEqual (alg.cells, 'ECalEndcapTurbinePositioned2')
+        self.assertEqual (alg.links, 'ECalEndcapTurbinePositioned2SimCaloHitLinks')
         self.assertEqual (alg.doCellCalibration, False)
         self.assertEqual (alg.addCrosstalk, False)
-        self.assertEqual (alg.addCellNoise, False)
-        self.assertEqual (alg.filterCellNoise, False)
-        self.assertEqual (alg.noiseTool.getFullName(), '')
+        self.assertEqual (alg.addCellNoise, True)
+        self.assertEqual (alg.filterCellNoise, True)
+        self.assertEqual (alg.noiseTool.getFullName(), 'NoiseCaloCellsFromFileTurbineEndcapTool/ECalEndcapNoiseTool')
         self.assertEqual (alg.calibTool.getFullName(), '')
-        self.assertEqual (alg.positionsTool.getFullName(), 'CellPositionsECalEndcapTurbineSegTool/CellPositionsECalEndcap')
+        self.assertEqual (alg.positionsTool.getFullName(), 'CellPositionsECalEndcapTurbineSegTool/CellPositionsECalEndcapTurbine')
         self.assertEqual (alg.positionsTool.readoutName, 'ECalEndcapTurbine')
         return
 

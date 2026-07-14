@@ -112,6 +112,8 @@ if ecalBarrelSamplingFraction and len(ecalBarrelSamplingFraction) > 0:
 
 
 # ECAL endcap parameters for digitization
+ecalEndcapWheels = 3
+
 # the turbine endcap has calibration "layers" in the both the z and radial
 # directions, for each of the three wheels.  So the total number of layers
 # is given by:
@@ -344,6 +346,23 @@ def ECalBarrelNoiseTool (flags, name = 'ECalBarrelNoiseTool'):
                                                )
 
 
+def ECalEndcapNoiseTool (flags, name = 'ECalEndcapNoiseTool'):
+    """Return noise tool for ECal endcap."""
+    return C.NoiseCaloCellsFromFileTurbineEndcapTool (name,
+                                                      cellPositionsTool=CellPositionsECalEndcap(flags),
+                                                      readoutName=flags.ECal.Endcap.readoutName,
+                                                      noiseFileName=flags.ECal.Endcap.noisePath,
+                                                      elecNoiseRMSHistoName=flags.ECal.Endcap.noiseRMSHistName,
+                                                      setNoiseOffset=False,
+                                                      activeFieldName="wheel",
+                                                      addPileup=False,
+                                                      filterNoiseThreshold=flags.ECal.Endcap.filterNoiseThreshold,
+                                                      useAbsInFilter=True,
+                                                      numHistograms=ecalEndcapWheels, # 3 wheels
+                                                      scaleFactor=1 / 1000.,  # MeV to GeV
+                                               )
+
+
 def CreateECalBarrelCellsCfg (flags,
                               name = 'CreatePositionedECalBarrelCells',
                               doCellCalibration = True,
@@ -408,8 +427,11 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
 def CreateECalEndcapCellsCfg (flags,
                               name = 'CreatePositionedECalEndcapCells',
                               doCellCalibration = True,
+                              addNoise = False,
+                              filterCellNoise = False,
                               cellsNameSuffix = '',
                               hits = None,
+                              readoutName = None,
                               alg = C.CreatePositionedCaloCells,
                               **kw):
     """Return a CA for creating ECal endcap cells.
@@ -423,24 +445,34 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
 """
     cfg = ComponentAccumulator()
     cfg.merge (CaloCellIndexerSvcCfg (flags, detectors = ['ECAL_Endcap']))
+    if readoutName is None: readoutName = flags.ECal.Endcap.readoutName
     if hits is None: hits = flags.ECal.Endcap.readoutName
 
-    kw.setdefault('cells', hits + flags.cellsNamePart + cellsNameSuffix)
+    kw.setdefault('cells', readoutName + flags.cellsNamePart + cellsNameSuffix)
     kw.setdefault('links', kw['cells'] + flags.linksNamePart)
 
+    kw.setdefault('noiseTool', ECalEndcapNoiseTool(flags) if addNoise else None)
+    kw.setdefault('geometryTool', ECalEndcapGeometryTool(flags) if addNoise else None)
+
     kw.setdefault('calibTool', CalibrateECalEndcap(flags) if doCellCalibration else None)
+
+    if hits == flags.ECal.Endcap.readoutName:
+        kw['positionsTool'] = CellPositionsECalEndcap(flags)
+    else:
+        kw['positionsTool'] = CellPositionsECalEndcap(flags,
+                                                      name='CellPositions' + readoutName,
+                                                      readoutName=readoutName)
 
     cfg.addAlg(alg(name,
                    hits=hits,
                    doCellCalibration=doCellCalibration,
-                   positionsTool=CellPositionsECalEndcap(flags),
-                   addCellNoise=False,
-                   noiseTool=None,
+                   addCellNoise=addNoise,
                    addCrosstalk=False,
-                   filterCellNoise=False,
+                   filterCellNoise=filterCellNoise,
                    crosstalkTool=None,
                    **kw
                    ))
+
     return cfg
 
 
@@ -598,6 +630,9 @@ def defineCaloCellFlags(flags = None,
     flags.ECal.Endcap.readoutName = 'ECalEndcapTurbine'                # endcap, turbine-like (baseline)
     flags.ECal.Endcap.cellsName = flags.ECal.Endcap.readoutName + flags.cellsNamePart
     flags.ECal.Endcap.linksName = flags.ECal.Endcap.cellsName + flags.linksNamePart
+    flags.ECal.Endcap.noisePath = dataFiles + "elecNoise_ecalendcap.root"
+    flags.ECal.Endcap.noiseRMSHistName = 'noise_endcap_wheel'
+    flags.ECal.Endcap.filterNoiseThreshold = -1
 
     # HCal barrel
     flags.HCal.Barrel = Flags()

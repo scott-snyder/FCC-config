@@ -105,7 +105,6 @@ ecalEndcapLayers = 98
 
 resegmentECalBarrel = opts.resegmentECalBarrel
 
-ecalEndcapWheels = 3
 hcalBarrelLayers = 13
 hcalEndcapLayers = 22
 
@@ -762,7 +761,7 @@ def setupSWClusters(inputCells,
                 augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
                                                          inClusters=clusterAlg.clusters.Path,
                                                          outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         systemIDs=[IDs["ECAL_Barrel"]],
+                                                         systemIDs=detIDs(flags, ["ECAL_Barrel"]),
                                                          systemNames=["EMB"],
                                                          numLayers=[ecalBarrelLayers],
                                                          readoutNames=[inputReadouts["ECAL_Barrel"]],
@@ -777,7 +776,7 @@ def setupSWClusters(inputCells,
                 augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
                                                          inClusters=clusterAlg.clusters.Path,
                                                          outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         systemIDs=[IDs["ECAL_Endcap"]],
+                                                         systemIDs=detIDs(flags, ["ECAL_Endcap"]),
                                                          systemNames=["EMEC"],
                                                          numLayers=[ecalEndcapLayers],
                                                          readoutNames=[inputReadouts["ECAL_Endcap"]],
@@ -800,7 +799,7 @@ def setupSWClusters(inputCells,
                                                          #thetaFieldNames=["theta"]*4,  # will be ignored for systems!=EMB
                                                          #moduleFieldNames=["module"]*4,  # will be ignored for systems!=EMB
                                                          #thetaRecalcWeights=[ecalBarrelThetaWeights, [-1]*ecalEndcapLayers, [-1]*hcalBarrelLayers, [-1]*hcalEndcapLayers],
-                                                         systemIDs=[IDs["ECAL_Barrel"],IDs["HCAL_Barrel"]],
+                                                         systemIDs=detIDs(flags, ["ECAL_Barrel","HCAL_Barrel"]),
                                                          systemNames=["EMB", "HCALB"],
                                                          numLayers=[ecalBarrelLayers, hcalBarrelLayers],
                                                          readoutNames=[inputReadouts["ECAL_Barrel"], inputReadouts["HCAL_Barrel"]],
@@ -948,7 +947,7 @@ def setupTopoClusters(inputCells,
                 augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
                                                          inClusters=clusterAlg.clusters.Path,
                                                          outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         systemIDs=[IDs["ECAL_Barrel"]],
+                                                         systemIDs=detIDs(flags, ["ECAL_Barrel"]),
                                                          systemNames=["EMB"],
                                                          numLayers=[ecalBarrelLayers],
                                                          readoutNames=[inputReadouts["ECAL_Barrel"]],
@@ -963,7 +962,7 @@ def setupTopoClusters(inputCells,
                 augmentClusterAlg = AugmentClustersFCCee("Augment" + outputClusters,
                                                          inClusters=clusterAlg.clusters.Path,
                                                          outClusters="Augmented" + clusterAlg.clusters.Path,
-                                                         systemIDs=[IDs["ECAL_Endcap"]],
+                                                         systemIDs=detIDs(flags, ["ECAL_Endcap"]),
                                                          systemNames=["EMEC"],
                                                          numLayers=[ecalEndcapLayers],
                                                          readoutNames=[inputReadouts["ECAL_Endcap"]],
@@ -986,7 +985,7 @@ def setupTopoClusters(inputCells,
                                                          #thetaFieldNames=["theta"]*4,  # will be ignored for systems!=EMB
                                                          #moduleFieldNames=["module"]*4,  # will be ignored for systems!=EMB
                                                          #thetaRecalcWeights=[ecalBarrelThetaWeights, [-1]*ecalEndcapLayers, [-1]*hcalBarrelLayers, [-1]*hcalEndcapLayers],
-                                                         systemIDs=[IDs["ECAL_Barrel"],IDs["HCAL_Barrel"]],
+                                                         systemIDs=detIDs(flags,["ECAL_Barrel","HCAL_Barrel"]),
                                                          systemNames=["EMB", "HCALB"],
                                                          numLayers=[ecalBarrelLayers, hcalBarrelLayers],
                                                          readoutNames=[inputReadouts["ECAL_Barrel"], inputReadouts["HCAL_Barrel"]],
@@ -1103,7 +1102,7 @@ if doSWClustering:
                         addShapeParameters,
                         runPhotonIDTool)
 
-        EMECCaloClusterInputsWithNoise = {"ECAL_Endcap": ecalEndcapPositionedCellsName + "WithNoise" if filterNoiseThreshold < 0 else ecalEndcapPositionedCellsName + "WithNoiseFiltered"}
+        EMECCaloClusterInputsWithNoise = {"ECAL_Endcap": flags.ECal.Endcap.cellsName + "WithNoise" if filterNoiseThreshold < 0 else flags.ECal.Endcap.cellsName + "WithNoiseFiltered"}
         setupSWClusters(EMECCaloClusterInputsWithNoise,
                         EMECCaloClusterReadouts,
                         "EMECCaloClustersWithNoise" if filterNoiseThreshold < 0 else "EMECCaloClustersWithNoiseFiltered",
@@ -1199,7 +1198,7 @@ if doTopoClustering:
                           addShapeParameters,
                           runPhotonIDTool)
 
-        EMECCaloTopoClusterInputsWithNoise = {"ECAL_Endcap": ecalEndcapPositionedCellsName + "WithNoise" if filterNoiseThreshold < 0 else ecalEndcapPositionedCellsName + "WithNoiseFiltered"}
+        EMECCaloTopoClusterInputsWithNoise = {"ECAL_Endcap": flags.ECal.Endcap.cellsName + "WithNoise" if filterNoiseThreshold < 0 else flags.ECal.Endcap.cellsName + "WithNoiseFiltered"}
         setupTopoClusters(EMECCaloTopoClusterInputsWithNoise,
                           EMECCaloTopoClusterReadouts,
                           "EMECCaloTopoClustersWithNoise" if filterNoiseThreshold < 0 else "EMECCaloTopoClustersWithNoiseFiltered",
