@@ -1,13 +1,13 @@
 {
   "version": 5,
-  "prev": "69fbe49ac52a98b38a6543e991c80b3826fcda2e",
-  "head": "707c4af547abf248c3ecf3a69889faf50f8a62c5",
+  "prev": "f2168e8f15a4e9fe609051699f9b8b62dfd986cd",
+  "head": "d3e0ce4243db4339708958f8d3925d699358020a",
   "applied": [
     "gitignore",
-    "indexing-config",
-    "ci"
+    "indexing-config"
   ],
   "unapplied": [
+    "ci",
     "resegment",
     "cell-creation",
     "cluster-creation",
