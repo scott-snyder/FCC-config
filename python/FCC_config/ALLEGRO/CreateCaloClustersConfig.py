@@ -499,6 +499,12 @@ runPhotonID: Control if photonID done.
     clustersName = cfg.algs()[-1].clusters.Path
     outputSaveClusters.append (clustersName)
 
+    keep = []
+    if not addShapeParameters:
+        keep.append (clustersName)
+    if clusterFlags.saveClusterCells:
+        keep.append (cfg.algs()[-1].clusterCells.Path)
+
     if applyUpDownstreamCorrections:
         # note that this only works for ecal barrel given various hardcoded quantities
         # to be generalized, pass more input parameters to function
@@ -537,18 +543,28 @@ runPhotonID: Control if photonID done.
             # see: https://indico.cern.ch/event/1483299/contributions/6488594/attachments/3056315/5403634/ALLEGRO_photon_pi0_20250424.pdf
             if clusterFlags.reconstructPi0s:
                 cfg.merge(PairCaloClustersPi0Cfg(flags, clustersName, outputClusters))
+                keep += [f'Unpaired{clustersName}',
+                         f'Paired{clustersName}',
+                         f'ResolvedPi0Particle{outputClusters}',
+                         ]
+    keep.append (clustersName)
 
     if calibrateClusters:
         # note that this only works for ecal barrel given various
         # hardcoded quantities
         cfg.merge (CalibrateCaloClustersCfg (flags, clusterFlags, clustersName, outputClusters))
         clustersName = cfg.algs()[-1].outClusters.Path
+        keep.append (clustersName)
 
     if runPhotonID and augmentClusterAlg is not None:
         cfg.merge (CaloPhotonIDCfg (flags, clustersName, outputClusters,
                                     clusterFlags.photonIDModelNameRoot))
         clustersName = cfg.algs()[-1].outClusters.Path
+        keep.append (clustersName)
 
+    if keep:
+        from FCC_config.CoreConfig import IOSvcCfg
+        cfg.merge(IOSvcCfg(flags, keep=keep))
     return cfg
 
 
@@ -656,6 +672,8 @@ class ClusterFlags:
         # purpose of testing that the code is not broken - will end up in
         # separate cluster collection
         self.applyUpDownstreamCorrections = False
+
+        self.saveClusterCells = True
 
         return
 def defineCaloClusterFlags(flags = None,

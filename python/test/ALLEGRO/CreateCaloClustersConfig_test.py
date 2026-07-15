@@ -17,6 +17,12 @@ compactFile = os.environ.get("K4GEO", "") + "/FCCee/ALLEGRO/compact/ALLEGRO_o1_v
 
 class Flags:
     pass
+def defineIOFlags (flags):
+    flags.saveCells = True
+    flags.saveHits = True
+    flags.IO = Flags()
+    flags.IO.inputFile = 'input.file'
+    flags.IO.outputFile = 'output.file'
 
 class TestCreateCaloClustersConfig (unittest.TestCase):
     def test_ClusterFlags (self):
@@ -324,6 +330,7 @@ class TestCreateCaloClustersConfig (unittest.TestCase):
         flags = CreateCaloClustersConfig.defineCaloClusterFlags()
         flags.compactFile = compactFile
         flags.dataFiles = 'data/'
+        defineIOFlags (flags)
         from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
         defineCaloCellFlags(flags)
 
@@ -340,7 +347,7 @@ class TestCreateCaloClustersConfig (unittest.TestCase):
                                                        runPhotonID = True,
                                                        applyUpDownstreamCorrections = True,
                                                        )
-        assert len(ca1.svcs()) == 0
+        assert len(ca1.svcs()) == 1
         assert len(ca1.algs()) == 5
         self.assertEqual (osc1, ['AugmentedEMBCaloClusters1'])
         alg1a = ca1.algs()[0]
@@ -383,7 +390,7 @@ class TestCreateCaloClustersConfig (unittest.TestCase):
                                                        calibrateClusters = False,
                                                        runPhotonID = True,
                                                        )
-        assert len(ca2.svcs()) == 0
+        assert len(ca2.svcs()) == 1
         assert len(ca2.algs()) == 4
         self.assertEqual (osc2, ['AugmentedCaloTopoClusters2'])
         alg2a = ca2.algs()[0]
@@ -413,6 +420,7 @@ class TestCreateCaloClustersConfig (unittest.TestCase):
         flags = CreateCaloClustersConfig.defineCaloClusterFlags()
         flags.compactFile = compactFile
         flags.dataFiles = 'data/'
+        defineIOFlags (flags)
         from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
         defineCaloCellFlags(flags)
 
@@ -423,7 +431,7 @@ class TestCreateCaloClustersConfig (unittest.TestCase):
                                                          2.5,
                                                          'ReducedSize',
                                                          osc3)
-        assert len(ca3.svcs()) == 0
+        assert len(ca3.svcs()) == 1
         assert len(ca3.algs()) == 2
         self.assertEqual (osc3, ['AugmentedEMECCaloClusters3'])
         alg3a = ca3.algs()[0]
@@ -443,6 +451,7 @@ class TestCreateCaloClustersConfig (unittest.TestCase):
         flags = CreateCaloClustersConfig.defineCaloClusterFlags()
         flags.compactFile = compactFile
         flags.dataFiles = 'data/'
+        defineIOFlags (flags)
         from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
         defineCaloCellFlags(flags)
 
@@ -452,7 +461,7 @@ class TestCreateCaloClustersConfig (unittest.TestCase):
                                                            'CaloTopoClusters4',
                                                            2.5,
                                                            osc4)
-        assert len(ca4.svcs()) == 0
+        assert len(ca4.svcs()) == 1
         assert len(ca4.algs()) == 3
         self.assertEqual (osc4, ['AugmentedCaloTopoClusters4'])
         alg4a = ca4.algs()[0]
