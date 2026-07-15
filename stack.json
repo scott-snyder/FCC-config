@@ -1,16 +1,16 @@
 {
   "version": 5,
-  "prev": "fc8b16c613b8647bf61c839dcef9b37544dca1ae",
-  "head": "e1f0ac14741be66c1312ec9e629c76dc51a901c5",
+  "prev": "e42232c4fde7cd733baab474894797418e8243a1",
+  "head": "d3e0ce4243db4339708958f8d3925d699358020a",
   "applied": [
     "gitignore",
-    "indexing-config",
+    "indexing-config"
+  ],
+  "unapplied": [
     "resegment",
     "cell-creation",
     "cluster-creation",
-    "outputsel-wip"
-  ],
-  "unapplied": [
+    "outputsel-wip",
     "ci",
     "noise"
   ],
