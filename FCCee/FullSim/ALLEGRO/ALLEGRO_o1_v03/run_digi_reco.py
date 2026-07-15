@@ -663,15 +663,20 @@ if doSWClustering:
                               'StandardSize',
                               outputSaveClusters))
 
-        EMECCaloClusterInputsWithNoise = {"ECAL_Endcap": flags.ECal.Endcap.cellsName + "WithNoise" if filterNoiseThreshold < 0 else flags.ECal.Endcap.cellsName + "WithNoiseFiltered"}
-        setupSWClusters(EMECCaloClusterInputsWithNoise,
-                        EMECCaloClusterReadouts,
-                        "EMECCaloClustersWithNoise" if filterNoiseThreshold < 0 else "EMECCaloClustersWithNoiseFiltered",
-                        0.1,  # large number of clusters with noise, consider raising to 0.3 if not looking at low-energy cluster reconstruction, or use filtered cells
-                        False,
-                        False,
-                        addShapeParameters,
-                        False)
+        calclust_cfg.merge (
+            CaloSWClusterCfg (flags,
+                              {'ECAL_Endcap': flags.ECal.Endcap.cellsName + suffix},
+                              'EMECCaloClusters' + suffix,
+                              # threshold --- large number of clusters
+                              # with noise, consider raising to 0.3 if not
+                              # looking at low-energy cluster
+                              # reconstruction, or use filtered cells
+                              0.1,
+                              'StandardSize',
+                              outputSaveClusters,
+                              runPhotonID = False,
+                              calibrateClusters = False,
+                              ))
 
     # ECAL + HCAL clusters
     if runHCal:
@@ -740,17 +745,15 @@ if doTopoClustering:
                                 0.1,  # threshold,
                                 outputSaveClusters))
 
-        EMECCaloTopoClusterInputsWithNoise = {"ECAL_Endcap": flags.ECal.Endcap.cellsName + "WithNoise" if filterNoiseThreshold < 0 else flags.ECal.Endcap.cellsName + "WithNoiseFiltered"}
-        setupTopoClusters(EMECCaloTopoClusterInputsWithNoise,
-                          EMECCaloTopoClusterReadouts,
-                          "EMECCaloTopoClustersWithNoise" if filterNoiseThreshold < 0 else "EMECCaloTopoClustersWithNoiseFiltered",
-                          0.1,
-                          dataFolder + "neighbours_map_ecalE_turbine.root",
-                          dataFolder + "cellNoise_map_endcapTurbine_electronicsNoiseLevel.root",
-                          False,
-                          False,
-                          addShapeParameters,
-                          False)
+        calclust_cfg.merge(
+            CaloTopoClusterCfg (flags,
+                                {'ECAL_Endcap': flags.ECal.Endcap.cellsName + suffix},
+                                'EMECCaloTopoClusters' + suffix,
+                                0.1,  # threshold,
+                                outputSaveClusters,
+                                runPhotonID = False,
+                                calibrateClusters = False,
+                                ))
 
     # ECAL + HCAL
     if runHCal:
