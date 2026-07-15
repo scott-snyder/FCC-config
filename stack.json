@@ -1,10 +1,11 @@
 {
   "version": 5,
-  "prev": "543000e44ae6fd9bc08ee7bfaf9bc4e46fde83a9",
-  "head": "9a132c1d9e0b5d26c2381df40ad39ef8d080201b",
+  "prev": "931a2b1e10b619835444c03f9c30806316f2c78a",
+  "head": "01556a1f42ad0681460693b2169522aaf23e011b",
   "applied": [
     "gitignore",
-    "indexing-config"
+    "indexing-config",
+    "resegment"
   ],
   "unapplied": [
     "cell-creation",
@@ -40,6 +41,9 @@
     },
     "outputsel-wip": {
       "oid": "1c44f277e564fce2313eccb58296a02cc3e44575"
+    },
+    "resegment": {
+      "oid": "01556a1f42ad0681460693b2169522aaf23e011b"
     }
   }
 }
