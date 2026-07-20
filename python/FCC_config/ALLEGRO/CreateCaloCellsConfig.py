@@ -396,7 +396,7 @@ def CreateECalBarrelCellsCfg (flags,
                               cellsNameSuffix = '',
                               hits = None,
                               readoutName = None,
-                              alg = C.CreatePositionedCaloCells,
+                              alg = C.CreateCaloCells,
                               **kw):
     """Return a CA for creating ECal barrel cells.
 
@@ -422,9 +422,9 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
 
     kw.setdefault('calibTool', CalibrateECalBarrel(flags) if doCellCalibration else None)
     if addCrosstalk:
-        kw['crosstalkTool'] = ReadCrosstalkMapECalBarrel(flags)
+        kw['crosstalksTool'] = ReadCrosstalkMapECalBarrel(flags)
     else:
-        kw['crosstalkTool'] = None
+        kw['crosstalksTool'] = None
        
     kw.setdefault('noiseTool',
                   ECalBarrelNoiseTool(flags, readoutName=readoutName)
@@ -446,6 +446,7 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    addCrosstalk=addCrosstalk,
                    addCellNoise=addNoise,
                    filterCellNoise=filterCellNoise,
+                   addPosition=True,
                    **kw
                    ))
 
@@ -461,7 +462,7 @@ def CreateECalEndcapCellsCfg (flags,
                               cellsNameSuffix = '',
                               hits = None,
                               readoutName = None,
-                              alg = C.CreatePositionedCaloCells,
+                              alg = C.CreateCaloCells,
                               **kw):
     """Return a CA for creating ECal endcap cells.
 
@@ -502,7 +503,8 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    addCellNoise=addNoise,
                    addCrosstalk=False,
                    filterCellNoise=filterCellNoise,
-                   crosstalkTool=None,
+                   crosstalksTool=None,
+                   addPosition=True,
                    **kw
                    ))
 
@@ -515,7 +517,7 @@ def CreateHCalBarrelCellsCfg (flags,
                               doCellCalibration = True,
                               cellsNameSuffix = '',
                               hits = None,
-                              alg = C.CreatePositionedCaloCells,
+                              alg = C.CreateCaloCells,
                               **kw):
     """Return a CA for creating HCal barrel cells.
 
@@ -543,7 +545,8 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    noiseTool=None,
                    addCrosstalk=False,
                    filterCellNoise=False,
-                   crosstalkTool=None,
+                   crosstalksTool=None,
+                   addPosition=True,
                    **kw
                    ))
 
@@ -556,7 +559,7 @@ def CreateHCalEndcapCellsCfg (flags,
                               doCellCalibration = True,
                               cellsNameSuffix = '',
                               hits = None,
-                              alg = C.CreatePositionedCaloCells,
+                              alg = C.CreateCaloCells,
                               **kw):
     """Return a CA for creating HCal endcap cells.
 
@@ -584,7 +587,8 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    noiseTool=None,
                    addCrosstalk=False,
                    filterCellNoise=False,
-                   crosstalkTool=None,
+                   crosstalksTool=None,
+                   addPosition=True,
                    **kw
                    ))
 
