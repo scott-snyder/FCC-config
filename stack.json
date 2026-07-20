@@ -1,17 +1,17 @@
 {
   "version": 5,
-  "prev": "532705941bca1138c1fb2816459afd5705af382b",
-  "head": "e1f0ac14741be66c1312ec9e629c76dc51a901c5",
+  "prev": "5328060d388655b9e0e2417cfd3faf728d7adec9",
+  "head": "9d3ed594120f82320a7578b1d5903fb094a600ce",
   "applied": [
     "gitignore",
     "indexing-config",
     "resegment",
     "cell-creation",
     "cluster-creation",
-    "outputsel-wip"
+    "outputsel-wip",
+    "createCells"
   ],
   "unapplied": [
-    "createCells",
     "ci",
     "noise"
   ],
