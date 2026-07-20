@@ -434,6 +434,7 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    addCrosstalk=addCrosstalk,
                    addCellNoise=addNoise,
                    filterCellNoise=filterCellNoise,
+                   addPosition=True,
                    **kw
                    ))
 
@@ -487,6 +488,7 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    addCrosstalk=False,
                    filterCellNoise=filterCellNoise,
                    crosstalksTool=None,
+                   addPosition=True,
                    **kw
                    ))
 
@@ -528,6 +530,7 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    addCrosstalk=False,
                    filterCellNoise=False,
                    crosstalksTool=None,
+                   addPosition=True,
                    **kw
                    ))
 
@@ -569,6 +572,7 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    addCrosstalk=False,
                    filterCellNoise=False,
                    crosstalksTool=None,
+                   addPosition=True,
                    **kw
                    ))
 
