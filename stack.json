@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "prev": "28e23d88fe391907209628f646806f5378a04f74",
+  "prev": "ea605fabbbb8072a66eb5cc5d61bba717eb3cc76",
   "head": "e1f0ac14741be66c1312ec9e629c76dc51a901c5",
   "applied": [
     "gitignore",
@@ -12,8 +12,7 @@
   ],
   "unapplied": [
     "createCells",
-    "ci",
-    "noise"
+    "ci"
   ],
   "hidden": [],
   "patches": {
@@ -40,9 +39,6 @@
     },
     "ci": {
       "oid": "707c4af547abf248c3ecf3a69889faf50f8a62c5"
-    },
-    "noise": {
-      "oid": "7b166ac0d69cf9326d7ab0c363a15d3af5c3aa7f"
     }
   }
 }
