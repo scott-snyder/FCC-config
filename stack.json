@@ -1,8 +1,9 @@
 {
   "version": 5,
-  "prev": "f0e40a2217cc460eb6272085fd8af32f283376d4",
-  "head": "92a469a82766ab09fb55b8e56b3361e0e296d185",
-  "applied": [
+  "prev": "b371b7c5960db483563e1ded5cc620664bd56ab4",
+  "head": "6adf7a6c282e4cfa041964e66ebf2af6af713111",
+  "applied": [],
+  "unapplied": [
     "gitignore",
     "indexing-config",
     "resegment",
@@ -12,7 +13,6 @@
     "createCells",
     "ci"
   ],
-  "unapplied": [],
   "hidden": [],
   "patches": {
     "gitignore": {
