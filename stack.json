@@ -1,12 +1,13 @@
 {
   "version": 5,
-  "prev": "6744a72ff99d2255c41c339ba87df6e2160a6810",
-  "head": "05786bc0efceaeeb3f3058ccda7f7856845ce74f",
+  "prev": "e468aeb161c6e3b1b19d264a5fa95c7804af703c",
+  "head": "8f6a9c7f82b35a6ff52d023899a1d9c6ba399ec1",
   "applied": [
     "gitignore",
     "resegment",
     "indexing-config",
-    "noEmecXtalk"
+    "noEmecXtalk",
+    "refresh-temp"
   ],
   "unapplied": [
     "indexing-config2",
@@ -29,6 +30,9 @@
     },
     "noEmecXtalk": {
       "oid": "05786bc0efceaeeb3f3058ccda7f7856845ce74f"
+    },
+    "refresh-temp": {
+      "oid": "8f6a9c7f82b35a6ff52d023899a1d9c6ba399ec1"
     },
     "indexing-config2": {
       "oid": "5e874d0e1e048afa5a12732a9f8d19f85d6b2e6e"
