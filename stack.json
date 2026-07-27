@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "prev": "c8f1da74b57abd4a89b4c8a9a9a7af9778fdd0fe",
+  "prev": "0d5d2dbafed4a3e26b192e7356551b3a94bdf70e",
   "head": "199bd32d584b7e61971a4324f4b54422d7745149",
   "applied": [
     "gitignore",
@@ -14,7 +14,6 @@
     "createCells"
   ],
   "unapplied": [
-    "reseg-wip",
     "ci"
   ],
   "hidden": [],
@@ -45,9 +44,6 @@
     },
     "createCells": {
       "oid": "199bd32d584b7e61971a4324f4b54422d7745149"
-    },
-    "reseg-wip": {
-      "oid": "d178efc0ea6425dc13f545e04eed9f55243c2535"
     },
     "ci": {
       "oid": "92a469a82766ab09fb55b8e56b3361e0e296d185"
