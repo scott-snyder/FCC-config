@@ -440,6 +440,56 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
 
     cfg.merge (_keepCells (flags, kw, readoutName))
     return cfg
+def CreateECalBarrelCellsResegCfg (flags,
+                              name = 'CreatePositionedECalBarrelCells',
+                              doCellCalibration = True,
+                              addNoise = False,
+                              addCrosstalk = None,
+                              filterCellNoise = False,
+                              cellsNameSuffix = '',
+                              hits = None,
+                              readoutName = None,
+                              alg = C.CreateCaloCells,
+                              **kw):
+
+    cfg = ComponentAccumulator()
+    cfg.merge (CaloCellIndexerSvcCfg (flags, detectors = ['ECAL_Barrel']))
+    if hits is None: hits = flags.ECal.Barrel.readoutName
+    if readoutName is None: readoutName = flags.ECal.Barrel.readoutName
+    if addCrosstalk is None: addCrosstalk = flags.ECal.Barrel.addCrosstalk
+
+    kw.setdefault('cells', readoutName + flags.cellsNamePart + cellsNameSuffix)
+    kw.setdefault('links', kw['cells'] + flags.linksNamePart)
+
+    kw.setdefault('calibTool', CalibrateECalBarrel(flags) if doCellCalibration else None)
+    if addCrosstalk:
+        kw['crosstalksTool'] = ReadCrosstalkMapECalBarrel(flags)
+    else:
+        kw['crosstalksTool'] = None
+       
+    kw.setdefault('crosstalksTool', ReadCrosstalkMapECalBarrel(flags) if addCrosstalk else None)
+    kw.setdefault('noiseTool', ECalBarrelNoiseTool(flags) if addNoise else None)
+    kw.setdefault('geometryTool', ECalBarrelGeometryTool(flags) if addNoise else None)
+
+    #if hits == flags.ECal.Barrel.readoutName:
+    #    kw['positionsTool'] = CellPositionsECalBarrel(flags)
+    #else:
+    #    kw['positionsTool'] = CellPositionsECalBarrel(flags,
+    #                                                  name='CellPositions' + readoutName,
+    #                                                  readoutName=readoutName)
+
+    cfg.addAlg(alg(name,
+                   hits=hits,
+                   doCellCalibration=doCellCalibration,
+                   addCrosstalk=addCrosstalk,
+                   addCellNoise=addNoise,
+                   filterCellNoise=filterCellNoise,
+                   addPosition=False,
+                   **kw
+                   ))
+
+    cfg.merge (_keepCells (flags, kw, readoutName))
+    return cfg
                            
 
 def CreateECalEndcapCellsCfg (flags,
