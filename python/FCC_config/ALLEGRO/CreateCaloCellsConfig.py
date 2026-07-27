@@ -471,12 +471,12 @@ def CreateECalBarrelCellsResegCfg (flags,
     kw.setdefault('noiseTool', ECalBarrelNoiseTool(flags) if addNoise else None)
     kw.setdefault('geometryTool', ECalBarrelGeometryTool(flags) if addNoise else None)
 
-    #if hits == flags.ECal.Barrel.readoutName:
-    #    kw['positionsTool'] = CellPositionsECalBarrel(flags)
-    #else:
-    #    kw['positionsTool'] = CellPositionsECalBarrel(flags,
-    #                                                  name='CellPositions' + readoutName,
-    #                                                  readoutName=readoutName)
+    if hits == flags.ECal.Barrel.readoutName:
+        kw['positionsTool'] = CellPositionsECalBarrel(flags)
+    else:
+        kw['positionsTool'] = CellPositionsECalBarrel(flags,
+                                                      name='CellPositions' + readoutName,
+                                                      readoutName=readoutName)
 
     cfg.addAlg(alg(name,
                    hits=hits,
@@ -484,7 +484,7 @@ def CreateECalBarrelCellsResegCfg (flags,
                    addCrosstalk=addCrosstalk,
                    addCellNoise=addNoise,
                    filterCellNoise=filterCellNoise,
-                   addPosition=False,
+                   addPosition=True,
                    **kw
                    ))
 
