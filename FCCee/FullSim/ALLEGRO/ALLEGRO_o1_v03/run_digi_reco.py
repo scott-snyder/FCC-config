@@ -527,8 +527,9 @@ if resegmentECalBarrel:
     # do not apply cell calibration again since cells were already
     # calibrated in Step 1
     # noise and xtalk off assuming they were applied earlier
+    from FCC_config.ALLEGRO.CreateCaloCellsConfig import CreateECalBarrelCellsResegCfg
     caldigi_cfg.merge (
-        CreateECalBarrelCellsCfg(flags,
+        CreateECalBarrelCellsResegCfg(flags,
                                  'CreatePositionedECalBarrelCells2',
                                  hits = ecalBarrelHitsMergedName,
                                  readoutName=ecalBarrelReadoutName2,
