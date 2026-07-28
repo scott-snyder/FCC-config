@@ -1,21 +1,34 @@
 {
   "version": 5,
-  "prev": "654c85724777a4a31d1b17ed95e5cc63ca89d6a4",
-  "head": "4ce153ec61a96ebf875608de979ba7fd9fd33222",
+  "prev": "734b6c054969326ff78bf75da3af513bd56cf99c",
+  "head": "41c06636a9c3080947a7438d6ed0824b4d1408cb",
   "applied": [
     "gitignore",
     "resegment",
     "noEmecXtalk",
     "indexing-config",
-    "indexing-config2"
+    "indexing-config2",
+    "cell-creation",
+    "cluster-creation",
+    "outputsel-wip",
+    "createCells"
   ],
   "unapplied": [],
   "hidden": [
     "ci"
   ],
   "patches": {
+    "cell-creation": {
+      "oid": "8b686bdcafc2628b48b92846e5f9ac5ca991d89f"
+    },
     "ci": {
       "oid": "64746bd5afc52a5f4474857635f4cd990421895c"
+    },
+    "cluster-creation": {
+      "oid": "9e513a0078814e8279f51dca81096af0c840be1a"
+    },
+    "createCells": {
+      "oid": "41c06636a9c3080947a7438d6ed0824b4d1408cb"
     },
     "gitignore": {
       "oid": "4df4918b7122330d2edeb6d3937c52ff856f1db5"
@@ -28,6 +41,9 @@
     },
     "noEmecXtalk": {
       "oid": "0ccffbfafda56a86a4ccc4977f87644d2b72c284"
+    },
+    "outputsel-wip": {
+      "oid": "8603a42ef3e18dc0dabeead30045c025b75b03eb"
     },
     "resegment": {
       "oid": "7c3cd85421b0b980027e585a05f4dac7b6a5bda0"
