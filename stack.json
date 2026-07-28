@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "prev": "f6023b4b0c1f642bcb82d1241373df6b4b779d48",
+  "prev": "654c85724777a4a31d1b17ed95e5cc63ca89d6a4",
   "head": "4ce153ec61a96ebf875608de979ba7fd9fd33222",
   "applied": [
     "gitignore",
@@ -9,23 +9,13 @@
     "indexing-config",
     "indexing-config2"
   ],
-  "unapplied": [
-    "cell-creation",
-    "cluster-creation",
-    "outputsel-wip"
-  ],
+  "unapplied": [],
   "hidden": [
     "ci"
   ],
   "patches": {
-    "cell-creation": {
-      "oid": "ac92b47985ebdccd3262b46e774f674c38d94abf"
-    },
     "ci": {
       "oid": "64746bd5afc52a5f4474857635f4cd990421895c"
-    },
-    "cluster-creation": {
-      "oid": "f4c05c3e917cb038f07aa62b618281fc7e5bff98"
     },
     "gitignore": {
       "oid": "4df4918b7122330d2edeb6d3937c52ff856f1db5"
@@ -38,9 +28,6 @@
     },
     "noEmecXtalk": {
       "oid": "0ccffbfafda56a86a4ccc4977f87644d2b72c284"
-    },
-    "outputsel-wip": {
-      "oid": "1070df4ac96cd2bc27c1eadcfdb90f82dd4c3b37"
     },
     "resegment": {
       "oid": "7c3cd85421b0b980027e585a05f4dac7b6a5bda0"
