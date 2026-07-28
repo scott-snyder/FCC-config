@@ -1,0 +1,8 @@
+Bottom: 4e70568df99d4aea97bf11a2619eac46bee637f9
+Top:    8c626c6086f52e50bf1239e167599c863533a125
+Author: scott snyder <snyder@bnl.gov>
+Date:   2026-07-28 11:42:27 -0400
+
+Configure indexing service for ALLEGRO.
+
+Configure the indexing service with ECal and HCal for ALLEGRO.
