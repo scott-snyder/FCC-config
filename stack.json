@@ -1,10 +1,11 @@
 {
   "version": 5,
-  "prev": "d06631b36a1b7d9c1a3a43973773d38c929389bb",
-  "head": "6adf7a6c282e4cfa041964e66ebf2af6af713111",
-  "applied": [],
+  "prev": "879f1dd0712ef4741c4b98a06ed43a9514805a4e",
+  "head": "4df4918b7122330d2edeb6d3937c52ff856f1db5",
+  "applied": [
+    "gitignore"
+  ],
   "unapplied": [
-    "gitignore",
     "indexing-config",
     "resegment",
     "cell-creation",
@@ -25,7 +26,7 @@
       "oid": "f4c05c3e917cb038f07aa62b618281fc7e5bff98"
     },
     "gitignore": {
-      "oid": "86baf4a7be8e01eee3adb49a86a3637129bdee0b"
+      "oid": "4df4918b7122330d2edeb6d3937c52ff856f1db5"
     },
     "indexing-config": {
       "oid": "9a132c1d9e0b5d26c2381df40ad39ef8d080201b"
