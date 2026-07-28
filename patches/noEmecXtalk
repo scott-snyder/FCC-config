@@ -1,0 +1,9 @@
+Bottom: 9cae99ba7187772f84f1a3c4fd6d9afd330d7941
+Top:    4e70568df99d4aea97bf11a2619eac46bee637f9
+Author: scott snyder <snyder@bnl.gov>
+Date:   2026-07-28 11:42:15 -0400
+
+Don't configure crosstalk tool for EMEC.
+
+There's no crosstalk data available yet for EMEC.
+Don't configure a crosstalk tool for it.
