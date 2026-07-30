@@ -1,13 +1,13 @@
 {
   "version": 5,
-  "prev": "1b25c3bada401bacd57324d88791ef56ee8709e2",
-  "head": "2de25fed11b065f728e17bc745df8629a421b74b",
+  "prev": "a6baf9cb24cf59c42ef75b36b0202e28fce972e3",
+  "head": "c69cd4f3436c4506c4b7656e6341647bd13145ed",
   "applied": [
-    "gitignore",
-    "resegment",
-    "cell-creation"
+    "gitignore"
   ],
   "unapplied": [
+    "resegment",
+    "cell-creation",
     "ci",
     "cluster-creation",
     "outputsel-wip",
