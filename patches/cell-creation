@@ -1,7 +1,7 @@
-Bottom: 8a89412afd3a74d9279f0aa2a24eb4fdfccdbb00
-Top:    2f54a1d556f372cd7a9e1ec75c8b5b918dcfac33
+Bottom: 1859e1f3d294d369a497dd522ce85dc6b2a1cfc3
+Top:    9b4bebafb1af18706d63aa962c4aabbb4d5b91b3
 Author: scott snyder <snyder@bnl.gov>
-Date:   2026-07-29 13:29:40 -0400
+Date:   2026-08-06 10:42:51 -0400
 
 Introduce ComponentAccumulator-style cell reconstruction for ALLEGRO.
 

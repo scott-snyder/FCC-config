@@ -1,7 +1,7 @@
-Bottom: 2f54a1d556f372cd7a9e1ec75c8b5b918dcfac33
-Top:    76c0e3347932b1a6186075462c9eac8ab7a0bd49
+Bottom: 9b4bebafb1af18706d63aa962c4aabbb4d5b91b3
+Top:    fc43e4cf4f2ec3f23553cab7a33835e0b871fbb2
 Author: scott snyder <snyder@bnl.gov>
-Date:   2026-07-29 13:29:40 -0400
+Date:   2026-08-06 10:42:51 -0400
 
 Introduce ComponentAccumulator-style cluster reconstruction for ALLEGRO.
 
