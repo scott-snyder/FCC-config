@@ -1,15 +1,14 @@
 {
   "version": 5,
-  "prev": "704bdc8e766151c5101ce3416293c27bbdc69ffe",
-  "head": "be18bb1ce94807f399a686a99f210d0a547e6a8c",
-  "applied": [
+  "prev": "c39f61d87c18835bb1c1cc285727cb2af346da92",
+  "head": "d613806b73de4752d7d9a018c9f31b4d1b73e8f1",
+  "applied": [],
+  "unapplied": [
     "gitignore",
     "resegment",
     "cell-creation",
     "cluster-creation",
-    "outputsel-wip"
-  ],
-  "unapplied": [
+    "outputsel-wip",
     "createCells"
   ],
   "hidden": [
