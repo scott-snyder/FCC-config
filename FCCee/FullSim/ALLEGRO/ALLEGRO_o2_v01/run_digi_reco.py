@@ -57,6 +57,7 @@ parser.add_argument("--useLegacyVTXDigitizer", type=str2bool, nargs="?", help="P
 parser.add_argument("--runTrkFinder", type=str2bool, nargs="?", help="Run Geometric Graph Track Finding (GGTF) on digitized tracker hits", const=True, default=False)
 parser.add_argument("--runTrkFitter", type=str2bool, nargs="?", help="Run track fitter on tracks", const=True, default=False)
 parser.add_argument("--runTrkValidation", type=str2bool, nargs="?", help="Run tracking validation", const=True, default=False)
+parser.add_argument("--resegmentECalBarrel", type=str2bool, nargs="?", help="Resegment ECal barrel", const=True, default=False)
 
 opts = parser.parse_known_args()[0]
 dataFolder = opts.dataFolder                        # directory containing the calibration files
@@ -112,7 +113,7 @@ ecalBarrelDownstreamParameters = [[0.00010587711361028165, 0.0052371999097777355
 # ECAL endcap parameters for digitization
 ecalEndcapLayers = 98
 
-resegmentECalBarrel = False
+resegmentECalBarrel = opts.resegmentECalBarrel
 
 hcalBarrelLayers = 13
 hcalEndcapLayers = 22
