@@ -1,13 +1,13 @@
 {
   "version": 5,
-  "prev": "9c15223bf610943863937837c558d7663f32b9cf",
-  "head": "ceaa0fb50f0947494106f13e955986570781e98b",
+  "prev": "a81b9bd1cdcb37eaa038faf6009cd88ac7106a0c",
+  "head": "4226b825ac611b79cf6c2d6ffd60502489f7123c",
   "applied": [
     "gitignore",
-    "cell-creation"
+    "cell-creation",
+    "resegment"
   ],
   "unapplied": [
-    "resegment",
     "cluster-creation",
     "outputsel-wip",
     "createCells",
@@ -22,7 +22,7 @@
       "oid": "ceaa0fb50f0947494106f13e955986570781e98b"
     },
     "resegment": {
-      "oid": "7cf0e3aa0c0e97fd74710262d01702ac8fcefd0b"
+      "oid": "4226b825ac611b79cf6c2d6ffd60502489f7123c"
     },
     "cluster-creation": {
       "oid": "02991517965b6ad3651b1e375bf98e4964fad9c8"
