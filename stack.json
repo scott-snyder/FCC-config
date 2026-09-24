@@ -1,8 +1,9 @@
 {
   "version": 5,
-  "prev": "91db45cd2b6fe9a97e07d52a7326e6559f1dbb14",
-  "head": "a477acb6887b15e0d67381bd913b76a65179ea9a",
-  "applied": [
+  "prev": "e24a5c09beaecd97859bb557f0751602ce1e761e",
+  "head": "07639d4d93af6945a689fcdfcfb588124e92b5a5",
+  "applied": [],
+  "unapplied": [
     "gitignore",
     "cell-creation",
     "resegment",
@@ -11,7 +12,6 @@
     "createCells",
     "ci"
   ],
-  "unapplied": [],
   "hidden": [],
   "patches": {
     "gitignore": {
