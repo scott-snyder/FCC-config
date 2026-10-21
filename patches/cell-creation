@@ -1,0 +1,13 @@
+Bottom: af8cb6b265b24009ce75b4fb6c0b7f94915997b4
+Top:    af8cb6b265b24009ce75b4fb6c0b7f94915997b4
+Author: scott snyder <snyder@bnl.gov>
+Date:   2026-10-21 09:40:01 -0400
+
+Introduce ComponentAccumulator-style cell reconstruction for ALLEGRO.
+    
+Introduce CreateCaloCellsConfig.py, which contains ComponentAccumulator-style
+configuration functions for ALLEGRO cell reconstruction.  Update configuration
+scripts for ALLEGRO_o1_v03 and ALLEGRO_o2_v01 to use these functions.
+
+This is a start at factoring out common configuration code to reduce
+duplication.
