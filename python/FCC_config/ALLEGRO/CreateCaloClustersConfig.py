@@ -462,7 +462,8 @@ def CaloClusterCfg (flags,
                     reconstructPi0s = None,
                     runTRAPPIST = None,
                     calibrateClusters = None,
-                    runPhotonID = None):
+                    runPhotonID = None,
+                    clusterOnly = False):
     """Return a CA to run calorimeter clustering (either SW or topo).
 
 This set up a chain of algorithms to run cluster finding.
@@ -513,6 +514,10 @@ calibrateClusters: Control if MVA cluster calibration is done.
 runPhotonID: Control if photonID done.
   If defaulted, taken from the cluster flags.
   addShapeParameters must also be true for this to run.
+
+If clusterOnly is set to True, this is shorthand for setting the defaults
+for all of calibrateClusters, reconstructPi0s, runTRAPPIST, and runPhotonID
+to False.
 """
     cfg = ComponentAccumulator()
 
@@ -521,13 +526,13 @@ runPhotonID: Control if photonID done.
     if addShapeParameters is None:
         addShapeParameters = clusterFlags.addShapeParameters
     if reconstructPi0s is None:
-        reconstructPi0s = clusterFlags.reconstructPi0s
+        reconstructPi0s = not clusterOnly and clusterFlags.reconstructPi0s
     if runTRAPPIST is None:
-        runTRAPPIST = clusterFlags.runTRAPPIST
+        runTRAPPIST = not clusterOnly and clusterFlags.runTRAPPIST
     if calibrateClusters is None:
-        calibrateClusters = clusterFlags.calibrateClusters
+        calibrateClusters = not clusterOnly and clusterFlags.calibrateClusters
     if runPhotonID is None:
-         runPhotonID = clusterFlags.runPhotonID
+         runPhotonID = not clusterOnly and clusterFlags.runPhotonID
 
     cells = []
     caloIDs = []
@@ -581,12 +586,13 @@ runPhotonID: Control if photonID done.
         # tool to identify resolved pi0->two photon cluster candidates
         # see: https://indico.cern.ch/event/1483299/contributions/6488594/attachments/3056315/5403634/ALLEGRO_photon_pi0_20250424.pdf
         cfg.merge(PairCaloClustersPi0Cfg(flags, clustersName, outputClusters))
+        reconstructPi0sAlg = cfg.algs()[-1]
 
-    if runTRAPPIST:
-        if not reconstructPi0s:
-            print("TRAPPIST tool cannot be run if invariant mass-based pi0 reconstruction is not enabled")
-        else:
-            cfg.merge (TRAPPISTPi0Cfg (flags, clusterFlags, clustersName, outputClusters))
+        if runTRAPPIST:
+            cfg.merge (TRAPPISTPi0Cfg (flags,
+                                       clusterFlags,
+                                       reconstructPi0sAlg.unpairedClusters.Path,
+                                       outputClusters))
         
     if calibrateClusters:
         # note that this only works for ecal barrel given various

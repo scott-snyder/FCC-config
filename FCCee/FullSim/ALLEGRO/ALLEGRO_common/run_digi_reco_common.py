@@ -813,11 +813,7 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
                               0.04,  # threshold,
                               'StandardSize',
                               outputSaveClusters,
-                              runPhotonID = False,
-                              reconstructPi0s = False,
-                              runTRAPPIST = False,
-                              calibrateClusters = False,
-                              ))
+                              clusterOnly = True))
         calclust_cfg.toVars (TopAlg, ExtSvc)
 
         # SW ECAL barrel and endcap clusters with noise
@@ -849,11 +845,7 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
                                   0.1,
                                   'StandardSize',
                                   outputSaveClusters,
-                                  runPhotonID = False,
-                                  reconstructPi0s = False,
-                                  runTRAPPIST = False,
-                                  calibrateClusters = False,
-                                  ))
+                                  clusterOnly = True))
 
         # ECAL + HCAL clusters
         if runHCal:
@@ -868,10 +860,7 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
                                   0.04,  # threshold,
                                   'StandardSize',
                                   outputSaveClusters,
-                                  reconstructPi0s = False,
-                                  runTRAPPIST = False,
-                                  calibrateClusters = False,
-                                  runPhotonID = False))
+                                  clusterOnly = True))
 
         # experimental: MUON clusters
         if (runMuon):
@@ -884,11 +873,7 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
                                   0.00,  # threshold,
                                   'MuonSize',
                                   outputSaveClusters,
-                                  calibrateClusters = False,
-                                  addShapeParameters = False,
-                                  reconstructPi0s = False,
-                                  runTRAPPIST = False,
-                                  runPhotonID = False))
+                                  clusterOnly = True))
 
     if doTopoClustering:
         from FCC_config.ALLEGRO.CreateCaloClustersConfig import CaloTopoClusterCfg
@@ -908,11 +893,7 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
                                 'EMECCaloTopoClusters',
                                 0,  # threshold,
                                 outputSaveClusters,
-                                runPhotonID = False,
-                                reconstructPi0s = False,
-                                runTRAPPIST = False,
-                                calibrateClusters = False,
-                                ))
+                                clusterOnly = True))
 
         # ECAL topoclusters with noise
         if addNoise:
@@ -933,11 +914,7 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
                                     'EMECCaloTopoClusters' + suffix,
                                     0.1,  # threshold,
                                     outputSaveClusters,
-                                    runPhotonID = False,
-                                    reconstructPi0s = False,
-                                    runTRAPPIST = False,
-                                    calibrateClusters = False,
-                                    ))
+                                    clusterOnly = True))
 
         # ECAL + HCAL
         if runHCal:
@@ -951,10 +928,7 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
                                     'CaloTopoClusters',
                                     0, # threshold
                                     outputSaveClusters,
-                                    calibrateClusters = False,
-                                    reconstructPi0s = False,
-                                    runTRAPPIST = False,
-                                    runPhotonID = False))
+                                    clusterOnly = True))
 
     calclust_cfg.toVars (TopAlg, ExtSvc)
 

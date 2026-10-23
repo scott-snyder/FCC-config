@@ -462,13 +462,13 @@ class TestCreateCaloClustersConfig (unittest.TestCase):
 
         alg2d = ca2.algs()[3]
         self.assertEqual (alg2d.getFullName(), 'TRAPPISTPi0PhotonInference/TRAPPISTCaloTopoClusters2')
-        self.assertEqual (alg2d.inClusters, ['AugmentedCaloTopoClusters2'])
-        self.assertEqual (alg2d.outClusters, ['AugmentedCaloTopoClusters2WithScore'])
+        self.assertEqual (alg2d.inClusters, ['UnpairedAugmentedCaloTopoClusters2'])
+        self.assertEqual (alg2d.outClusters, ['UnpairedAugmentedCaloTopoClusters2WithScore'])
         self.assertEqual (alg2d.ONNXModelPath, 'data/TRAPPIST_topoclustering.onnx')
 
         alg2e = ca2.algs()[4]
         self.assertEqual (alg2e.getFullName(), 'ClusterPi0PhotonID/IdentifiedPi0TRAPPISTScoreCaloTopoClusters2')
-        self.assertEqual (alg2e.inClusters, ['AugmentedCaloTopoClusters2WithScore'])
+        self.assertEqual (alg2e.inClusters, ['UnpairedAugmentedCaloTopoClusters2WithScore'])
         self.assertEqual (alg2e.outParticles, ['TRAPPISTParticlesCaloTopoClusters2'])
         self.assertEqual (alg2e.outParticleIDs, ['TRAPPISTParticleIDsCaloTopoClusters2'])
 
@@ -476,6 +476,30 @@ class TestCreateCaloClustersConfig (unittest.TestCase):
         self.assertEqual (alg2f.getFullName(), 'PhotonIDTool/PhotonIDCaloTopoClusters2')
         self.assertEqual (alg2f.inClusters.Path, 'AugmentedCaloTopoClusters2')
         self.assertEqual (alg2f.outClusters.Path, 'PhotonIDAugmentedCaloTopoClusters2')
+
+        osc3 = []
+        ca3 = CreateCaloClustersConfig.CaloClusterCfg (flags,
+                                                       flags.CaloTopo,
+                                                       {'ECAL_Barrel' : 'embcells',},
+                                                       'EMBCaloTopoClusters3',
+                                                       osc3,
+                                                       CreateCaloClustersConfig.CreateCaloTopoClustersCfg,
+                                                       {'threshold' : 0.1},
+                                                       clusterOnly = True,
+                                                       )
+        assert len(ca3.svcs()) == 0
+        assert len(ca3.algs()) == 2
+        self.assertEqual (osc3, ['AugmentedEMBCaloTopoClusters3'])
+        alg3a = ca3.algs()[0]
+        self.assertEqual (alg3a.getFullName(), 'CaloTopoClusterFCCee/CreateEMBCaloTopoClusters3')
+        self.assertEqual (alg3a.clusterCells.Path, 'EMBCaloTopoCluster3Cells')
+        self.assertEqual (alg3a.clusters.Path, 'EMBCaloTopoClusters3')
+
+        alg3b = ca3.algs()[1]
+        self.assertEqual (alg3b.getFullName(), 'AugmentClustersFCCee/AugmentEMBCaloTopoClusters3')
+        self.assertEqual (alg3b.inClusters.Path, 'EMBCaloTopoClusters3')
+        self.assertEqual (alg3b.outClusters.Path, 'AugmentedEMBCaloTopoClusters3')
+        self.assertEqual (alg3b.systemIDs, [4])
         return
 
 
