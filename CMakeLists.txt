@@ -21,3 +21,4 @@ add_test(NAME ComponentAccumulator_test COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/pyth
 set_tests_properties(ComponentAccumulator_test PROPERTIES FAIL_REGULAR_EXPRESSION failure)
 add_test(NAME DetIDs_test COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/python/test/DetIDs_test.py)
 add_test(NAME ALLEGRO_CreateCaloCellsConfig_test COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/python/test/ALLEGRO/CreateCaloCellsConfig_test.py)
+add_test(NAME ALLEGRO_CreateCaloClustersConfig_test COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/python/test/ALLEGRO/CreateCaloClustersConfig_test.py)
