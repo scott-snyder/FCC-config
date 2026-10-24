@@ -169,7 +169,7 @@ Use the default readout if readoutName is not supplied."""
                                           readoutName=readoutName,
                                           activeVolumeName="LAr_sensitive",
                                           activeFieldName="layer",
-                                          activeVolumesNumber=ecalBarrelLayers,
+                                          activeVolumesNumber=flags.ECal.Barrel.layers,
                                           fieldNames=["system"],
                                           fieldValues=[detIDs(flags, 'ECAL_Barrel')],
                                           )
@@ -341,7 +341,7 @@ def ECalBarrelNoiseTool (flags, name = 'ECalBarrelNoiseTool'):
                                                addPileup=False,
                                                filterNoiseThreshold=flags.ECal.Barrel.filterNoiseThreshold,
                                                useAbsInFilter=True,
-                                               numHistograms=ecalBarrelLayers,
+                                               numHistograms=flags.ECal.Barrel.layers,
                                                scaleFactor=1 / 1000.,  # MeV to GeV
                                                )
 
@@ -616,6 +616,7 @@ def defineCaloCellFlags(flags = None,
 
     # ECal barrel
     flags.ECal.Barrel = Flags()
+    flags.ECal.Barrel.layers = ecalBarrelLayers
     flags.ECal.Barrel.readoutName = 'ECalBarrelModuleThetaMerged'      # barrel, original segmentation (baseline)
     flags.ECal.Barrel.cellsName = flags.ECal.Barrel.readoutName + flags.cellsNamePart
     flags.ECal.Barrel.linksName = flags.ECal.Barrel.cellsName + flags.linksNamePart
@@ -627,6 +628,7 @@ def defineCaloCellFlags(flags = None,
 
     # ECal endcap
     flags.ECal.Endcap = Flags()
+    flags.ECal.Endcap.layers = ecalEndcapLayers
     flags.ECal.Endcap.readoutName = 'ECalEndcapTurbine'                # endcap, turbine-like (baseline)
     flags.ECal.Endcap.cellsName = flags.ECal.Endcap.readoutName + flags.cellsNamePart
     flags.ECal.Endcap.linksName = flags.ECal.Endcap.cellsName + flags.linksNamePart
@@ -636,6 +638,7 @@ def defineCaloCellFlags(flags = None,
 
     # HCal barrel
     flags.HCal.Barrel = Flags()
+    flags.HCal.Barrel.layers = hcalBarrelLayers
     flags.HCal.Barrel.readoutName = 'HCalBarrelReadout'            # barrel, original segmentation (phi-theta)
     #flags.HCal.Barrel.readoutName = 'HCalBarrelReadoutPhiRow'    # barrel, alternative segmentation (phi-row)
     flags.HCal.Barrel.cellsName = flags.HCal.Barrel.readoutName + flags.cellsNamePart
@@ -643,6 +646,7 @@ def defineCaloCellFlags(flags = None,
 
     # HCal endcap
     flags.HCal.Endcap = Flags()
+    flags.HCal.Endcap.layers = hcalEndcapLayers
     flags.HCal.Endcap.readoutName = 'HCalEndcapReadout'            # endcap, original segmentation
     #flags.HCal.Endcap.readoutName = 'HCalEndcapReadoutPhiRow'    # endcap, alternative segmentation (phi-row)
     flags.HCal.Endcap.cellsName = flags.HCal.Endcap.readoutName + flags.cellsNamePart
