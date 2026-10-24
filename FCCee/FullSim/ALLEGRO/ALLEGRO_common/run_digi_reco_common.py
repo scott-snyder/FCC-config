@@ -1173,6 +1173,7 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
             OutputLevel=INFO)
         TopAlg += [trackValidation]
 
+    #############################################################################
     # Calorimeter digitization (merging hits into cells, EM scale calibration via sampling fractions)
 
     caldigi_cfg = ComponentAccumulator()
@@ -1544,6 +1545,9 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
                               False,
                               False,
                               TopAlg, outputSaveClusters, cfg)
+
+
+    ########################################################################
 
 
     # Create CaloHit<->MCParticle links (needed for training datasets for MLPF)
