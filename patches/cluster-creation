@@ -1,0 +1,12 @@
+Bottom: c1472061e4916b94dacd1cac8f5ad1d7fe31f73b
+Top:    c1472061e4916b94dacd1cac8f5ad1d7fe31f73b
+Author: scott snyder <snyder@bnl.gov>
+Date:   2026-10-24 11:40:13 -0400
+
+Introduce ComponentAccumulator-style cluster reconstruction for ALLEGRO.
+
+Introduce CreateCaloClustersConfig.py, which contains ComponentAccumulator-style
+configuration functions for ALLEGRO cluster reconstruction.
+Update ALLEGRO configuration scripts to use these functions.
+
+This continues factoring out common configuration code to reduce duplication.
