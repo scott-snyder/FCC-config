@@ -548,6 +548,12 @@ to False.
     clustersName = cfg.algs()[-1].clusters.Path
     outputSaveClusters.append (clustersName)
 
+    keep = []
+    if not addShapeParameters:
+        keep.append (clustersName)
+    if clusterFlags.saveClusterCells:
+        keep.append (cfg.algs()[-1].clusterCells.Path)
+
     if applyUpDownstreamCorrections:
         # note that this only works for ecal barrel given various hardcoded quantities
         # to be generalized, pass more input parameters to function
@@ -588,17 +594,28 @@ to False.
         cfg.merge(PairCaloClustersPi0Cfg(flags, clustersName, outputClusters))
         reconstructPi0sAlg = cfg.algs()[-1]
 
+        keep += [f'Paired{clustersName}',
+                 f'ResolvedPi0Particle{outputClusters}',
+                 ]
+
         if runTRAPPIST:
             cfg.merge (TRAPPISTPi0Cfg (flags,
                                        clusterFlags,
                                        reconstructPi0sAlg.unpairedClusters.Path,
                                        outputClusters))
+            keep += [f'TRAPPISTParticles{outputClusters}',
+                     f'TRAPPISTParticleIDs{outputClusters}',
+                     f'Unpaired{clustersName}WithScore']
+        else:
+            keep += [f'Unpaired{clustersName}']
+    keep.append (clustersName)
         
     if calibrateClusters:
         # note that this only works for ecal barrel given various
         # hardcoded quantities
         cfg.merge (CalibrateCaloClustersCfg (flags, clusterFlags, clustersName, outputClusters))
         clustersName = cfg.algs()[-1].outClusters.Path
+        keep.append (clustersName)
 
     if runPhotonID:
         if augmentClusterAlg is None:
@@ -607,6 +624,11 @@ to False.
             cfg.merge (CaloPhotonIDCfg (flags, clustersName, outputClusters,
                                         clusterFlags.photonIDModelNameRoot))
             clustersName = cfg.algs()[-1].outClusters.Path
+            keep.append (clustersName)
+
+    if keep:
+        from FCC_config.CoreConfig import IOSvcCfg
+        cfg.merge(IOSvcCfg(flags, keep=keep))
 
     return cfg
 
@@ -718,6 +740,8 @@ class ClusterFlags:
         # purpose of testing that the code is not broken - will end up in
         # separate cluster collection
         self.applyUpDownstreamCorrections = False
+
+        self.saveClusterCells = True
 
         return
 def defineCaloClusterFlags(flags = None,

@@ -329,6 +329,21 @@ def ReadCrosstalkMapECalBarrel (flags, name = 'ReadCrosstalkMapECalBarrel'):
                                   fileName = flags.ECal.Barrel.xtalkPath)
 
 
+def _keepCells (flags, kw, readoutName):
+    cfg = ComponentAccumulator()
+    keep = []
+    if flags.saveCells:
+        keep.append (kw['cells'])
+    if flags.saveHits and flags.saveCells:
+        keep.append (kw['links'])
+    if flags.saveHits:
+        keep.append (f'{readoutName}Contributions')
+    if keep:
+        from FCC_config.CoreConfig import IOSvcCfg
+        cfg.merge(IOSvcCfg(flags, keep=keep))
+    return cfg
+
+
 def ECalBarrelNoiseTool (flags,
                          name = 'ECalBarrelNoiseTool',
                          readoutName = None):
@@ -433,6 +448,8 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    filterCellNoise=filterCellNoise,
                    **kw
                    ))
+
+    cfg.merge (_keepCells (flags, kw, readoutName))
     return cfg
                            
 
@@ -489,6 +506,7 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    **kw
                    ))
 
+    cfg.merge (_keepCells (flags, kw, hits))
     return cfg
 
 
@@ -528,6 +546,8 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    crosstalkTool=None,
                    **kw
                    ))
+
+    cfg.merge (_keepCells (flags, kw, hits))
     return cfg
 
 
@@ -567,6 +587,8 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
                    crosstalkTool=None,
                    **kw
                    ))
+
+    cfg.merge (_keepCells (flags, kw, hits))
     return cfg
 
 
