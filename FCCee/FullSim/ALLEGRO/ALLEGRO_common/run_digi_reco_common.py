@@ -777,6 +777,8 @@ def run_digi_reco(path_to_detector, detectors_to_use, wire_tracker):
     from FCC_config.ALLEGRO.CreateCaloCellsConfig import defineCaloCellFlags
     defineCaloCellFlags(flags)
     flags.ECal.Barrel.addCrosstalk = addCrosstalk
+    flags.ECal.Barrel.filterNoiseThreshold = filterNoiseThreshold
+    flags.ECal.Endcap.filterNoiseThreshold = filterNoiseThreshold
 
 
     # Input/Output handling

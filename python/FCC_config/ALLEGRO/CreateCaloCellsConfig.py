@@ -329,11 +329,16 @@ def ReadCrosstalkMapECalBarrel (flags, name = 'ReadCrosstalkMapECalBarrel'):
                                   fileName = flags.ECal.Barrel.xtalkPath)
 
 
-def ECalBarrelNoiseTool (flags, name = 'ECalBarrelNoiseTool'):
+def ECalBarrelNoiseTool (flags,
+                         name = 'ECalBarrelNoiseTool',
+                         readoutName = None):
     """Return noise tool for ECal barrel."""
+
+    if readoutName is None:
+        readoutName = flags.ECal.Barrel.readoutName
     return C.NoiseCaloCellsFromFileBarrelTool (name,
                                                cellPositionsTool=CellPositionsECalBarrel(flags),
-                                               readoutName=flags.ECal.Barrel.readoutName,
+                                               readoutName=readoutName,
                                                noiseFileName=flags.ECal.Barrel.noisePath,
                                                elecNoiseRMSHistoName=flags.ECal.Barrel.noiseRMSHistName,
                                                setNoiseOffset=False,
@@ -346,11 +351,15 @@ def ECalBarrelNoiseTool (flags, name = 'ECalBarrelNoiseTool'):
                                                )
 
 
-def ECalEndcapNoiseTool (flags, name = 'ECalEndcapNoiseTool'):
+def ECalEndcapNoiseTool (flags,
+                         name = 'ECalEndcapNoiseTool',
+                         readoutName = None):
     """Return noise tool for ECal endcap."""
+    if readoutName is None:
+        readoutName = flags.ECal.Barrel.readoutName
     return C.NoiseCaloCellsFromFileTurbineEndcapTool (name,
                                                       cellPositionsTool=CellPositionsECalEndcap(flags),
-                                                      readoutName=flags.ECal.Endcap.readoutName,
+                                                      readoutName=readoutName,
                                                       noiseFileName=flags.ECal.Endcap.noisePath,
                                                       elecNoiseRMSHistoName=flags.ECal.Endcap.noiseRMSHistName,
                                                       setNoiseOffset=False,
@@ -402,9 +411,12 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
     else:
         kw['crosstalkTool'] = None
        
-    kw.setdefault('crosstalkTool', ReadCrosstalkMapECalBarrel(flags) if addCrosstalk else None)
-    kw.setdefault('noiseTool', ECalBarrelNoiseTool(flags) if addNoise else None)
-    kw.setdefault('geometryTool', ECalBarrelGeometryTool(flags) if addNoise else None)
+    kw.setdefault('noiseTool',
+                  ECalBarrelNoiseTool(flags, readoutName=readoutName)
+                  if addNoise else None)
+    kw.setdefault('geometryTool',
+                  ECalBarrelGeometryTool(flags, readoutName=readoutName)
+                  if addNoise else None)
 
     if hits == flags.ECal.Barrel.readoutName:
         kw['positionsTool'] = CellPositionsECalBarrel(flags)
@@ -451,8 +463,12 @@ Passing alg allows overriding the algorithm type used for the reconstruction.
     kw.setdefault('cells', readoutName + flags.cellsNamePart + cellsNameSuffix)
     kw.setdefault('links', kw['cells'] + flags.linksNamePart)
 
-    kw.setdefault('noiseTool', ECalEndcapNoiseTool(flags) if addNoise else None)
-    kw.setdefault('geometryTool', ECalEndcapGeometryTool(flags) if addNoise else None)
+    kw.setdefault('noiseTool',
+                  ECalEndcapNoiseTool(flags, readoutName=readoutName)
+                  if addNoise else None)
+    kw.setdefault('geometryTool',
+                  ECalEndcapGeometryTool(flags, readoutName=readoutName)
+                  if addNoise else None)
 
     kw.setdefault('calibTool', CalibrateECalEndcap(flags) if doCellCalibration else None)
 
