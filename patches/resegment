@@ -1,6 +1,0 @@
-Bottom: 8cb72e1f7745d1338af07ceaad04d4399e9a659c
-Top:    8cb72e1f7745d1338af07ceaad04d4399e9a659c
-Author: scott snyder <snyder@bnl.gov>
-Date:   2026-11-17 13:45:17 -0500
-
-Add --resegmentECalBarrel option to ALLEGRO configurations.
