@@ -1,9 +1,10 @@
 {
   "version": 5,
-  "prev": "7a08c1a39f3a704017bb96036b775a7b14fba06a",
-  "head": "8f8b7be8ea65c44bac245179d4d0fd9df4d95b8e",
+  "prev": "5e8647a79b521b4a74d8235ffa3c869b1890674c",
+  "head": "db97e440db6d679eb8b6f58833e96443e9673569",
   "applied": [
-    "gitignore"
+    "gitignore",
+    "resegment"
   ],
   "unapplied": [
     "cell-creation",
@@ -32,6 +33,9 @@
     },
     "outputsel-wip": {
       "oid": "7f4fd4ff888b23673ddbffd9f22d666f001c1617"
+    },
+    "resegment": {
+      "oid": "db97e440db6d679eb8b6f58833e96443e9673569"
     }
   }
 }
